@@ -186,6 +186,17 @@ int main(int argc, char* argv[]) {
     }
 
     rpcNUMAContext* rpcContext = NULL;
+    rpcContext = createRPCNUMAContext(0, // dev_fd
+        machine_id, // mynodeid
+        node_cnt, // total nodes
+        0, // start qp
+        num_threads - 1, // end qp ( 1 qp per thread )
+        0, // clocal-pages (FIXME: what is this?)
+        (is_client == 1), // true if senders context
+        num_threads, // used to make cbufs
+        num_rem_threads // used to make cbufs (PER CLIENT NODE)
+    );
+    /*
     if( is_client ) {
         rpcContext = createRPCNUMAContext(0, // dev_fd
                 machine_id , // mynodeid
@@ -209,7 +220,7 @@ int main(int argc, char* argv[]) {
                 num_rem_threads // used to make cbufs (PER CLIENT NODE)
                 ); 
     }
-
+    */
     /* Launch a single server thread or multiple client threads */
     printf("main: Using %d threads\n", num_threads);
     param_arr = (struct thread_params*) malloc(num_threads * sizeof(struct thread_params));
@@ -307,6 +318,7 @@ int main(int argc, char* argv[]) {
             param_arr[i].num_serv_threads = num_threads;
 
             int core = thread_pin[i];
+            printf("main launching pthread_create runworker\n");
             int err = pthread_create(&thread_arr[i], NULL, run_worker, &param_arr[i]);
 
             /* Calculate cpuset for this core id, assign it. */
