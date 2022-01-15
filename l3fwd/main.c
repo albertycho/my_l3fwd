@@ -52,6 +52,7 @@ int* get_random_permutation(unsigned int n, unsigned int clt_gid, uint64_t* seed
 int main(int argc, char* argv[]) {
     /* Use small queues to reduce cache pressure */
 	struct rte_hash  dummy_check_hash;
+    dummy_func_link_check();
     const pid_t pid = getpid();
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);

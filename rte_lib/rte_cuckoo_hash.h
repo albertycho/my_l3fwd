@@ -9,5 +9,7 @@ struct rte_hash {
 
 };
 
+uint32_t dummy_func_link_check();
+
 #endif
 
