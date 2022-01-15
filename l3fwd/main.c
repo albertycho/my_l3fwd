@@ -5,6 +5,9 @@
 #include "rte_hash.h"
 #include "rte_cuckoo_hash.h"
 #include "rpc.h"
+
+#include "em_l3f.h"
+
 #ifdef __sparc__
     #include <sys/pset.h>
 #else // linux
@@ -53,6 +56,7 @@ int main(int argc, char* argv[]) {
     /* Use small queues to reduce cache pressure */
 	struct rte_hash  dummy_check_hash;
     dummy_func_link_check();
+	em_dummy_print_func();
     const pid_t pid = getpid();
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
@@ -64,15 +68,15 @@ int main(int argc, char* argv[]) {
         printf("Bound herd main thread to core\n");
     }
 
-    assert(HRD_Q_DEPTH == 128);
+    //assert(HRD_Q_DEPTH == 128);
 
     /* All requests should fit into the master's request region */
-    assert(sizeof(struct mica_op) * NUM_CLIENTS * NUM_WORKERS * WINDOW_SIZE <
-            RR_SIZE);
+    //assert(sizeof(struct mica_op) * NUM_CLIENTS * NUM_WORKERS * WINDOW_SIZE <
+    //        RR_SIZE);
 
     /* Unsignaled completion checks. worker.c does its own check w/ @postlist */
-    assert(UNSIG_BATCH >= WINDOW_SIZE);     /* Pipelining check for clients */
-    assert(HRD_Q_DEPTH >= 2 * UNSIG_BATCH); /* Queue capacity check */
+    //assert(UNSIG_BATCH >= WINDOW_SIZE);     /* Pipelining check for clients */
+    //assert(HRD_Q_DEPTH >= 2 * UNSIG_BATCH); /* Queue capacity check */
 
     unsigned int i;
     int c;

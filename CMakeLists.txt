@@ -72,7 +72,7 @@ set(RPC_SHM_SOURCES
 #add_executable(herd herd/main.c herd/worker.c herd/client.c herd/master.c)
 #add_executable(herd herd/main.c herd/worker.c herd/master.c)
 #add_executable(mica_test mica/test.c)
-add_executable(l3fwd l3fwd/main.c l3fwd/worker.c)
+add_executable(l3fwd l3fwd/main.c l3fwd/worker.c l3fwd/em_l3f.c)
 
 if(BUILD_STATIC)
 #add_library(mica STATIC ${MICA_SOURCES}) // maybe add rte library for l3fwd
