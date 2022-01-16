@@ -179,7 +179,7 @@ int main(int argc, char* argv[]) {
         0, // start qp
         num_threads - 1, // end qp ( 1 qp per thread )
         0, // clocal-pages (FIXME: what is this?)
-        (is_client == 1), // true if senders context
+        1, // true if senders context
         num_threads, // used to make cbufs
         num_rem_threads // used to make cbufs (PER CLIENT NODE)
     );
