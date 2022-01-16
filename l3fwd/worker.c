@@ -116,7 +116,6 @@ void* run_worker(void* arg) {
 #endif
 
 	int tmp_count=0;
-    //while ( 1 ) {
 	
 	//printf("HERD: before entering while loop\n");
     while (1) {
@@ -124,13 +123,13 @@ void* run_worker(void* arg) {
         /* Begin new RPCValet */
         uint64_t source_node_id,source_qp_to_reply;
 	//notify_service_start(tmp_count);
-    //RPCWithHeader rpc = receiveRPCRequest_zsim( rpcContext,
-    //            (void*) datastore_pointer,
-    //            params.sonuma_nid,
-    //            wrkr_lid,
-    //            &source_node_id,
-    //            &source_qp_to_reply,
-    //            client_done );
+    RPCWithHeader rpc = receiveRPCRequest_zsim( rpcContext,
+                (void*) datastore_pointer,
+                params.sonuma_nid,
+                wrkr_lid,
+                &source_node_id,
+                &source_qp_to_reply,
+                client_done );
 		
 //        if((rpc.payload_len==0xdead))
 //            break;
