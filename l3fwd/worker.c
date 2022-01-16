@@ -70,6 +70,9 @@ void* run_worker(void* arg) {
     } else {
         printf("Bound worker thread %d to core %d\n", params.id, params.id+3);
     }
+    dummy_func_link_check();
+	em_dummy_print_func();
+
 
     unsigned int wrkr_lid = params.id; /* Local ID of this worker thread*/
 
