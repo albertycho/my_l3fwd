@@ -91,6 +91,9 @@ int main(int argc, char* argv[]) {
     struct thread_params* param_arr;
     pthread_t* thread_arr;
 
+    unsigned int start_core = 3;
+
+
     uint64_t num_client_keys = 1024*1024, num_hash_buckets=2*1024*1024, log_cap = 8*1024*1024; // DEFAULTS, overwritten by parameters
 
     static const struct option opts[] = {
@@ -120,6 +123,9 @@ int main(int argc, char* argv[]) {
         switch (c) {
             case 'K':
                 num_client_keys = atol(optarg);
+                break;
+            case 's':
+                start_core = atol(optarg);
                 break;
             case 'L':
                 log_cap = atol(optarg);
@@ -229,6 +235,7 @@ int main(int argc, char* argv[]) {
         param_arr[i].num_hash_buckets = num_hash_buckets;
         param_arr[i].log_capacity_bytes = log_cap;
         param_arr[i].run_debug_mode = run_debug_mode;
+        param_arr[i].start_core = start_core;
 
        
      

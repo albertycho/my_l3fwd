@@ -42,6 +42,7 @@
 
 struct thread_params {
   unsigned int id;
+  unsigned int start_core;
   unsigned int local_tid;
   int base_port_index;
   int num_server_ports;

@@ -63,7 +63,7 @@ void* run_worker(void* arg) {
     struct thread_params params = *(struct thread_params*)arg;
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
-    CPU_SET(params.id + 3,&cpuset);
+    CPU_SET(params.id + params.start_core,&cpuset);
     int error = sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
     if (error) {
         printf("Could not bind worker thread %d to core %d! (error %d)\n", params.id, params.id+1, error);
