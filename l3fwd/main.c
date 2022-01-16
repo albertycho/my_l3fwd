@@ -99,6 +99,7 @@ int main(int argc, char* argv[]) {
     static const struct option opts[] = {
         {.name = "master", .has_arg = 1, .flag = NULL, .val = 'M'},
         {.name = "num-threads", .has_arg = 1, .flag = NULL, .val = 't'},
+        {.name = "start-core", .has_arg = 1, .flag = NULL, .val = 's'},
         {.name = "base-port-index", .has_arg = 1, .flag = NULL,.val = 'b'},
         {.name = "num-server-ports", .has_arg = 1, .flag = NULL,.val = 'N'},
         {.name = "num-client-ports", .has_arg = 1, .flag = NULL,.val = 'n'},
