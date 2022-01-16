@@ -187,7 +187,7 @@ void* run_worker(void* arg) {
 		//notify_service_end(tmp_count);
     } // end infinite loop
     //free(datastore_pointer);
-	printf("HERD worker: requests serviced:%d\n", tmp_count);
+	printf("L3FWD worker: requests serviced:%d\n", tmp_count);
 	notify_done_to_zsim();
 
     return NULL;

@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
     const pid_t pid = getpid();
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
-    CPU_SET(2,&cpuset);
+    CPU_SET(2,&cpuset); //just pin thread-spawning thread to core 2
 	int error = sched_setaffinity(pid, sizeof(cpu_set_t), &cpuset);
     if (error) {
         printf("Could not bind herd main thread to core 2! (error %d)\n", error);
@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
     unsigned int num_rem_threads = 0;
     unsigned int node_cnt = 0; // Msutherl
     unsigned int qps = 0; // Msutherl
-    int is_client = -1, machine_id = -1, postlist = -1, update_percentage = -1;
+    int machine_id = -1, postlist = -1, update_percentage = -1;
     int base_port_index = -1, num_server_ports = -1, num_client_ports = -1;
     struct thread_params* param_arr;
     pthread_t* thread_arr;
@@ -141,9 +141,6 @@ int main(int argc, char* argv[]) {
             case 'n':
                 num_client_ports = atoi(optarg);
                 break;
-            case 'c':
-                is_client = atoi(optarg);
-                break;
             case 'u':
                 update_percentage = atoi(optarg);
                 break;
@@ -169,25 +166,15 @@ int main(int argc, char* argv[]) {
     }
 
     /* Common sanity checks for worker process and per-machine client process */
-    assert(is_client == 0 || is_client == 1);
+
     assert( qps >= num_threads ); 
 
-    if (is_client == 1) {
-        assert(num_threads >= 1);
-        assert(machine_id >= 0);
-        assert(update_percentage >= 0 && update_percentage <= 100);
-    } else {
-        /* Server does not need to know number of client ports */
-        /*assert(num_threads == 0);  Number of server threads is fixed to NUM_WORKERS
-          (and not passed through num-threads) */
-        //num_threads = NUM_WORKERS; /* Needed to allocate thread structs later */
-        assert(machine_id >= 0);
-        assert(update_percentage == -1);
-    }
+
+    
 
     rpcNUMAContext* rpcContext = NULL;
     rpcContext = createRPCNUMAContext(0, // dev_fd
-        machine_id, // mynodeid
+        1, //doesn't matter in zsim env? //machine_id, // mynodeid
         node_cnt, // total nodes
         0, // start qp
         num_threads - 1, // end qp ( 1 qp per thread )
@@ -269,69 +256,21 @@ int main(int argc, char* argv[]) {
         param_arr[i].log_capacity_bytes = log_cap;
         param_arr[i].run_debug_mode = run_debug_mode;
 
-        if (is_client) {
-            printf("Client should never run\n");
-            /*
-            param_arr[i].id = ((unsigned int)machine_id * num_threads) + i;
-            param_arr[i].local_tid = i;
-            // cast fine because is_client always sets machine_id
-            param_arr[i].base_port_index = base_port_index;
-            param_arr[i].num_server_ports = num_server_ports;
-            param_arr[i].num_client_ports = num_client_ports;
-            param_arr[i].update_percentage = update_percentage;
-            param_arr[i].node_cnt = node_cnt;
-            // Msutherl: Always set # of other threads 
-            param_arr[i].num_serv_threads = num_rem_threads;
-            param_arr[i].num_client_threads = num_threads;
+       
+     
+        param_arr[i].id = i;
+        param_arr[i].base_port_index = base_port_index;
+        param_arr[i].num_server_ports = num_server_ports;
+        param_arr[i].num_client_ports = num_client_ports;
+        param_arr[i].node_cnt = node_cnt;
+        /* Msutherl: Always set # of other threads */
+        param_arr[i].num_client_threads = num_rem_threads;
+        param_arr[i].num_serv_threads = num_threads;
 
-            int core = thread_pin[i];
-            pthread_create(&thread_arr[i], NULL, run_client, &param_arr[i]);
+        int core = thread_pin[i];
+        printf("main launching pthread_create runworker\n");
+        int err = pthread_create(&thread_arr[i], NULL, run_worker, &param_arr[i]);
 
-            // Calculate cpuset for this core id, assign it.
-            CPU_ZERO(&cpuset);
-            CPU_SET(core,&cpuset);
-            int error = pthread_setaffinity_np(thread_arr[i], sizeof(cpu_set_t), &cpuset);
-            if (error) {
-                printf("Could not bind client thread %d to core %d! (error %d)\n", i, core, error);
-            } else {
-                printf("Bound client thread %d to core %d\n", i, core);
-            }
-            */
-        } else {
-            /*
-             * Hook for gdb. Inside gdb, go to the main() stackframe and run:
-             * 1. set var zzz = 0
-             * 2. contiune
-             */
-            /*int zzz = 1;
-              while(zzz == 1) {
-              sleep(1);
-              }*/
-
-            param_arr[i].id = i;
-            param_arr[i].base_port_index = base_port_index;
-            param_arr[i].num_server_ports = num_server_ports;
-            param_arr[i].num_client_ports = num_client_ports;
-            param_arr[i].node_cnt = node_cnt;
-            /* Msutherl: Always set # of other threads */
-            param_arr[i].num_client_threads = num_rem_threads;
-            param_arr[i].num_serv_threads = num_threads;
-
-            int core = thread_pin[i];
-            printf("main launching pthread_create runworker\n");
-            int err = pthread_create(&thread_arr[i], NULL, run_worker, &param_arr[i]);
-
-            /* Calculate cpuset for this core id, assign it. */
-            /*CPU_ZERO(&cpuset);
-            CPU_SET(core,&cpuset);
-            int error = pthread_setaffinity_np(thread_arr[i], sizeof(cpu_set_t), &cpuset);
-            if (error) {
-                printf("Could not bind worker thread %d to core %d! (error %d)\n", i, core, error);
-            } else {
-                printf("Bound worker thread %d to core %d\n", i, core);
-            }
-            */
-        }
     }
 
     for (i = 0; i < num_threads; i++) {
