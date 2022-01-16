@@ -132,7 +132,7 @@ void* run_worker(void* arg) {
                 &source_qp_to_reply,
                 client_done );
 		
-//        if((rpc.payload_len==0xdead))
+        if((rpc.payload_len==0xdead))
 //            break;
 //
 	  tmp_count++;
@@ -146,13 +146,15 @@ void* run_worker(void* arg) {
        * in the file core-occupancies.txt */
       //bool is_get = herdCallbackFunction((uint8_t*) rpc.payload, &args );
 
+        bool is_get = true; //put dummy for now, before implementing l3fwd callback
+
         timestamp(tmp_count);
 
       //printf("HERD: after herdCallback\n");
 	  //printf("app: is_get = %s, serviced %d\n", is_get ? "true":"false", tmp_count);
 
       //bool skip_ret_cpy = (resp_arr[0].val_len == 0);
-
+        bool skip_ret_cpy = true;
       // resp_arr is already filled by the callback function, through the hacked
       // datastore pointer. This is ugly, would be nice to fix.
       sendToNode_zsim( rpcContext, 
