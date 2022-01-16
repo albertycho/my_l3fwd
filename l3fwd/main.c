@@ -85,7 +85,8 @@ int main(int argc, char* argv[]) {
     unsigned int num_rem_threads = 0;
     unsigned int node_cnt = 0; // Msutherl
     unsigned int qps = 0; // Msutherl
-    int machine_id = -1, postlist = -1, update_percentage = -1;
+    int postlist = -1, update_percentage = -1;
+    int machine_id = 1;
     int base_port_index = -1, num_server_ports = -1, num_client_ports = -1;
     struct thread_params* param_arr;
     pthread_t* thread_arr;
@@ -168,9 +169,6 @@ int main(int argc, char* argv[]) {
     /* Common sanity checks for worker process and per-machine client process */
 
     assert( qps >= num_threads ); 
-
-
-    
 
     rpcNUMAContext* rpcContext = NULL;
     rpcContext = createRPCNUMAContext(0, // dev_fd
