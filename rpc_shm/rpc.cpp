@@ -375,7 +375,7 @@ receiveRPCRequest(rpcNUMAContext* rpcContext, herdCallback* cb, void* pointer_to
 #endif
 
 RPCWithHeader
-receiveRPCRequest_zsim(rpcNUMAContext* rpcContext, void* pointer_to_data_store, unsigned int serv_nid, unsigned int serv_qp_id, uint16_t* source_node_id,uint16_t* source_qp_id, bool* client_done)
+receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, void* pointer_to_data_store, unsigned int serv_nid, unsigned int serv_qp_id, uint16_t* source_node_id,uint16_t* source_qp_id, bool* client_done)
 {
 	//printf("inside RPCReq_zsim\n");
     /* Implementation using CQ polling ( raw rpc message will be in recv_slots )

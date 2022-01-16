@@ -123,7 +123,8 @@ void* run_worker(void* arg) {
         /* Begin new RPCValet */
         uint64_t source_node_id,source_qp_to_reply;
 	//notify_service_start(tmp_count);
-    RPCWithHeader rpc = receiveRPCRequest_zsim( rpcContext,
+        void* datastore_pointer;
+        RPCWithHeader rpc = receiveRPCRequest_zsim_l3fwd( rpcContext,
                 (void*) datastore_pointer,
                 params.sonuma_nid,
                 wrkr_lid,
