@@ -117,9 +117,9 @@ void* run_worker(void* arg) {
 
 	int tmp_count=0;
 	
-	//printf("HERD: before entering while loop\n");
+	printf("l3fwd: before entering while loop\n");
     while (1) {
-		//printf("HERD: after entering while loop\n");
+		printf("l3fwd: after entering while loop\n");
         /* Begin new RPCValet */
         uint64_t source_node_id,source_qp_to_reply;
 	//notify_service_start(tmp_count);
@@ -145,6 +145,8 @@ void* run_worker(void* arg) {
       /* the netpipe start/ends are only for direct on-cpu time, output by flexus stats
        * in the file core-occupancies.txt */
       //bool is_get = herdCallbackFunction((uint8_t*) rpc.payload, &args );
+
+        printf("l3fwd: 1\n");
 
         bool is_get = true; //put dummy for now, before implementing l3fwd callback
 
@@ -173,13 +175,13 @@ void* run_worker(void* arg) {
           ); 
 
         timestamp(tmp_count);
-
+        printf("l3fwd: 2\n");
       //printf("HERD: after sendtoNode\n");
 
         do_Recv_zsim(rpcContext, params.sonuma_nid, wrkr_lid, 0, rpc.payload, 64);
           //(is_get ? 64 : sizeof(struct mica_op))  // GETS only allocated 64B in reassembler. puts are a full op
           //);
-
+        printf("l3fwd: 3\n");
         timestamp(tmp_count);
 
       //printf("HERD: after recvtoNode\n");
