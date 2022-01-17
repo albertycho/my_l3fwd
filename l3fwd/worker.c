@@ -92,7 +92,7 @@ void* run_worker(void* arg) {
     registerNewSONUMAQP(rpcContext,wrkr_lid);
 
 #if defined ZSIM
-    printf("sanity check for defined ZSIM\n")
+    printf("sanity check for defined ZSIM\n");
 #endif
 
 	/* We can detect at most NUM_CLIENTS requests in each step */
