@@ -123,7 +123,7 @@ void* run_worker(void* arg) {
 	
 	printf("l3fwd: before entering while loop\n");
     while (1) {
-		printf("l3fwd: after entering while loop\n");
+		printf("l3fwd: after entering while loop, tmp_count=%d\n", tmp_count);
         /* Begin new RPCValet */
         uint64_t source_node_id,source_qp_to_reply;
 	//notify_service_start(tmp_count);
