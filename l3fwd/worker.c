@@ -135,6 +135,9 @@ void* run_worker(void* arg) {
                 &source_node_id,
                 &source_qp_to_reply,
                 client_done );
+
+        printf("l3fwd: 2, rpc.payload: %lx\n", rpc.payload);
+       
 		
         if((rpc.payload_len==0xdead))
 //            break;
