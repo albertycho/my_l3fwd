@@ -91,6 +91,10 @@ void* run_worker(void* arg) {
     //DLog("Local buffer at address %lld\n",myLocalBuffer);
     registerNewSONUMAQP(rpcContext,wrkr_lid);
 
+#if defined ZSIM
+    printf("sanity check for defined ZSIM\n")
+#endif
+
 	/* We can detect at most NUM_CLIENTS requests in each step */
     //struct mica_resp resp_arr[NUM_CLIENTS];
     long long rolling_iter = 0; /* For throughput measurement */
@@ -109,7 +113,7 @@ void* run_worker(void* arg) {
 
 #if defined ZSIM
 	monitor_client_done(&client_done);
-	//printf("monitor_client_done register done, returned addr:%lx\n");
+	printf("monitor_client_done register done, returned addr:%lx\n");
 #else
 	bool dummy_true = true;
 	client_done = &dummy_true;
