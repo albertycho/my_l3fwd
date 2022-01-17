@@ -140,7 +140,7 @@ void* run_worker(void* arg) {
        
 		
         if((rpc.payload_len==0xdead))
-//            break;
+            break;
 //
 	  tmp_count++;
 
