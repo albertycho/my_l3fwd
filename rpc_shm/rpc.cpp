@@ -251,15 +251,17 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
 
     /* Calculate local buffer address based on rpc_send_count, wrapping around when its greater than num msgs outstanding. */
     ctx_entry_t *the_ctx = &(rpcContext->msg_domain->ctx_struct);
+    printf("in sendToNode 2\n");
     size_t lbuf_offset = ((rpc_send_count % the_ctx->msgs_per_dest) * the_ctx->msg_entry_size);
+    printf("in sendToNode 3\n");
     uint32_t* net_buffer_vaddr = messageBuffer->getUnderlyingAddress(lbuf_offset);
 	//printf("rpc_send_count: %d, lbuf_offset: %d, net_buffer_vaddr: %lx, underlying_buffer_base: %lx\n", rpc_send_count, lbuf_offset, net_buffer_vaddr, messageBuffer->underlyingBuffer);
-
+    printf("in sendToNode 4\n");
     //PASS2FLEXUS_DEBUG((uint64_t)lbuf_offset,MEASUREMENT,(uint64_t)net_buffer_vaddr);
     soNUMAQP_T* my_qp = rpcContext->qps.at(sendQP);
     // copy the struct into the netbuffer address
 
-    printf("in sendToNode 2\n");
+    printf("in sendToNode 5\n");
 
     if( skipcpy ) {
         *((uint32_t*)net_buffer_vaddr) = 0x1234; // simulate header write
@@ -268,7 +270,7 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
         mempcpy(net_buffer_vaddr,raw_payload_data,messageByteSize);
     }
 
-    printf("in sendToNode 3\n");
+    printf("in sendToNode 6\n");
     /* Use rmc_hw_send for nebula - no software slot locking needed */
     //rmc_hw_send(my_qp->wq,the_ctx->ctx_id,net_buffer_vaddr,messageByteSize,destNode);
     int send_ret;
