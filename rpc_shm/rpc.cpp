@@ -258,6 +258,9 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
     //PASS2FLEXUS_DEBUG((uint64_t)lbuf_offset,MEASUREMENT,(uint64_t)net_buffer_vaddr);
     soNUMAQP_T* my_qp = rpcContext->qps.at(sendQP);
     // copy the struct into the netbuffer address
+
+    printf("in sendToNode 2\n");
+
     if( skipcpy ) {
         *((uint32_t*)net_buffer_vaddr) = 0x1234; // simulate header write
     } else {
@@ -265,12 +268,15 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
         mempcpy(net_buffer_vaddr,raw_payload_data,messageByteSize);
     }
 
+    printf("in sendToNode 3\n");
     /* Use rmc_hw_send for nebula - no software slot locking needed */
     //rmc_hw_send(my_qp->wq,the_ctx->ctx_id,net_buffer_vaddr,messageByteSize,destNode);
     int send_ret;
     do {
         send_ret=rmc_hw_send(my_qp->wq, the_ctx->ctx_id, net_buffer_vaddr, messageByteSize, destNode);
     } while (send_ret);
+    
+    printf("leaving sendToNode\n");
 }
 
 #if 0
