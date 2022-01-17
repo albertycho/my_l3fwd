@@ -179,7 +179,7 @@ void* run_worker(void* arg) {
           ); 
 
         timestamp(tmp_count);
-        printf("l3fwd: 2\n");
+        printf("l3fwd: 2, rpc.payload: %lx\n", rpc.payload);
       //printf("HERD: after sendtoNode\n");
 
         do_Recv_zsim(rpcContext, params.sonuma_nid, wrkr_lid, 0, rpc.payload, 64);
