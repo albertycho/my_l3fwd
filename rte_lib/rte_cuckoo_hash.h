@@ -39,7 +39,6 @@
 
 #define RTE_HASH_TSX_MAX_RETRY  10
 
-typedef unsigned int uintptr_t;
 
 struct rte_hash_key {
 	union {
@@ -65,6 +64,9 @@ struct rte_hash {
     char name[RTE_HASH_NAMESIZE];   /**< Name of the hash. */
     uint32_t entries;               /**< Total table entries. */
     uint32_t num_buckets;           /**< Number of buckets in table. */
+
+	uint32_t key_len __rte_cache_aligned;
+
 
 };
 
