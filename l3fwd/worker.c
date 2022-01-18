@@ -81,6 +81,9 @@ void* run_worker(void* arg) {
     int dummyint = rte_jhash_dummy_int();
     printf("dummyint = %d\n", dummyint);
 
+    multithread_check = param.id;
+
+
     uint32_t portid;
     /* pre-init dst MACs for all ports to 02:00:00:00:00:xx */
     for (portid = 0; portid < RTE_MAX_ETHPORTS; portid++) {
@@ -216,6 +219,9 @@ void* run_worker(void* arg) {
     } // end infinite loop
     //free(datastore_pointer);
 	printf("L3FWD worker: requests serviced:%d\n", tmp_count);
+
+    printf("multithread check: %d\n", multithread_check);
+
 	notify_done_to_zsim();
 
     return NULL;
