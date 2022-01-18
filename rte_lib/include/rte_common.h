@@ -388,6 +388,9 @@ rte_is_aligned(void *ptr, unsigned align)
 	RTE_CACHE_LINE_SIZE))
 
 /** Cache line size in terms of log2 */
+#define RTE_CACHE_LINE_SIZE 64
+#define RTE_CACHE_LINE_SIZE_LOG2 6
+/*
 #if RTE_CACHE_LINE_SIZE == 64
 #define RTE_CACHE_LINE_SIZE_LOG2 6
 #elif RTE_CACHE_LINE_SIZE == 128
@@ -395,7 +398,7 @@ rte_is_aligned(void *ptr, unsigned align)
 #else
 #error "Unsupported cache line size"
 #endif
-
+*/
 /** Minimum Cache line size. */
 #define RTE_CACHE_LINE_MIN_SIZE 64
 
