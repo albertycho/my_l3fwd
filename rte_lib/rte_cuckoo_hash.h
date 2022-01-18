@@ -1,7 +1,7 @@
 #ifndef _RTE_CUCKOO_HASH_H_                                                     
 #define _RTE_CUCKOO_HASH_H_
 
-#include <rte_jhash.h>
+#include "rte_jhash.h"
 ///#include <rte_hash.h>
 
 #define RTE_MAX_ETHPORTS           64 //Not sure what the default val should be
