@@ -5,7 +5,9 @@
 
 #include <stdio.h>
 #include "rte_jhash.h"
-#include "rte_cuckoo_hash.h"
+//#include "rte_cuckoo_hash.h"
+
+#include "em_l3f.h"
 
 //#include "zsim_nic_defines.hpp"
 

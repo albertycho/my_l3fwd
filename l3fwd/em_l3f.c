@@ -1,7 +1,7 @@
 #include "em_l3f.h"
 #include <stdio.h>
-#include "rte_hash.h"
-#include "rte_cuckoo_hash.h"
+//#include "rte_hash.h"
+//#include "rte_cuckoo_hash.h"
 
 /*
 #define IPV6_ADDR_LEN 16
