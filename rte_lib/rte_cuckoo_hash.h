@@ -132,6 +132,9 @@ const rte_hash_cmp_eq_t cmp_jump_table[NUM_KEY_CMP_CASES] = {
 
 #define RTE_HASH_TSX_MAX_RETRY  10
 
+#define RTE_MAX_ETHPORTS           64 //Not sure what the default val should be
+#define RTE_ETHER_LOCAL_ADMIN_ADDR 0x02 /**< Locally assigned Eth. address. */
+
 struct lcore_cache {
 	unsigned len; /**< Cache len */
 	uint32_t objs[LCORE_CACHE_SIZE]; /**< Cache objects */
