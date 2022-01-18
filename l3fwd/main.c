@@ -3,7 +3,7 @@
 //#include "util_from_hrd.h"
 //#include "mica.h"
 #include "rte_hash.h"
-#include "rte_cuckoo_hash.h"
+//#include "rte_cuckoo_hash.h"
 #include "rpc.h"
 #include "rte_jhash.h"
 
