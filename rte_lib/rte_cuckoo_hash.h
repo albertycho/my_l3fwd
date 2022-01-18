@@ -97,7 +97,7 @@ enum cmp_jump_table_case {
  * Table storing all different key compare functions
  * (multi-process supported)
  */
-const rte_hash_cmp_eq_t cmp_jump_table[NUM_KEY_CMP_CASES] = {
+inline rte_hash_cmp_eq_t cmp_jump_table[NUM_KEY_CMP_CASES] = {
 	NULL,
 	memcmp
 };
