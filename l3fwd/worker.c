@@ -220,7 +220,7 @@ void* run_worker(void* arg) {
     //free(datastore_pointer);
 	printf("L3FWD worker: requests serviced:%d\n", tmp_count);
 
-    printf("multithread check: %d\n", multithread_check);
+    printf("multithread check: %d\n", multithread_check );
 
 	notify_done_to_zsim();
 
