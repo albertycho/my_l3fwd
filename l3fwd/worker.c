@@ -81,7 +81,7 @@ void* run_worker(void* arg) {
     int dummyint = rte_jhash_dummy_int();
     printf("dummyint = %d\n", dummyint);
 
-    multithread_check = param.id;
+    multithread_check = params.id;
 
 
     uint32_t portid;
