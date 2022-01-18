@@ -9,8 +9,10 @@
 #include <stdarg.h>
 #include <sys/queue.h>
 
-#include <rte_common.h>
-#include <rte_memory.h>         /* for definition of RTE_CACHE_LINE_SIZE */
+
+#include "include/rte_common.h"
+/*
+#include <rte_memory.h>
 #include <rte_log.h>
 #include <rte_prefetch.h>
 #include <rte_branch_prediction.h>
@@ -27,7 +29,7 @@
 #include <rte_compat.h>
 #include <rte_vect.h>
 #include <rte_tailq.h>
-
+*/
 static inline uint32_t
 get_prim_bucket_index(const struct rte_hash *h, const hash_sig_t hash)
 {

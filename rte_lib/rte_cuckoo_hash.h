@@ -44,6 +44,7 @@
 //#include <rte_hash_crc.h>
 #include "rte_jhash.h"
 #include "include/rte_common.h"
+#include "include/generic/rte_rwlock.h"
 
 #if defined(RTE_ARCH_X86) || defined(RTE_ARCH_ARM64)
 /*
