@@ -7,7 +7,7 @@
 #define RTE_MAX_ETHPORTS           64 //Not sure what the default val should be
 #define RTE_ETHER_LOCAL_ADMIN_ADDR 0x02 /**< Locally assigned Eth. address. */
 
-typedef int32x4_t xmm_t;
+//typedef int32x4_t xmm_t;
 
 struct rte_hash {
     char name[RTE_HASH_NAMESIZE];   /**< Name of the hash. */
