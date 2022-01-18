@@ -1,4 +1,6 @@
-#include "rte_hash.h"
+//#include "rte_hash.h"
+
+#define NB_SOCKETS 8
 
 int em_dummy_print_func();
 
