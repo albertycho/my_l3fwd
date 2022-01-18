@@ -2,18 +2,19 @@
 #include <stdio.h>
 //#include "rte_hash.h"
 
+/*
 #define IPV6_ADDR_LEN 16
 #define L3FWD_HASH_ENTRIES		(1024*1024*1)
-/** Minimum Cache line size. */
+// Minimum Cache line size. 
 #define RTE_CACHE_LINE_MIN_SIZE 64
 #define RTE_CACHE_LINE_SIZE 64
 #define IPPROTO_UDP 17
 
 #define __rte_packed __attribute__((__packed__))
 #define __rte_aligned(a) __attribute__((__aligned__(a)))
-/** Force alignment to cache line. */
+//Force alignment to cache line. 
 #define __rte_cache_aligned __rte_aligned(RTE_CACHE_LINE_SIZE)
-
+*/
 int em_dummy_print_func(){
 	printf("EM_DUMMY_PRINT\n");
 	return 0;
