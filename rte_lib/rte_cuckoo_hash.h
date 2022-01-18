@@ -1,6 +1,7 @@
 #ifndef _RTE_CUCKOO_HASH_H_                                                     
 #define _RTE_CUCKOO_HASH_H_
 
+#include <rte_jhash.h>
 
 #define RTE_MAX_ETHPORTS           64 //Not sure what the default val should be
 #define RTE_ETHER_LOCAL_ADMIN_ADDR 0x02 /**< Locally assigned Eth. address. */
