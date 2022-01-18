@@ -25,7 +25,7 @@ extern "C" {
 #include "rte_config.h"
 
 /* OS specific include */
-#include "rte_os.h"
+//#include "rte_os.h"
 
 
 #ifndef typeof
