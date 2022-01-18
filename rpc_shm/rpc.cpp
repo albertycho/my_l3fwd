@@ -732,48 +732,4 @@ uint64_t get_lbuf_size(rpcNUMAContext *ctx) {
 }
 
 
-static inline uint32_t
-ipv6_hash_crc(const void* data, __rte_unused uint32_t data_len,
-    uint32_t init_val)
-{
-    const union ipv6_5tuple_host* k;
-    uint32_t t;
-    const uint32_t* p;
-#ifdef EM_HASH_CRC
-    const uint32_t* ip_src0, * ip_src1, * ip_src2, * ip_src3;
-    const uint32_t* ip_dst0, * ip_dst1, * ip_dst2, * ip_dst3;
-#endif
 
-    k = data;
-    t = k->proto;
-    p = (const uint32_t*)&k->port_src;
-
-#ifdef EM_HASH_CRC
-    ip_src0 = (const uint32_t*)k->ip_src;
-    ip_src1 = (const uint32_t*)(k->ip_src + 4);
-    ip_src2 = (const uint32_t*)(k->ip_src + 8);
-    ip_src3 = (const uint32_t*)(k->ip_src + 12);
-    ip_dst0 = (const uint32_t*)k->ip_dst;
-    ip_dst1 = (const uint32_t*)(k->ip_dst + 4);
-    ip_dst2 = (const uint32_t*)(k->ip_dst + 8);
-    ip_dst3 = (const uint32_t*)(k->ip_dst + 12);
-    init_val = rte_hash_crc_4byte(t, init_val);
-    init_val = rte_hash_crc_4byte(*ip_src0, init_val);
-    init_val = rte_hash_crc_4byte(*ip_src1, init_val);
-    init_val = rte_hash_crc_4byte(*ip_src2, init_val);
-    init_val = rte_hash_crc_4byte(*ip_src3, init_val);
-    init_val = rte_hash_crc_4byte(*ip_dst0, init_val);
-    init_val = rte_hash_crc_4byte(*ip_dst1, init_val);
-    init_val = rte_hash_crc_4byte(*ip_dst2, init_val);
-    init_val = rte_hash_crc_4byte(*ip_dst3, init_val);
-    init_val = rte_hash_crc_4byte(*p, init_val);
-#else
-    init_val = rte_jhash_1word(t, init_val);
-    init_val = rte_jhash(k->ip_src,
-        sizeof(uint8_t) * IPV6_ADDR_LEN, init_val);
-    init_val = rte_jhash(k->ip_dst,
-        sizeof(uint8_t) * IPV6_ADDR_LEN, init_val);
-    init_val = rte_jhash_1word(*p, init_val);
-#endif
-    return init_val;
-}
