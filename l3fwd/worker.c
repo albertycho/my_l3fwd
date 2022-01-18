@@ -64,6 +64,7 @@ bool herdCallbackFunction(uint8_t* slot_ptr, rpcArg_t* rpc_arguments)
 
 static uint64_t dest_eth_addr[RTE_MAX_ETHPORTS];
 
+
 void* run_worker(void* arg) {
     struct thread_params params = *(struct thread_params*)arg;
     cpu_set_t cpuset;
