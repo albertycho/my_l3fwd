@@ -59,7 +59,9 @@ set(BENCHMARKS
 
 set(RTE_SOURCES
 	rte_lib/rte_cuckoo_hash.c
+    rte_lib/rte_cuckoo_hash.h
     rte_lib/rte_jhash.h
+    rte_lib/rte_hash.h
 	)
 
 set(RPC_SHM_SOURCES
