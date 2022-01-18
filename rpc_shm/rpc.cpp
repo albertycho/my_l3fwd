@@ -247,21 +247,21 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
 {
     DRPC("Client [%d] calls sendToNode [%d], sendQP [%d], qpTarget [%d]",clientFrom,destNode,sendQP,qpTarget);
 
-    printf("in sendToNode\n");
+
 
     /* Calculate local buffer address based on rpc_send_count, wrapping around when its greater than num msgs outstanding. */
     ctx_entry_t *the_ctx = &(rpcContext->msg_domain->ctx_struct);
-    printf("in sendToNode 2\n");
+
     size_t lbuf_offset = ((rpc_send_count % the_ctx->msgs_per_dest) * the_ctx->msg_entry_size);
-    printf("in sendToNode 3\n");
+
     uint32_t* net_buffer_vaddr = messageBuffer->getUnderlyingAddress(lbuf_offset);
 	//printf("rpc_send_count: %d, lbuf_offset: %d, net_buffer_vaddr: %lx, underlying_buffer_base: %lx\n", rpc_send_count, lbuf_offset, net_buffer_vaddr, messageBuffer->underlyingBuffer);
-    printf("in sendToNode 4\n");
+
     //PASS2FLEXUS_DEBUG((uint64_t)lbuf_offset,MEASUREMENT,(uint64_t)net_buffer_vaddr);
     soNUMAQP_T* my_qp = rpcContext->qps.at(sendQP);
     // copy the struct into the netbuffer address
 
-    printf("in sendToNode 5\n");
+
 
     if( skipcpy ) {
         *((uint32_t*)net_buffer_vaddr) = 0x1234; // simulate header write
@@ -270,15 +270,14 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
         mempcpy(net_buffer_vaddr,raw_payload_data,messageByteSize);
     }
 
-    printf("in sendToNode 6\n");
+
     /* Use rmc_hw_send for nebula - no software slot locking needed */
     //rmc_hw_send(my_qp->wq,the_ctx->ctx_id,net_buffer_vaddr,messageByteSize,destNode);
     int send_ret;
     do {
         send_ret=rmc_hw_send(my_qp->wq, the_ctx->ctx_id, net_buffer_vaddr, messageByteSize, destNode);
     } while (send_ret);
-    
-    printf("leaving sendToNode\n");
+
 }
 
 #if 0
@@ -730,4 +729,51 @@ void ctx_disable_arm_timers(rpcNUMAContext* ctx) {
 */
 uint64_t get_lbuf_size(rpcNUMAContext *ctx) {
   return ctx->getLBufSizeBytes();
+}
+
+
+static inline uint32_t
+ipv6_hash_crc(const void* data, __rte_unused uint32_t data_len,
+    uint32_t init_val)
+{
+    const union ipv6_5tuple_host* k;
+    uint32_t t;
+    const uint32_t* p;
+#ifdef EM_HASH_CRC
+    const uint32_t* ip_src0, * ip_src1, * ip_src2, * ip_src3;
+    const uint32_t* ip_dst0, * ip_dst1, * ip_dst2, * ip_dst3;
+#endif
+
+    k = data;
+    t = k->proto;
+    p = (const uint32_t*)&k->port_src;
+
+#ifdef EM_HASH_CRC
+    ip_src0 = (const uint32_t*)k->ip_src;
+    ip_src1 = (const uint32_t*)(k->ip_src + 4);
+    ip_src2 = (const uint32_t*)(k->ip_src + 8);
+    ip_src3 = (const uint32_t*)(k->ip_src + 12);
+    ip_dst0 = (const uint32_t*)k->ip_dst;
+    ip_dst1 = (const uint32_t*)(k->ip_dst + 4);
+    ip_dst2 = (const uint32_t*)(k->ip_dst + 8);
+    ip_dst3 = (const uint32_t*)(k->ip_dst + 12);
+    init_val = rte_hash_crc_4byte(t, init_val);
+    init_val = rte_hash_crc_4byte(*ip_src0, init_val);
+    init_val = rte_hash_crc_4byte(*ip_src1, init_val);
+    init_val = rte_hash_crc_4byte(*ip_src2, init_val);
+    init_val = rte_hash_crc_4byte(*ip_src3, init_val);
+    init_val = rte_hash_crc_4byte(*ip_dst0, init_val);
+    init_val = rte_hash_crc_4byte(*ip_dst1, init_val);
+    init_val = rte_hash_crc_4byte(*ip_dst2, init_val);
+    init_val = rte_hash_crc_4byte(*ip_dst3, init_val);
+    init_val = rte_hash_crc_4byte(*p, init_val);
+#else
+    init_val = rte_jhash_1word(t, init_val);
+    init_val = rte_jhash(k->ip_src,
+        sizeof(uint8_t) * IPV6_ADDR_LEN, init_val);
+    init_val = rte_jhash(k->ip_dst,
+        sizeof(uint8_t) * IPV6_ADDR_LEN, init_val);
+    init_val = rte_jhash_1word(*p, init_val);
+#endif
+    return init_val;
 }
