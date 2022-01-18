@@ -60,6 +60,9 @@ bool herdCallbackFunction(uint8_t* slot_ptr, rpcArg_t* rpc_arguments)
     //addToContainer(rpcContext, serviceTime);
 }
 */
+
+static uint64_t dest_eth_addr[RTE_MAX_ETHPORTS];
+
 void* run_worker(void* arg) {
     struct thread_params params = *(struct thread_params*)arg;
     cpu_set_t cpuset;
@@ -76,6 +79,13 @@ void* run_worker(void* arg) {
     int dummyint = rte_jhash_dummy_int();
     printf("dummyint = %d\n", dummyint);
 
+    uint32_t portid;
+    /* pre-init dst MACs for all ports to 02:00:00:00:00:xx */
+    for (portid = 0; portid < RTE_MAX_ETHPORTS; portid++) {
+        dest_eth_addr[portid] =
+            RTE_ETHER_LOCAL_ADMIN_ADDR + ((uint64_t)portid << 40);
+    //    *(uint64_t*)(val_eth + portid) = dest_eth_addr[portid];
+    }
 
     unsigned int wrkr_lid = params.id; /* Local ID of this worker thread*/
 
