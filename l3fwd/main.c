@@ -5,6 +5,7 @@
 #include "rte_hash.h"
 #include "rte_cuckoo_hash.h"
 #include "rpc.h"
+#include "rte_jhash.h"
 
 #include "em_l3f.h"
 
