@@ -72,8 +72,8 @@ void* run_worker(void* arg) {
     }
     dummy_func_link_check();
 	em_dummy_print_func();
-    int dummyint = rte_jhash_dummy_int();
-    printf("dummyint = %d\n", dummyint);
+    //int dummyint = rte_jhash_dummy_int();
+    //printf("dummyint = %d\n", dummyint);
 
 
     unsigned int wrkr_lid = params.id; /* Local ID of this worker thread*/
