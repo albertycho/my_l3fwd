@@ -8,8 +8,7 @@ int em_dummy_print_func(){
 }
 
 static inline uint32_t
-ipv6_hash_crc(const void* data, __rte_unused uint32_t data_len,
-	uint32_t init_val){
+ipv6_hash_crc(const void* data, uint32_t init_val){
 
 	return 0;
 }
