@@ -4,6 +4,7 @@
 #include "rpc.h"
 
 #include <stdio.h>
+#include "rte_jhash.h"
 
 //#include "zsim_nic_defines.hpp"
 
