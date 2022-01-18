@@ -21,8 +21,8 @@
 #include <endian.h>
 #endif
 
-#include <rte_common.h>
-#include <rte_config.h>
+#include "../rte_common.h"
+#include "../rte_config.h"
 
 /*
  * Compile-time endianness detection

@@ -13,9 +13,9 @@
  */
 
 #include <stdint.h>
-#include <rte_compat.h>
-#include <rte_debug.h>
-#include <rte_atomic.h>
+#include "../rte_compat.h"
+#include "../rte_debug.h"
+#include "rte_atomic.h"
 
 #define MS_PER_S 1000
 #define US_PER_S 1000000

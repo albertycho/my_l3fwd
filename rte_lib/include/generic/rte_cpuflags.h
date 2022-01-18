@@ -13,7 +13,7 @@
 #include "rte_common.h"
 #include <errno.h>
 
-#include <rte_compat.h>
+#include "../rte_compat.h"
 
 /**
  * Structure used to describe platform-specific intrinsics that may or may not
