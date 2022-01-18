@@ -7,6 +7,8 @@ int em_dummy_print_func(){
 	return 0;
 }
 
+int multithread_check;
+
 static inline uint32_t
 ipv6_hash_crc(const void* data, uint32_t init_val){
 
