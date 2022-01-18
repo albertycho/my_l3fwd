@@ -7,6 +7,7 @@
 /** Minimum Cache line size. */
 #define RTE_CACHE_LINE_MIN_SIZE 64
 #define RTE_CACHE_LINE_SIZE 64
+#define IPPROTO_UDP 17
 
 #define __rte_packed __attribute__((__packed__))
 #define __rte_aligned(a) __attribute__((__aligned__(a)))
