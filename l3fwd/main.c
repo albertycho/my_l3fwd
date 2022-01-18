@@ -7,7 +7,7 @@
 #include "rpc.h"
 //#include "rte_jhash.h"
 
-#include "em_l3f.h"
+//#include "em_l3f.h"
 
 #ifdef __sparc__
     #include <sys/pset.h>
