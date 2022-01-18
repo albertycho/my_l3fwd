@@ -2,10 +2,10 @@
 #include <getopt.h>
 //#include "util_from_hrd.h"
 //#include "mica.h"
-#include "rte_hash.h"
+//#include "rte_hash.h"
 //#include "rte_cuckoo_hash.h"
 #include "rpc.h"
-#include "rte_jhash.h"
+//#include "rte_jhash.h"
 
 #include "em_l3f.h"
 
