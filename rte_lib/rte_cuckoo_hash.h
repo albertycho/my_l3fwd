@@ -135,6 +135,10 @@ const rte_hash_cmp_eq_t cmp_jump_table[NUM_KEY_CMP_CASES] = {
 #define RTE_MAX_ETHPORTS           64 //Not sure what the default val should be
 #define RTE_ETHER_LOCAL_ADMIN_ADDR 0x02 /**< Locally assigned Eth. address. */
 
+#define IPV6_ADDR_LEN 16
+#define L3FWD_HASH_ENTRIES		(1024*1024*1)
+#define IPPROTO_UDP 17
+
 struct lcore_cache {
 	unsigned len; /**< Cache len */
 	uint32_t objs[LCORE_CACHE_SIZE]; /**< Cache objects */
