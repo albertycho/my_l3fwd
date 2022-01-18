@@ -3,7 +3,14 @@
 //#include "rte_hash.h"
 
 #define IPV6_ADDR_LEN 16
+#define L3FWD_HASH_ENTRIES		(1024*1024*1)
+/** Minimum Cache line size. */
+#define RTE_CACHE_LINE_MIN_SIZE 64
+
 #define __rte_packed __attribute__((__packed__))
+#define __rte_aligned(a) __attribute__((__aligned__(a)))
+/** Force alignment to cache line. */
+#define __rte_cache_aligned __rte_aligned(RTE_CACHE_LINE_SIZE)
 
 int em_dummy_print_func(){
 	printf("EM_DUMMY_PRINT\n");
@@ -60,6 +67,8 @@ static const struct ipv6_l3fwd_em_route ipv6_l3fwd_em_route_array[] = {
 	{{{32, 1, 2, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0},
 	  {32, 1, 2, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 1}, 9, 9, IPPROTO_UDP}, 15},
 };
+
+static uint8_t ipv6_l3fwd_out_if[L3FWD_HASH_ENTRIES] __rte_cache_aligned;
 
 static inline uint32_t
 ipv6_hash_crc(const void* data, uint32_t init_val){
