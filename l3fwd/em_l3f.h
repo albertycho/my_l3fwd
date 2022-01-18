@@ -1,3 +1,4 @@
+#include "rte_hash.h"
 
 int em_dummy_print_func();
 

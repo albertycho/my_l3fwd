@@ -1,6 +1,6 @@
 #include "em_l3f.h"
 #include <stdio.h>
-#include "rte_hash.h"
+//#include "rte_hash.h"
 
 int em_dummy_print_func(){
 	printf("EM_DUMMY_PRINT\n");
