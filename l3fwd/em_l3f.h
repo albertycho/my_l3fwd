@@ -1,4 +1,6 @@
 //#include "rte_hash.h"
+#include <stdint.h>
+
 
 #define NB_SOCKETS 8
 
