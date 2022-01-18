@@ -41,7 +41,7 @@
 #define ERR_IF_TRUE(cond, fmt, args...)
 #endif
 
-#include <rte_hash_crc.h>
+//#include <rte_hash_crc.h>
 #include <rte_jhash.h>
 
 #if defined(RTE_ARCH_X86) || defined(RTE_ARCH_ARM64)
