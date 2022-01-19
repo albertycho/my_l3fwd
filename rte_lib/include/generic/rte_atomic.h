@@ -434,7 +434,7 @@ rte_atomic32_cmpset(volatile uint32_t *dst, uint32_t exp, uint32_t src)
 	uint8_t res;
 
 	asm volatile(
-			MPLOCKED
+			//MPLOCKED
 			"cmpxchgl %[src], %[dst];"
 			"sete %[res];"
 			: [res] "=a" (res),     // output
