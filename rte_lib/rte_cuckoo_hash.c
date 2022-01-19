@@ -33,6 +33,11 @@
 
 
 
+#define FOR_EACH_BUCKET(CURRENT_BKT, START_BUCKET)                            \
+	for (CURRENT_BKT = START_BUCKET;                                      \
+		CURRENT_BKT != NULL;                                          \
+		CURRENT_BKT = CURRENT_BKT->next)
+
 static inline void rte_prefetch0(const volatile void* p)
 {
 	asm volatile ("pld [%0]" : : "r" (p));
