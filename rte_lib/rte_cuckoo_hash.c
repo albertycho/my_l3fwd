@@ -645,3 +645,354 @@ rte_hash_add_key(const struct rte_hash* h, const void* key)
     RETURN_IF_TRUE(((h == NULL) || (key == NULL)), -EINVAL);
     return __rte_hash_add_key_with_hash(h, key, rte_hash_hash(h, key), 0);
 }
+
+struct rte_hash*
+	rte_hash_create(const struct rte_hash_parameters* params)
+{
+	struct rte_hash* h = NULL;
+	struct rte_tailq_entry* te = NULL;
+	struct rte_hash_list* hash_list;
+	struct rte_ring* r = NULL;
+	struct rte_ring* r_ext = NULL;
+	char hash_name[RTE_HASH_NAMESIZE];
+	void* k = NULL;
+	void* buckets = NULL;
+	void* buckets_ext = NULL;
+	char ring_name[RTE_RING_NAMESIZE];
+	char ext_ring_name[RTE_RING_NAMESIZE];
+	unsigned num_key_slots;
+	unsigned int hw_trans_mem_support = 0, use_local_cache = 0;
+	unsigned int ext_table_support = 0;
+	unsigned int readwrite_concur_support = 0;
+	unsigned int writer_takes_lock = 0;
+	unsigned int no_free_on_del = 0;
+	uint32_t* ext_bkt_to_free = NULL;
+	uint32_t* tbl_chng_cnt = NULL;
+	struct lcore_cache* local_free_slots = NULL;
+	unsigned int readwrite_concur_lf_support = 0;
+	uint32_t i;
+
+	rte_hash_function default_hash_func = (rte_hash_function)rte_jhash;
+
+	hash_list = RTE_TAILQ_CAST(rte_hash_tailq.head, rte_hash_list);
+
+	if (params == NULL) {
+		RTE_LOG(ERR, HASH, "rte_hash_create has no parameters\n");
+		return NULL;
+	}
+
+	/* Check for valid parameters */
+	if ((params->entries > RTE_HASH_ENTRIES_MAX) ||
+		(params->entries < RTE_HASH_BUCKET_ENTRIES) ||
+		(params->key_len == 0)) {
+		rte_errno = EINVAL;
+		RTE_LOG(ERR, HASH, "rte_hash_create has invalid parameters\n");
+		return NULL;
+	}
+
+	if (params->extra_flag & ~RTE_HASH_EXTRA_FLAGS_MASK) {
+		rte_errno = EINVAL;
+		RTE_LOG(ERR, HASH, "rte_hash_create: unsupported extra flags\n");
+		return NULL;
+	}
+
+	/* Validate correct usage of extra options */
+	if ((params->extra_flag & RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY) &&
+		(params->extra_flag & RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY_LF)) {
+		rte_errno = EINVAL;
+		RTE_LOG(ERR, HASH, "rte_hash_create: choose rw concurrency or "
+			"rw concurrency lock free\n");
+		return NULL;
+	}
+
+	/* Check extra flags field to check extra options. */
+	if (params->extra_flag & RTE_HASH_EXTRA_FLAGS_TRANS_MEM_SUPPORT)
+		hw_trans_mem_support = 1;
+
+	if (params->extra_flag & RTE_HASH_EXTRA_FLAGS_MULTI_WRITER_ADD) {
+		use_local_cache = 1;
+		writer_takes_lock = 1;
+	}
+
+	if (params->extra_flag & RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY) {
+		readwrite_concur_support = 1;
+		writer_takes_lock = 1;
+	}
+
+	if (params->extra_flag & RTE_HASH_EXTRA_FLAGS_EXT_TABLE)
+		ext_table_support = 1;
+
+	if (params->extra_flag & RTE_HASH_EXTRA_FLAGS_NO_FREE_ON_DEL)
+		no_free_on_del = 1;
+
+	if (params->extra_flag & RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY_LF) {
+		readwrite_concur_lf_support = 1;
+		/* Enable not freeing internal memory/index on delete.
+		 * If internal RCU is enabled, freeing of internal memory/index
+		 * is done on delete
+		 */
+		no_free_on_del = 1;
+	}
+
+	/* Store all keys and leave the first entry as a dummy entry for lookup_bulk */
+	if (use_local_cache)
+		/*
+		 * Increase number of slots by total number of indices
+		 * that can be stored in the lcore caches
+		 * except for the first cache
+		 */
+		num_key_slots = params->entries + (RTE_MAX_LCORE - 1) *
+		(LCORE_CACHE_SIZE - 1) + 1;
+	else
+		num_key_slots = params->entries + 1;
+
+	snprintf(ring_name, sizeof(ring_name), "HT_%s", params->name);
+	/* Create ring (Dummy slot index is not enqueued) */
+	r = rte_ring_create_elem(ring_name, sizeof(uint32_t),
+		rte_align32pow2(num_key_slots), params->socket_id, 0);
+	if (r == NULL) {
+		RTE_LOG(ERR, HASH, "memory allocation failed\n");
+		goto err;
+	}
+
+	const uint32_t num_buckets = rte_align32pow2(params->entries) /
+		RTE_HASH_BUCKET_ENTRIES;
+
+	/* Create ring for extendable buckets. */
+	if (ext_table_support) {
+		snprintf(ext_ring_name, sizeof(ext_ring_name), "HT_EXT_%s",
+			params->name);
+		r_ext = rte_ring_create_elem(ext_ring_name, sizeof(uint32_t),
+			rte_align32pow2(num_buckets + 1),
+			params->socket_id, 0);
+
+		if (r_ext == NULL) {
+			RTE_LOG(ERR, HASH, "ext buckets memory allocation "
+				"failed\n");
+			goto err;
+		}
+	}
+
+	snprintf(hash_name, sizeof(hash_name), "HT_%s", params->name);
+
+	rte_mcfg_tailq_write_lock();
+
+	/* guarantee there's no existing: this is normally already checked
+	 * by ring creation above */
+	TAILQ_FOREACH(te, hash_list, next) {
+		h = (struct rte_hash*)te->data;
+		if (strncmp(params->name, h->name, RTE_HASH_NAMESIZE) == 0)
+			break;
+	}
+	h = NULL;
+	if (te != NULL) {
+		rte_errno = EEXIST;
+		te = NULL;
+		goto err_unlock;
+	}
+
+	te = rte_zmalloc("HASH_TAILQ_ENTRY", sizeof(*te), 0);
+	if (te == NULL) {
+		RTE_LOG(ERR, HASH, "tailq entry allocation failed\n");
+		goto err_unlock;
+	}
+
+	h = (struct rte_hash*)rte_zmalloc_socket(hash_name, sizeof(struct rte_hash),
+		RTE_CACHE_LINE_SIZE, params->socket_id);
+
+	if (h == NULL) {
+		RTE_LOG(ERR, HASH, "memory allocation failed\n");
+		goto err_unlock;
+	}
+
+	buckets = rte_zmalloc_socket(NULL,
+		num_buckets * sizeof(struct rte_hash_bucket),
+		RTE_CACHE_LINE_SIZE, params->socket_id);
+
+	if (buckets == NULL) {
+		RTE_LOG(ERR, HASH, "buckets memory allocation failed\n");
+		goto err_unlock;
+	}
+
+	/* Allocate same number of extendable buckets */
+	if (ext_table_support) {
+		buckets_ext = rte_zmalloc_socket(NULL,
+			num_buckets * sizeof(struct rte_hash_bucket),
+			RTE_CACHE_LINE_SIZE, params->socket_id);
+		if (buckets_ext == NULL) {
+			RTE_LOG(ERR, HASH, "ext buckets memory allocation "
+				"failed\n");
+			goto err_unlock;
+		}
+		/* Populate ext bkt ring. We reserve 0 similar to the
+		 * key-data slot, just in case in future we want to
+		 * use bucket index for the linked list and 0 means NULL
+		 * for next bucket
+		 */
+		for (i = 1; i <= num_buckets; i++)
+			rte_ring_sp_enqueue_elem(r_ext, &i, sizeof(uint32_t));
+
+		if (readwrite_concur_lf_support) {
+			ext_bkt_to_free = rte_zmalloc(NULL, sizeof(uint32_t) *
+				num_key_slots, 0);
+			if (ext_bkt_to_free == NULL) {
+				RTE_LOG(ERR, HASH, "ext bkt to free memory allocation "
+					"failed\n");
+				goto err_unlock;
+			}
+		}
+	}
+
+	const uint32_t key_entry_size =
+		RTE_ALIGN(sizeof(struct rte_hash_key) + params->key_len,
+			KEY_ALIGNMENT);
+	const uint64_t key_tbl_size = (uint64_t)key_entry_size * num_key_slots;
+
+	k = rte_zmalloc_socket(NULL, key_tbl_size,
+		RTE_CACHE_LINE_SIZE, params->socket_id);
+
+	if (k == NULL) {
+		RTE_LOG(ERR, HASH, "memory allocation failed\n");
+		goto err_unlock;
+	}
+
+	tbl_chng_cnt = rte_zmalloc_socket(NULL, sizeof(uint32_t),
+		RTE_CACHE_LINE_SIZE, params->socket_id);
+
+	if (tbl_chng_cnt == NULL) {
+		RTE_LOG(ERR, HASH, "memory allocation failed\n");
+		goto err_unlock;
+	}
+
+	/*
+	 * If x86 architecture is used, select appropriate compare function,
+	 * which may use x86 intrinsics, otherwise use memcmp
+	 */
+#if defined(RTE_ARCH_X86) || defined(RTE_ARCH_ARM64)
+	 /* Select function to compare keys */
+	switch (params->key_len) {
+	case 16:
+		h->cmp_jump_table_idx = KEY_16_BYTES;
+		break;
+	case 32:
+		h->cmp_jump_table_idx = KEY_32_BYTES;
+		break;
+	case 48:
+		h->cmp_jump_table_idx = KEY_48_BYTES;
+		break;
+	case 64:
+		h->cmp_jump_table_idx = KEY_64_BYTES;
+		break;
+	case 80:
+		h->cmp_jump_table_idx = KEY_80_BYTES;
+		break;
+	case 96:
+		h->cmp_jump_table_idx = KEY_96_BYTES;
+		break;
+	case 112:
+		h->cmp_jump_table_idx = KEY_112_BYTES;
+		break;
+	case 128:
+		h->cmp_jump_table_idx = KEY_128_BYTES;
+		break;
+	default:
+		/* If key is not multiple of 16, use generic memcmp */
+		h->cmp_jump_table_idx = KEY_OTHER_BYTES;
+	}
+#else
+	h->cmp_jump_table_idx = KEY_OTHER_BYTES;
+#endif
+
+	if (use_local_cache) {
+		local_free_slots = rte_zmalloc_socket(NULL,
+			sizeof(struct lcore_cache) * RTE_MAX_LCORE,
+			RTE_CACHE_LINE_SIZE, params->socket_id);
+		if (local_free_slots == NULL) {
+			RTE_LOG(ERR, HASH, "local free slots memory allocation failed\n");
+			goto err_unlock;
+		}
+	}
+
+	/* Default hash function */
+#if defined(RTE_ARCH_X86)
+	default_hash_func = (rte_hash_function)rte_hash_crc;
+#elif defined(RTE_ARCH_ARM64)
+	if (rte_cpu_get_flag_enabled(RTE_CPUFLAG_CRC32))
+		default_hash_func = (rte_hash_function)rte_hash_crc;
+#endif
+	/* Setup hash context */
+	strlcpy(h->name, params->name, sizeof(h->name));
+	h->entries = params->entries;
+	h->key_len = params->key_len;
+	h->key_entry_size = key_entry_size;
+	h->hash_func_init_val = params->hash_func_init_val;
+
+	h->num_buckets = num_buckets;
+	h->bucket_bitmask = h->num_buckets - 1;
+	h->buckets = buckets;
+	h->buckets_ext = buckets_ext;
+	h->free_ext_bkts = r_ext;
+	h->hash_func = (params->hash_func == NULL) ?
+		default_hash_func : params->hash_func;
+	h->key_store = k;
+	h->free_slots = r;
+	h->ext_bkt_to_free = ext_bkt_to_free;
+	h->tbl_chng_cnt = tbl_chng_cnt;
+	*h->tbl_chng_cnt = 0;
+	h->hw_trans_mem_support = hw_trans_mem_support;
+	h->use_local_cache = use_local_cache;
+	h->local_free_slots = local_free_slots;
+	h->readwrite_concur_support = readwrite_concur_support;
+	h->ext_table_support = ext_table_support;
+	h->writer_takes_lock = writer_takes_lock;
+	h->no_free_on_del = no_free_on_del;
+	h->readwrite_concur_lf_support = readwrite_concur_lf_support;
+
+#if defined(RTE_ARCH_X86)
+	if (rte_cpu_get_flag_enabled(RTE_CPUFLAG_SSE2))
+		h->sig_cmp_fn = RTE_HASH_COMPARE_SSE;
+	else
+#elif defined(RTE_ARCH_ARM64)
+	if (rte_cpu_get_flag_enabled(RTE_CPUFLAG_NEON))
+		h->sig_cmp_fn = RTE_HASH_COMPARE_NEON;
+	else
+#endif
+		h->sig_cmp_fn = RTE_HASH_COMPARE_SCALAR;
+
+	/* Writer threads need to take the lock when:
+	 * 1) RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY is enabled OR
+	 * 2) RTE_HASH_EXTRA_FLAGS_MULTI_WRITER_ADD is enabled
+	 */
+	if (h->writer_takes_lock) {
+		h->readwrite_lock = rte_malloc(NULL, sizeof(rte_rwlock_t),
+			RTE_CACHE_LINE_SIZE);
+		if (h->readwrite_lock == NULL)
+			goto err_unlock;
+
+		rte_rwlock_init(h->readwrite_lock);
+	}
+
+	/* Populate free slots ring. Entry zero is reserved for key misses. */
+	for (i = 1; i < num_key_slots; i++)
+		rte_ring_sp_enqueue_elem(r, &i, sizeof(uint32_t));
+
+	te->data = (void*)h;
+	TAILQ_INSERT_TAIL(hash_list, te, next);
+	rte_mcfg_tailq_write_unlock();
+
+	return h;
+err_unlock:
+	rte_mcfg_tailq_write_unlock();
+err:
+	rte_ring_free(r);
+	rte_ring_free(r_ext);
+	rte_free(te);
+	rte_free(local_free_slots);
+	rte_free(h);
+	rte_free(buckets);
+	rte_free(buckets_ext);
+	rte_free(k);
+	rte_free(tbl_chng_cnt);
+	rte_free(ext_bkt_to_free);
+	return NULL;
+}
