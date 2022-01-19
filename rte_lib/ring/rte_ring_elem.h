@@ -696,10 +696,10 @@ rte_ring_dequeue_burst_elem(struct rte_ring *r, void *obj_table,
 	return 0;
 }
 
-#include <rte_ring_peek.h>
-#include <rte_ring_peek_zc.h>
+//#include "rte_ring_peek.h"
+//#include <rte_ring_peek_zc.h>
 
-#include <rte_ring.h>
+//#include <rte_ring.h>
 
 #ifdef __cplusplus
 }
