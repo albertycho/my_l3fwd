@@ -795,7 +795,7 @@ struct rte_hash*
 
 	/* guarantee there's no existing: this is normally already checked
 	 * by ring creation above */
-	TAILQ_FOREACH(te, hash_list, next) {
+	TAILQ_FOREACH(te, (struct rte_hash_list *)hash_list, next) {
 		h = (struct rte_hash*)te->data;
 		if (strncmp(params->name, h->name, RTE_HASH_NAMESIZE) == 0)
 			break;
