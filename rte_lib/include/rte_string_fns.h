@@ -112,6 +112,7 @@ rte_strlcat(char *dst, const char *src, size_t size)
  *   -E2BIG if the destination buffer is too small.
  *   rte_errno is set.
  */
+typedef long long ssize_t;
 ssize_t
 rte_strscpy(char *dst, const char *src, size_t dsize);
 
