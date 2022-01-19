@@ -17,7 +17,7 @@
 #include "rte_config.h"
 #include "rte_compat.h"
 #include "rte_per_lcore.h"
-#include "rte_bus.h"
+//#include "rte_bus.h"
 #include "rte_uuid.h"
 
 #include "rte_pci_dev_feature_defs.h"
