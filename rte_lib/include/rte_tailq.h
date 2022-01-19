@@ -24,6 +24,14 @@ struct { \
 	struct type **tqe_prev; \
 }
 
+
+#define	RTE_TAILQ_HEAD(name, type)						\
+struct name {								\
+	struct type *tqh_first;	/* first element */			\
+	struct type **tqh_last;	/* addr of last next element */		\
+	TRACEBUF							\
+}
+
 /** dummy structure type used by the rte_tailq APIs */
 struct rte_tailq_entry {
 	RTE_TAILQ_ENTRY(rte_tailq_entry) next; /**< Pointer entries for a tailq list */
