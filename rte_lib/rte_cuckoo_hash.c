@@ -134,6 +134,15 @@ __hash_rw_reader_unlock(const struct rte_hash* h)
 }
 
 
+static inline void
+enqueue_slot_back(const struct rte_hash* h,
+	struct lcore_cache* cached_free_slots,
+	uint32_t slot_id)
+{
+	rte_ring_sp_enqueue_elem(h->free_slots, &slot_id,
+		sizeof(uint32_t));
+}
+
 static inline int32_t
 search_and_update(const struct rte_hash* h, void* data, const void* key,
 	struct rte_hash_bucket* bkt, uint16_t sig)
@@ -225,6 +234,61 @@ rte_hash_cuckoo_insert_mw(const struct rte_hash* h,
 	/* no empty entry */
 	return -1;
 }
+
+static inline int
+rte_hash_cuckoo_make_space_mw(const struct rte_hash* h,
+	struct rte_hash_bucket* bkt,
+	struct rte_hash_bucket* sec_bkt,
+	const struct rte_hash_key* key, void* data,
+	uint16_t sig, uint32_t bucket_idx,
+	uint32_t new_idx, int32_t* ret_val)
+{
+	unsigned int i;
+	struct queue_node queue[RTE_HASH_BFS_QUEUE_MAX_LEN];
+	struct queue_node* tail, * head;
+	struct rte_hash_bucket* curr_bkt, * alt_bkt;
+	uint32_t cur_idx, alt_idx;
+
+	tail = queue;
+	head = queue + 1;
+	tail->bkt = bkt;
+	tail->prev = NULL;
+	tail->prev_slot = -1;
+	tail->cur_bkt_idx = bucket_idx;
+
+	/* Cuckoo bfs Search */
+	while (likely(tail != head && head <
+		queue + RTE_HASH_BFS_QUEUE_MAX_LEN -
+		RTE_HASH_BUCKET_ENTRIES)) {
+		curr_bkt = tail->bkt;
+		cur_idx = tail->cur_bkt_idx;
+		for (i = 0; i < RTE_HASH_BUCKET_ENTRIES; i++) {
+			if (curr_bkt->key_idx[i] == EMPTY_SLOT) {
+				int32_t ret = rte_hash_cuckoo_move_insert_mw(h,
+					bkt, sec_bkt, key, data,
+					tail, i, sig,
+					new_idx, ret_val);
+				if (likely(ret != -1))
+					return ret;
+			}
+
+			/* Enqueue new node and keep prev node info */
+			alt_idx = get_alt_bucket_index(h, cur_idx,
+				curr_bkt->sig_current[i]);
+			alt_bkt = &(h->buckets[alt_idx]);
+			head->bkt = alt_bkt;
+			head->cur_bkt_idx = alt_idx;
+			head->prev = tail;
+			head->prev_slot = i;
+			head++;
+		}
+		tail++;
+	}
+
+	return -ENOSPC;
+}
+
+
 
 
 hash_sig_t
