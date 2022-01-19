@@ -48,6 +48,9 @@
 		CURRENT_BKT != NULL;                                          \
 		CURRENT_BKT = CURRENT_BKT->next)
 
+
+TAILQ_HEAD(rte_hash_list, rte_tailq_entry);
+
 static struct rte_tailq_elem rte_hash_tailq = {
 	.name = "RTE_HASH",
 };
