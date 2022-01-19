@@ -20,8 +20,8 @@ extern "C" {
 
 #include <stdio.h>
 
-#include <rte_log.h>
-#include <rte_dev.h>
+#include "rte_log.h"
+#include "rte_dev.h"
 
 /** Double linked list of buses */
 RTE_TAILQ_HEAD(rte_bus_list, rte_bus);
