@@ -25,8 +25,11 @@
  * This call is intended for tight loops which poll a shared resource or wait
  * for an event. A short pause within the loop may reduce the power consumption.
  */
-static inline void rte_pause(void);
-
+//static inline void rte_pause(void);
+static inline void rte_pause(void)
+{
+	_mm_pause();
+}
 /**
  * Wait for *addr to be updated with a 16-bit expected value, with a relaxed
  * memory ordering model meaning the loads around this API can be reordered.
