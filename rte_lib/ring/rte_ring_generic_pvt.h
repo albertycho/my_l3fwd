@@ -10,23 +10,23 @@
 #ifndef _RTE_RING_GENERIC_PVT_H_
 #define _RTE_RING_GENERIC_PVT_H_
 
-static __rte_always_inline void
-__rte_ring_update_tail(struct rte_ring_headtail *ht, uint32_t old_val,
-		uint32_t new_val, uint32_t single, uint32_t enqueue)
-{
-	if (enqueue)
-		rte_smp_wmb();
-	else
-		rte_smp_rmb();
-	/*
-	 * If there are other enqueues/dequeues in progress that preceded us,
-	 * we need to wait for them to complete
-	 */
-	if (!single)
-		rte_wait_until_equal_32(&ht->tail, old_val, __ATOMIC_RELAXED);
-
-	ht->tail = new_val;
-}
+//static __rte_always_inline void
+//__rte_ring_update_tail(struct rte_ring_headtail *ht, uint32_t old_val,
+//		uint32_t new_val, uint32_t single, uint32_t enqueue)
+//{
+//	if (enqueue)
+//		rte_smp_wmb();
+//	else
+//		rte_smp_rmb();
+//	/*
+//	 * If there are other enqueues/dequeues in progress that preceded us,
+//	 * we need to wait for them to complete
+//	 */
+//	if (!single)
+//		rte_wait_until_equal_32(&ht->tail, old_val, __ATOMIC_RELAXED);
+//
+//	ht->tail = new_val;
+//}
 
 /**
  * @internal This function updates the producer head for enqueue
