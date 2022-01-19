@@ -11,6 +11,7 @@
 
 
 #include "include/rte_common.h"
+#include "ring/rte_ring_elem.h"
 /*
 #include <rte_memory.h>
 #include <rte_log.h>
