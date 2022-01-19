@@ -30,6 +30,8 @@ extern "C" {
 #include "../include/rte_common.h"
 #include "../include/rte_config.h"
 #include "../include/generic/rte_atomic.h"
+#include "../include/rte_memzone.h"
+#include "../include/rte_memory.h"
 //#include <rte_config.h>
 	/*
 #include <rte_memory.h>
