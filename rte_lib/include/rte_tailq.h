@@ -17,6 +17,7 @@ extern "C" {
 
 #include <stdio.h>
 #include "rte_debug.h"
+//#include "eal_common_tailqs.h"
 
 #define RTE_TAILQ_ENTRY(type) \
 struct { \
@@ -29,7 +30,6 @@ struct { \
 struct name {								\
 	struct type *tqh_first;	/* first element */			\
 	struct type **tqh_last;	/* addr of last next element */		\
-	TRACEBUF							\
 }
 
 /** dummy structure type used by the rte_tailq APIs */

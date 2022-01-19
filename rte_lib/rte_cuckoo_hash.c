@@ -33,7 +33,13 @@
 #include <rte_tailq.h>
 */
 
-
+/* Mask of all flags supported by this version */
+#define RTE_HASH_EXTRA_FLAGS_MASK (RTE_HASH_EXTRA_FLAGS_TRANS_MEM_SUPPORT | \
+				   RTE_HASH_EXTRA_FLAGS_MULTI_WRITER_ADD | \
+				   RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY | \
+				   RTE_HASH_EXTRA_FLAGS_EXT_TABLE |	\
+				   RTE_HASH_EXTRA_FLAGS_NO_FREE_ON_DEL | \
+				   RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY_LF)
 
 #define FOR_EACH_BUCKET(CURRENT_BKT, START_BUCKET)                            \
 	for (CURRENT_BKT = START_BUCKET;                                      \
@@ -690,13 +696,13 @@ struct rte_hash*
 	if ((params->entries > RTE_HASH_ENTRIES_MAX) ||
 		(params->entries < RTE_HASH_BUCKET_ENTRIES) ||
 		(params->key_len == 0)) {
-		rte_errno = EINVAL;
+		//rte_errno = EINVAL;
 		RTE_LOG(ERR, HASH, "rte_hash_create has invalid parameters\n");
 		return NULL;
 	}
 
 	if (params->extra_flag & ~RTE_HASH_EXTRA_FLAGS_MASK) {
-		rte_errno = EINVAL;
+		//rte_errno = EINVAL;
 		RTE_LOG(ERR, HASH, "rte_hash_create: unsupported extra flags\n");
 		return NULL;
 	}
@@ -704,7 +710,7 @@ struct rte_hash*
 	/* Validate correct usage of extra options */
 	if ((params->extra_flag & RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY) &&
 		(params->extra_flag & RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY_LF)) {
-		rte_errno = EINVAL;
+		//rte_errno = EINVAL;
 		RTE_LOG(ERR, HASH, "rte_hash_create: choose rw concurrency or "
 			"rw concurrency lock free\n");
 		return NULL;
@@ -740,6 +746,7 @@ struct rte_hash*
 	}
 
 	/* Store all keys and leave the first entry as a dummy entry for lookup_bulk */
+#ifdef 0
 	if (use_local_cache)
 		/*
 		 * Increase number of slots by total number of indices
@@ -750,6 +757,8 @@ struct rte_hash*
 		(LCORE_CACHE_SIZE - 1) + 1;
 	else
 		num_key_slots = params->entries + 1;
+#endif
+	num_key_slots = params->entries + 1;
 
 	snprintf(ring_name, sizeof(ring_name), "HT_%s", params->name);
 	/* Create ring (Dummy slot index is not enqueued) */
@@ -791,7 +800,7 @@ struct rte_hash*
 	}
 	h = NULL;
 	if (te != NULL) {
-		rte_errno = EEXIST;
+		//rte_errno = EEXIST;
 		te = NULL;
 		goto err_unlock;
 	}
@@ -908,6 +917,8 @@ struct rte_hash*
 	h->cmp_jump_table_idx = KEY_OTHER_BYTES;
 #endif
 
+	//not using local cache
+#ifdef 0
 	if (use_local_cache) {
 		local_free_slots = rte_zmalloc_socket(NULL,
 			sizeof(struct lcore_cache) * RTE_MAX_LCORE,
@@ -917,6 +928,8 @@ struct rte_hash*
 			goto err_unlock;
 		}
 	}
+#endif
+
 
 	/* Default hash function */
 #if defined(RTE_ARCH_X86)
