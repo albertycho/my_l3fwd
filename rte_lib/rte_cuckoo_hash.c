@@ -38,6 +38,11 @@ static inline void rte_prefetch0(const volatile void* p)
 	asm volatile ("pld [%0]" : : "r" (p));
 }
 
+static inline int
+rte_hash_cmp_eq(const void* key1, const void* key2, const struct rte_hash* h) {
+	return memcmp(key1, key2, sizeof(key1));
+}
+
 static inline int32_t
 search_and_update(const struct rte_hash* h, void* data, const void* key,
 	struct rte_hash_bucket* bkt, uint16_t sig)
