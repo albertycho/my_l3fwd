@@ -27,8 +27,11 @@ extern "C" {
 #include <stdint.h>
 #include <string.h>
 #include <errno.h>
-#include <rte_common.h>
-#include <rte_config.h>
+#include "../include/rte_common.h"
+#include "../include/rte_config.h"
+#include "../include/generic/rte_atomic.h"
+//#include <rte_config.h>
+	/*
 #include <rte_memory.h>
 #include <rte_lcore.h>
 #include <rte_atomic.h>
@@ -36,6 +39,7 @@ extern "C" {
 #include <rte_memzone.h>
 #include <rte_pause.h>
 #include <rte_debug.h>
+*/
 
 #define RTE_TAILQ_RING_NAME "RTE_RING"
 
