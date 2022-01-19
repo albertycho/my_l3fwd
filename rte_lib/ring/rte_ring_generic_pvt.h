@@ -10,23 +10,37 @@
 #ifndef _RTE_RING_GENERIC_PVT_H_
 #define _RTE_RING_GENERIC_PVT_H_
 
-//static __rte_always_inline void
-//__rte_ring_update_tail(struct rte_ring_headtail *ht, uint32_t old_val,
-//		uint32_t new_val, uint32_t single, uint32_t enqueue)
-//{
-//	if (enqueue)
-//		rte_smp_wmb();
-//	else
-//		rte_smp_rmb();
-//	/*
-//	 * If there are other enqueues/dequeues in progress that preceded us,
-//	 * we need to wait for them to complete
-//	 */
-//	if (!single)
-//		rte_wait_until_equal_32(&ht->tail, old_val, __ATOMIC_RELAXED);
-//
-//	ht->tail = new_val;
-//}
+//#include "generic/rte_atomic.h"
+
+#define	rte_mb()  __sync_synchronize()
+
+#define	rte_wmb() do { asm volatile ("dmb st" : : : "memory"); } while (0)
+
+#define	rte_rmb() __sync_synchronize()
+
+#define rte_smp_mb() rte_mb()
+
+#define rte_smp_wmb() rte_wmb()
+
+#define rte_smp_rmb() rte_rmb()
+
+static __rte_always_inline void
+__rte_ring_update_tail(struct rte_ring_headtail *ht, uint32_t old_val,
+		uint32_t new_val, uint32_t single, uint32_t enqueue)
+{
+	if (enqueue)
+		rte_smp_wmb();
+	else
+		rte_smp_rmb();
+	/*
+	 * If there are other enqueues/dequeues in progress that preceded us,
+	 * we need to wait for them to complete
+	 */
+	if (!single)
+		rte_wait_until_equal_32(&ht->tail, old_val, __ATOMIC_RELAXED);
+
+	ht->tail = new_val;
+}
 
 /**
  * @internal This function updates the producer head for enqueue
