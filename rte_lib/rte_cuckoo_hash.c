@@ -80,7 +80,21 @@ search_and_update(const struct rte_hash* h, void* data, const void* key,
 	return -1;
 }
 
+static inline uint32_t
+alloc_slot(const struct rte_hash* h, struct lcore_cache* cached_free_slots)
+{
+	unsigned int n_slots;
+	uint32_t slot_id;
 
+
+	else {
+		if (rte_ring_sc_dequeue_elem(h->free_slots, &slot_id,
+			sizeof(uint32_t)) != 0)
+			return EMPTY_SLOT;
+	}
+
+	return slot_id;
+}
 //static inline uint32_t
 uint32_t
 dummy_func_link_check() {
@@ -200,11 +214,13 @@ __rte_hash_add_key_with_hash(const struct rte_hash* h, const void* key,
 	__hash_rw_writer_unlock(h);
 
 	/* Did not find a match, so get a new slot for storing the new key */
-	if (h->use_local_cache) {
-		lcore_id = rte_lcore_id();
-		cached_free_slots = &h->local_free_slots[lcore_id];
-	}
+
 	slot_id = alloc_slot(h, cached_free_slots);
+	if (slot_id == EMPTY_SLOT) {
+		printf("Alloc Slot failed!\n");
+	}
+	/*Don't understand DQ, so let's see if we can get by without it..*/
+	/*
 	if (slot_id == EMPTY_SLOT) {
 		if (h->dq) {
 			__hash_rw_writer_lock(h);
@@ -218,6 +234,7 @@ __rte_hash_add_key_with_hash(const struct rte_hash* h, const void* key,
 		if (slot_id == EMPTY_SLOT)
 			return -ENOSPC;
 	}
+	*/
 
 	new_k = RTE_PTR_ADD(keys, slot_id * h->key_entry_size);
 	/* The store to application data (by the application) at *data should
