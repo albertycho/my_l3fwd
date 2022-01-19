@@ -582,6 +582,8 @@ __rte_hash_add_key_with_hash(const struct rte_hash* h, const void* key,
 	if (rte_ring_sc_dequeue_elem(h->free_ext_bkts, &ext_bkt_id,
 		sizeof(uint32_t)) != 0 ||
 		ext_bkt_id == 0) {
+		/*don't understand dq, see if we can get by without it..*/
+		/*
 		if (h->dq) {
 			if (rte_rcu_qsbr_dq_reclaim(h->dq,
 				h->hash_rcu_cfg->max_reclaim_size,
@@ -591,6 +593,7 @@ __rte_hash_add_key_with_hash(const struct rte_hash* h, const void* key,
 					sizeof(uint32_t));
 			}
 		}
+		*/
 		if (ext_bkt_id == 0) {
 			ret = -ENOSPC;
 			goto failure;
