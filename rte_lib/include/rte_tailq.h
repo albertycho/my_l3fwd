@@ -18,6 +18,12 @@ extern "C" {
 #include <stdio.h>
 #include "rte_debug.h"
 
+#define RTE_TAILQ_ENTRY(type) \
+struct { \
+	struct type *tqe_next; \
+	struct type **tqe_prev; \
+}
+
 /** dummy structure type used by the rte_tailq APIs */
 struct rte_tailq_entry {
 	RTE_TAILQ_ENTRY(rte_tailq_entry) next; /**< Pointer entries for a tailq list */
