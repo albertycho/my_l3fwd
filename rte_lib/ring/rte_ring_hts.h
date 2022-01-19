@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 
-#include <rte_ring_hts_elem_pvt.h>
+#include "rte_ring_hts_elem_pvt.h"
 
 /**
  * Enqueue several objects on the HTS ring (multi-producers safe).

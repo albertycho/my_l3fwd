@@ -55,7 +55,7 @@
 extern "C" {
 #endif
 
-#include <rte_ring_rts_elem_pvt.h>
+#include "rte_ring_rts_elem_pvt.h"
 
 /**
  * Enqueue several objects on the RTS ring (multi-producers safe).
