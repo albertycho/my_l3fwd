@@ -235,6 +235,129 @@ rte_hash_cuckoo_insert_mw(const struct rte_hash* h,
 	return -1;
 }
 
+
+static inline int
+rte_hash_cuckoo_move_insert_mw(const struct rte_hash* h,
+	struct rte_hash_bucket* bkt,
+	struct rte_hash_bucket* alt_bkt,
+	const struct rte_hash_key* key, void* data,
+	struct queue_node* leaf, uint32_t leaf_slot,
+	uint16_t sig, uint32_t new_idx,
+	int32_t* ret_val)
+{
+	uint32_t prev_alt_bkt_idx;
+	struct rte_hash_bucket* cur_bkt;
+	struct queue_node* prev_node, * curr_node = leaf;
+	struct rte_hash_bucket* prev_bkt, * curr_bkt = leaf->bkt;
+	uint32_t prev_slot, curr_slot = leaf_slot;
+	int32_t ret;
+
+	__hash_rw_writer_lock(h);
+
+	/* In case empty slot was gone before entering protected region */
+	if (curr_bkt->key_idx[curr_slot] != EMPTY_SLOT) {
+		__hash_rw_writer_unlock(h);
+		return -1;
+	}
+
+	/* Check if key was inserted after last check but before this
+	 * protected region.
+	 */
+	ret = search_and_update(h, data, key, bkt, sig);
+	if (ret != -1) {
+		__hash_rw_writer_unlock(h);
+		*ret_val = ret;
+		return 1;
+	}
+
+	FOR_EACH_BUCKET(cur_bkt, alt_bkt) {
+		ret = search_and_update(h, data, key, cur_bkt, sig);
+		if (ret != -1) {
+			__hash_rw_writer_unlock(h);
+			*ret_val = ret;
+			return 1;
+		}
+	}
+
+	while (likely(curr_node->prev != NULL)) {
+		prev_node = curr_node->prev;
+		prev_bkt = prev_node->bkt;
+		prev_slot = curr_node->prev_slot;
+
+		prev_alt_bkt_idx = get_alt_bucket_index(h,
+			prev_node->cur_bkt_idx,
+			prev_bkt->sig_current[prev_slot]);
+
+		if (unlikely(&h->buckets[prev_alt_bkt_idx]
+			!= curr_bkt)) {
+			/* revert it to empty, otherwise duplicated keys */
+			__atomic_store_n(&curr_bkt->key_idx[curr_slot],
+				EMPTY_SLOT,
+				__ATOMIC_RELEASE);
+			__hash_rw_writer_unlock(h);
+			return -1;
+		}
+
+		if (h->readwrite_concur_lf_support) {
+			/* Inform the previous move. The current move need
+			 * not be informed now as the current bucket entry
+			 * is present in both primary and secondary.
+			 * Since there is one writer, load acquires on
+			 * tbl_chng_cnt are not required.
+			 */
+			__atomic_store_n(h->tbl_chng_cnt,
+				*h->tbl_chng_cnt + 1,
+				__ATOMIC_RELEASE);
+			/* The store to sig_current should not
+			 * move above the store to tbl_chng_cnt.
+			 */
+			__atomic_thread_fence(__ATOMIC_RELEASE);
+		}
+
+		/* Need to swap current/alt sig to allow later
+		 * Cuckoo insert to move elements back to its
+		 * primary bucket if available
+		 */
+		curr_bkt->sig_current[curr_slot] =
+			prev_bkt->sig_current[prev_slot];
+		/* Release the updated bucket entry */
+		__atomic_store_n(&curr_bkt->key_idx[curr_slot],
+			prev_bkt->key_idx[prev_slot],
+			__ATOMIC_RELEASE);
+
+		curr_slot = prev_slot;
+		curr_node = prev_node;
+		curr_bkt = curr_node->bkt;
+	}
+
+	if (h->readwrite_concur_lf_support) {
+		/* Inform the previous move. The current move need
+		 * not be informed now as the current bucket entry
+		 * is present in both primary and secondary.
+		 * Since there is one writer, load acquires on
+		 * tbl_chng_cnt are not required.
+		 */
+		__atomic_store_n(h->tbl_chng_cnt,
+			*h->tbl_chng_cnt + 1,
+			__ATOMIC_RELEASE);
+		/* The store to sig_current should not
+		 * move above the store to tbl_chng_cnt.
+		 */
+		__atomic_thread_fence(__ATOMIC_RELEASE);
+	}
+
+	curr_bkt->sig_current[curr_slot] = sig;
+	/* Release the new bucket entry */
+	__atomic_store_n(&curr_bkt->key_idx[curr_slot],
+		new_idx,
+		__ATOMIC_RELEASE);
+
+	__hash_rw_writer_unlock(h);
+
+	return 0;
+
+}
+
 static inline int
 rte_hash_cuckoo_make_space_mw(const struct rte_hash* h,
 	struct rte_hash_bucket* bkt,
