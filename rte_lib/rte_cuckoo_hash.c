@@ -13,6 +13,8 @@
 #include "include/rte_common.h"
 #include "ring/rte_ring_elem.h"
 #include "include/rte_tailq.h"
+#include "include/queue.h"
+
 /*
 #include <rte_memory.h>
 #include <rte_log.h>
@@ -746,18 +748,18 @@ struct rte_hash*
 	}
 
 	/* Store all keys and leave the first entry as a dummy entry for lookup_bulk */
-#ifdef 0
-	if (use_local_cache)
-		/*
-		 * Increase number of slots by total number of indices
-		 * that can be stored in the lcore caches
-		 * except for the first cache
-		 */
-		num_key_slots = params->entries + (RTE_MAX_LCORE - 1) *
-		(LCORE_CACHE_SIZE - 1) + 1;
-	else
-		num_key_slots = params->entries + 1;
-#endif
+
+	//if (use_local_cache)
+	//	/*
+	//	 * Increase number of slots by total number of indices
+	//	 * that can be stored in the lcore caches
+	//	 * except for the first cache
+	//	 */
+	//	num_key_slots = params->entries + (RTE_MAX_LCORE - 1) *
+	//	(LCORE_CACHE_SIZE - 1) + 1;
+	//else
+	//	num_key_slots = params->entries + 1;
+
 	num_key_slots = params->entries + 1;
 
 	snprintf(ring_name, sizeof(ring_name), "HT_%s", params->name);
@@ -918,17 +920,17 @@ struct rte_hash*
 #endif
 
 	//not using local cache
-#ifdef 0
-	if (use_local_cache) {
-		local_free_slots = rte_zmalloc_socket(NULL,
-			sizeof(struct lcore_cache) * RTE_MAX_LCORE,
-			RTE_CACHE_LINE_SIZE, params->socket_id);
-		if (local_free_slots == NULL) {
-			RTE_LOG(ERR, HASH, "local free slots memory allocation failed\n");
-			goto err_unlock;
-		}
-	}
-#endif
+
+	//if (use_local_cache) {
+	//	local_free_slots = rte_zmalloc_socket(NULL,
+	//		sizeof(struct lcore_cache) * RTE_MAX_LCORE,
+	//		RTE_CACHE_LINE_SIZE, params->socket_id);
+	//	if (local_free_slots == NULL) {
+	//		RTE_LOG(ERR, HASH, "local free slots memory allocation failed\n");
+	//		goto err_unlock;
+	//	}
+	//}
+
 
 
 	/* Default hash function */
