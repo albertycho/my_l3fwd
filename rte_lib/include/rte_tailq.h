@@ -17,7 +17,7 @@ extern "C" {
 
 #include <stdio.h>
 #include "rte_debug.h"
-#include "eal_common_tailqs.h"
+//#include "eal_common_tailqs.h"
 
 #define RTE_TAILQ_ENTRY(type) \
 struct { \
