@@ -7,7 +7,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <sys/queue.h>
+//#include <sys/queue.h>
 
 
 #include "include/rte_common.h"
