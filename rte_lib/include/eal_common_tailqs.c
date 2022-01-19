@@ -119,7 +119,7 @@ rte_eal_tailq_update(struct rte_tailq_elem *t)
 int
 rte_eal_tailq_register(struct rte_tailq_elem *t)
 {
-	//printf("in eal_common_tailqs.c - rte_eal_tailq_register\n"); 
+	printf("in eal_common_tailqs.c - rte_eal_tailq_register\n"); 
 	if (rte_eal_tailq_local_register(t) < 0) {
 		RTE_LOG(ERR, EAL,
 			"%s tailq is already registered\n", t->name);
