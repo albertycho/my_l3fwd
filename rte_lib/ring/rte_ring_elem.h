@@ -20,8 +20,8 @@
 extern "C" {
 #endif
 
-#include <rte_ring_core.h>
-#include <rte_ring_elem_pvt.h>
+#include "rte_ring_core.h"
+#include "rte_ring_elem_pvt.h"
 
 /**
  * Calculate the memory size needed for a ring with given element size
