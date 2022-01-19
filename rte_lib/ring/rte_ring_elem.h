@@ -41,6 +41,7 @@ extern "C" {
  *   - -EINVAL - esize is not a multiple of 4 or count provided is not a
  *		 power of 2.
  */
+typedef long long ssize_t;
 ssize_t rte_ring_get_memsize_elem(unsigned int esize, unsigned int count);
 
 /**
