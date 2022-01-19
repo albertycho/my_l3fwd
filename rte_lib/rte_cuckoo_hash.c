@@ -50,6 +50,90 @@ rte_hash_cmp_eq(const void* key1, const void* key2, const struct rte_hash* h) {
 	return memcmp(key1, key2, key1size);
 }
 
+
+
+static inline uint32_t
+alloc_slot(const struct rte_hash* h, struct lcore_cache* cached_free_slots)
+{
+	unsigned int n_slots;
+	uint32_t slot_id;
+
+	if (rte_ring_sc_dequeue_elem(h->free_slots, &slot_id,
+		sizeof(uint32_t)) != 0)
+		return EMPTY_SLOT;
+
+	return slot_id;
+}
+//static inline uint32_t
+uint32_t
+dummy_func_link_check() {
+    printf("DUMMY PRINT FOR LINK CHECK\n");
+    return 0;
+}
+
+
+static inline uint16_t
+get_short_sig(const hash_sig_t hash)
+{
+    return hash >> 16;
+}
+
+static inline uint32_t
+get_prim_bucket_index(const struct rte_hash* h, const hash_sig_t hash)
+{
+    return hash & h->bucket_bitmask;
+}
+
+static inline uint32_t
+get_alt_bucket_index(const struct rte_hash* h,
+    uint32_t cur_bkt_idx, uint16_t sig)
+{
+    return (cur_bkt_idx ^ sig) & h->bucket_bitmask;
+}
+
+
+/* Read write locks implemented using rte_rwlock */
+static inline void
+__hash_rw_writer_lock(const struct rte_hash* h)
+{
+	if (h->writer_takes_lock && h->hw_trans_mem_support)
+		//rte_rwlock_write_lock_tm(h->readwrite_lock);
+		rte_rwlock_write_lock(h->readwrite_lock);
+	else if (h->writer_takes_lock)
+		rte_rwlock_write_lock(h->readwrite_lock);
+}
+
+static inline void
+__hash_rw_reader_lock(const struct rte_hash* h)
+{
+	if (h->readwrite_concur_support && h->hw_trans_mem_support)
+		//rte_rwlock_read_lock_tm(h->readwrite_lock);
+		rte_rwlock_read_lock(h->readwrite_lock);
+	else if (h->readwrite_concur_support)
+		rte_rwlock_read_lock(h->readwrite_lock);
+}
+
+static inline void
+__hash_rw_writer_unlock(const struct rte_hash* h)
+{
+	if (h->writer_takes_lock && h->hw_trans_mem_support)
+		//rte_rwlock_write_unlock_tm(h->readwrite_lock);
+		rte_rwlock_write_unlock(h->readwrite_lock);
+	else if (h->writer_takes_lock)
+		rte_rwlock_write_unlock(h->readwrite_lock);
+}
+
+static inline void
+__hash_rw_reader_unlock(const struct rte_hash* h)
+{
+	if (h->readwrite_concur_support && h->hw_trans_mem_support)
+		//rte_rwlock_read_unlock_tm(h->readwrite_lock);
+		rte_rwlock_read_unlock(h->readwrite_lock);
+	else if (h->readwrite_concur_support)
+		rte_rwlock_read_unlock(h->readwrite_lock);
+}
+
+
 static inline int32_t
 search_and_update(const struct rte_hash* h, void* data, const void* key,
 	struct rte_hash_bucket* bkt, uint16_t sig)
@@ -140,87 +224,6 @@ rte_hash_cuckoo_insert_mw(const struct rte_hash* h,
 
 	/* no empty entry */
 	return -1;
-}
-
-static inline uint32_t
-alloc_slot(const struct rte_hash* h, struct lcore_cache* cached_free_slots)
-{
-	unsigned int n_slots;
-	uint32_t slot_id;
-
-	if (rte_ring_sc_dequeue_elem(h->free_slots, &slot_id,
-		sizeof(uint32_t)) != 0)
-		return EMPTY_SLOT;
-
-	return slot_id;
-}
-//static inline uint32_t
-uint32_t
-dummy_func_link_check() {
-    printf("DUMMY PRINT FOR LINK CHECK\n");
-    return 0;
-}
-
-
-static inline uint16_t
-get_short_sig(const hash_sig_t hash)
-{
-    return hash >> 16;
-}
-
-static inline uint32_t
-get_prim_bucket_index(const struct rte_hash* h, const hash_sig_t hash)
-{
-    return hash & h->bucket_bitmask;
-}
-
-static inline uint32_t
-get_alt_bucket_index(const struct rte_hash* h,
-    uint32_t cur_bkt_idx, uint16_t sig)
-{
-    return (cur_bkt_idx ^ sig) & h->bucket_bitmask;
-}
-
-
-/* Read write locks implemented using rte_rwlock */
-static inline void
-__hash_rw_writer_lock(const struct rte_hash* h)
-{
-	if (h->writer_takes_lock && h->hw_trans_mem_support)
-		//rte_rwlock_write_lock_tm(h->readwrite_lock);
-		rte_rwlock_write_lock(h->readwrite_lock);
-	else if (h->writer_takes_lock)
-		rte_rwlock_write_lock(h->readwrite_lock);
-}
-
-static inline void
-__hash_rw_reader_lock(const struct rte_hash* h)
-{
-	if (h->readwrite_concur_support && h->hw_trans_mem_support)
-		//rte_rwlock_read_lock_tm(h->readwrite_lock);
-		rte_rwlock_read_lock(h->readwrite_lock);
-	else if (h->readwrite_concur_support)
-		rte_rwlock_read_lock(h->readwrite_lock);
-}
-
-static inline void
-__hash_rw_writer_unlock(const struct rte_hash* h)
-{
-	if (h->writer_takes_lock && h->hw_trans_mem_support)
-		//rte_rwlock_write_unlock_tm(h->readwrite_lock);
-		rte_rwlock_write_unlock(h->readwrite_lock);
-	else if (h->writer_takes_lock)
-		rte_rwlock_write_unlock(h->readwrite_lock);
-}
-
-static inline void
-__hash_rw_reader_unlock(const struct rte_hash* h)
-{
-	if (h->readwrite_concur_support && h->hw_trans_mem_support)
-		//rte_rwlock_read_unlock_tm(h->readwrite_lock);
-		rte_rwlock_read_unlock(h->readwrite_lock);
-	else if (h->readwrite_concur_support)
-		rte_rwlock_read_unlock(h->readwrite_lock);
 }
 
 
