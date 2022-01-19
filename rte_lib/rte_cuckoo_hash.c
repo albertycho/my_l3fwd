@@ -46,7 +46,8 @@ static inline void rte_prefetch0(const volatile void* p)
 
 static inline int
 rte_hash_cmp_eq(const void* key1, const void* key2, const struct rte_hash* h) {
-	return memcmp(key1, key2, sizeof(key1));
+	size_t key1size = sizeof(key1);
+	return memcmp(key1, key2, key1size);
 }
 
 static inline int32_t
@@ -126,7 +127,8 @@ static inline void
 __hash_rw_writer_lock(const struct rte_hash* h)
 {
 	if (h->writer_takes_lock && h->hw_trans_mem_support)
-		rte_rwlock_write_lock_tm(h->readwrite_lock);
+		//rte_rwlock_write_lock_tm(h->readwrite_lock);
+		rte_rwlock_write_lock(h->readwrite_lock);
 	else if (h->writer_takes_lock)
 		rte_rwlock_write_lock(h->readwrite_lock);
 }
@@ -135,7 +137,8 @@ static inline void
 __hash_rw_reader_lock(const struct rte_hash* h)
 {
 	if (h->readwrite_concur_support && h->hw_trans_mem_support)
-		rte_rwlock_read_lock_tm(h->readwrite_lock);
+		//rte_rwlock_read_lock_tm(h->readwrite_lock);
+		rte_rwlock_read_lock(h->readwrite_lock);
 	else if (h->readwrite_concur_support)
 		rte_rwlock_read_lock(h->readwrite_lock);
 }
@@ -144,7 +147,8 @@ static inline void
 __hash_rw_writer_unlock(const struct rte_hash* h)
 {
 	if (h->writer_takes_lock && h->hw_trans_mem_support)
-		rte_rwlock_write_unlock_tm(h->readwrite_lock);
+		//rte_rwlock_write_unlock_tm(h->readwrite_lock);
+		rte_rwlock_write_unlock(h->readwrite_lock);
 	else if (h->writer_takes_lock)
 		rte_rwlock_write_unlock(h->readwrite_lock);
 }
@@ -153,7 +157,8 @@ static inline void
 __hash_rw_reader_unlock(const struct rte_hash* h)
 {
 	if (h->readwrite_concur_support && h->hw_trans_mem_support)
-		rte_rwlock_read_unlock_tm(h->readwrite_lock);
+		//rte_rwlock_read_unlock_tm(h->readwrite_lock);
+		rte_rwlock_read_unlock_(h->readwrite_lock);
 	else if (h->readwrite_concur_support)
 		rte_rwlock_read_unlock(h->readwrite_lock);
 }

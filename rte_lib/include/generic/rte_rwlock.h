@@ -195,8 +195,8 @@ rte_rwlock_write_unlock(rte_rwlock_t *rwl)
  * @param rwl
  *   A pointer to a rwlock structure.
  */
-static inline void
-rte_rwlock_read_lock_tm(rte_rwlock_t *rwl);
+//static inline void
+//rte_rwlock_read_lock_tm(rte_rwlock_t *rwl);
 
 /**
  * Commit hardware memory transaction or release the read lock if the lock is used as a fall-back
@@ -204,8 +204,8 @@ rte_rwlock_read_lock_tm(rte_rwlock_t *rwl);
  * @param rwl
  *   A pointer to the rwlock structure.
  */
-static inline void
-rte_rwlock_read_unlock_tm(rte_rwlock_t *rwl);
+//static inline void
+//rte_rwlock_read_unlock_tm(rte_rwlock_t *rwl);
 
 /**
  * Try to execute critical section in a hardware memory transaction, if it
@@ -220,8 +220,8 @@ rte_rwlock_read_unlock_tm(rte_rwlock_t *rwl);
  * @param rwl
  *   A pointer to a rwlock structure.
  */
-static inline void
-rte_rwlock_write_lock_tm(rte_rwlock_t *rwl);
+//static inline void
+//rte_rwlock_write_lock_tm(rte_rwlock_t *rwl);
 
 /**
  * Commit hardware memory transaction or release the write lock if the lock is used as a fall-back
@@ -229,8 +229,8 @@ rte_rwlock_write_lock_tm(rte_rwlock_t *rwl);
  * @param rwl
  *   A pointer to a rwlock structure.
  */
-static inline void
-rte_rwlock_write_unlock_tm(rte_rwlock_t *rwl);
+//static inline void
+//rte_rwlock_write_unlock_tm(rte_rwlock_t *rwl);
 
 #ifdef __cplusplus
 }
