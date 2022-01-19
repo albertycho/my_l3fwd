@@ -19,10 +19,10 @@
 extern "C" {
 #endif
 
-#include <rte_common.h>
-#include <rte_compat.h>
-#include <rte_config.h>
-#include <rte_fbarray.h>
+#include "rte_common.h"
+#include "rte_compat.h"
+#include "rte_config.h"
+#include "rte_fbarray.h"
 
 #define RTE_PGSIZE_4K   (1ULL << 12)
 #define RTE_PGSIZE_64K  (1ULL << 16)
