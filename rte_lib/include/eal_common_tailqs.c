@@ -22,7 +22,8 @@
 #include "rte_string_fns.h"
 #include "rte_debug.h"
 
-#include "eal_common_tailqs.h"
+#include "rte_tailq.h"
+//#include "eal_common_tailqs.h"
 
 //#include "eal_private.h"
 //#include "eal_memcfg.h"

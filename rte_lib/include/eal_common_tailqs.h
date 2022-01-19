@@ -21,7 +21,7 @@
 #include "rte_log.h"
 #include "rte_string_fns.h"
 #include "rte_debug.h"
-#include "rte_tailq.h"
+//#include "rte_tailq.h"
 
 
 
