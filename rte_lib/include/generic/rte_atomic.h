@@ -425,8 +425,28 @@ static inline void rte_atomic16_clear(rte_atomic16_t *v)
  * @return
  *   Non-zero on success; 0 on failure.
  */
+//static inline int
+//rte_atomic32_cmpset(volatile uint32_t *dst, uint32_t exp, uint32_t src);
+/* this is the actual function from x86 lib */
 static inline int
-rte_atomic32_cmpset(volatile uint32_t *dst, uint32_t exp, uint32_t src);
+rte_atomic32_cmpset(volatile uint32_t *dst, uint32_t exp, uint32_t src)
+{
+	uint8_t res;
+
+	asm volatile(
+			MPLOCKED
+			"cmpxchgl %[src], %[dst];"
+			"sete %[res];"
+			: [res] "=a" (res),     // output
+[dst] "=m" (*dst)
+	: [src] "r" (src),      // input
+	"a" (exp),
+	"m" (*dst)
+	: "memory");            // no-clobber list
+	return res;
+}
+
+
 
 #ifdef RTE_FORCE_INTRINSICS
 static inline int
