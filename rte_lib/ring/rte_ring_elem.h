@@ -166,8 +166,8 @@ rte_ring_sp_enqueue_bulk_elem(struct rte_ring *r, const void *obj_table,
 			RTE_RING_QUEUE_FIXED, RTE_RING_SYNC_ST, free_space);
 }
 
-#include <rte_ring_hts.h>
-#include <rte_ring_rts.h>
+//#include "rte_ring_hts.h"
+//#include "rte_ring_rts.h"
 
 /**
  * Enqueue several objects on a ring.
