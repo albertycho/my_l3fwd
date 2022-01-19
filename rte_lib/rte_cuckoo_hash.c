@@ -86,12 +86,9 @@ alloc_slot(const struct rte_hash* h, struct lcore_cache* cached_free_slots)
 	unsigned int n_slots;
 	uint32_t slot_id;
 
-
-	else {
-		if (rte_ring_sc_dequeue_elem(h->free_slots, &slot_id,
-			sizeof(uint32_t)) != 0)
-			return EMPTY_SLOT;
-	}
+	if (rte_ring_sc_dequeue_elem(h->free_slots, &slot_id,
+		sizeof(uint32_t)) != 0)
+		return EMPTY_SLOT;
 
 	return slot_id;
 }
