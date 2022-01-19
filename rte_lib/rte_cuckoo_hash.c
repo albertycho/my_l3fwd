@@ -44,6 +44,15 @@ static inline void rte_prefetch0(const volatile void* p)
 	asm volatile ("pld [%0]" : : "r" (p));
 }
 
+
+static inline struct rte_hash_bucket*
+rte_hash_get_last_bkt(struct rte_hash_bucket* lst_bkt)
+{
+	while (lst_bkt->next != NULL)
+		lst_bkt = lst_bkt->next;
+	return lst_bkt;
+}
+
 static inline int
 rte_hash_cmp_eq(const void* key1, const void* key2, const struct rte_hash* h) {
 	size_t key1size = sizeof(key1);
