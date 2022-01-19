@@ -212,7 +212,8 @@ rte_ring_enqueue_bulk_elem(struct rte_ring *r, const void *obj_table,
 	}
 
 	/* valid ring should never reach this point */
-	RTE_ASSERT(0);
+	//RTE_ASSERT(0);
+	printf("VALID RING SHOULD NEVER REACH THIS POINT\n");
 	if (free_space != NULL)
 		*free_space = 0;
 	return 0;
