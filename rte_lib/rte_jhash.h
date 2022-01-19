@@ -73,9 +73,15 @@ extern "C" {
 #define BIT_SHIFT(x, y, k) (((uint64_t)(x) << (k)) | ((y) >> (32-(k))))
 #endif
 
+/*
 #define LOWER8b_MASK rte_le_to_cpu_32(0xff)
 #define LOWER16b_MASK rte_le_to_cpu_32(0xffff)
 #define LOWER24b_MASK rte_le_to_cpu_32(0xffffff)
+*/
+#define LOWER8b_MASK (0xff)
+#define LOWER16b_MASK (0xffff)
+#define LOWER24b_MASK (0xffffff)
+
 
 
 static inline int rte_jhash_dummy_int()

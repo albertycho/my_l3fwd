@@ -32,6 +32,45 @@
 */
 
 
+
+static inline void rte_prefetch0(const volatile void* p)
+{
+	asm volatile ("pld [%0]" : : "r" (p));
+}
+
+static inline int32_t
+search_and_update(const struct rte_hash* h, void* data, const void* key,
+	struct rte_hash_bucket* bkt, uint16_t sig)
+{
+	int i;
+	struct rte_hash_key* k, * keys = h->key_store;
+
+	for (i = 0; i < RTE_HASH_BUCKET_ENTRIES; i++) {
+		if (bkt->sig_current[i] == sig) {
+			k = (struct rte_hash_key*)((char*)keys +
+				bkt->key_idx[i] * h->key_entry_size);
+			if (rte_hash_cmp_eq(key, k->key, h) == 0) {
+				/* The store to application data at *data
+				 * should not leak after the store to pdata
+				 * in the key store. i.e. pdata is the guard
+				 * variable. Release the application data
+				 * to the readers.
+				 */
+				__atomic_store_n(&k->pdata,
+					data,
+					__ATOMIC_RELEASE);
+				/*
+				 * Return index where key is stored,
+				 * subtracting the first dummy index
+				 */
+				return bkt->key_idx[i] - 1;
+			}
+		}
+	}
+	return -1;
+}
+
+
 //static inline uint32_t
 uint32_t
 dummy_func_link_check() {
