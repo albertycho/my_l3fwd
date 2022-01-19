@@ -129,7 +129,7 @@ struct rte_tailq_head *rte_eal_tailq_lookup(const char *name);
  * @return
  *   0 on success or -1 in case of an error.
  */
-int rte_eal_tailq_register(struct rte_tailq_elem *t);
+//int rte_eal_tailq_register(struct rte_tailq_elem *t);
 
 #define EAL_REGISTER_TAILQ(t) \
 RTE_INIT(tailqinitfn_ ##t) \
