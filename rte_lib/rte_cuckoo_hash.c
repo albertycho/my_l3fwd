@@ -82,6 +82,66 @@ search_and_update(const struct rte_hash* h, void* data, const void* key,
 	return -1;
 }
 
+
+static inline int32_t
+rte_hash_cuckoo_insert_mw(const struct rte_hash* h,
+	struct rte_hash_bucket* prim_bkt,
+	struct rte_hash_bucket* sec_bkt,
+	const struct rte_hash_key* key, void* data,
+	uint16_t sig, uint32_t new_idx,
+	int32_t* ret_val)
+{
+	unsigned int i;
+	struct rte_hash_bucket* cur_bkt;
+	int32_t ret;
+
+	__hash_rw_writer_lock(h);
+	/* Check if key was inserted after last check but before this
+	 * protected region in case of inserting duplicated keys.
+	 */
+	ret = search_and_update(h, data, key, prim_bkt, sig);
+	if (ret != -1) {
+		__hash_rw_writer_unlock(h);
+		*ret_val = ret;
+		return 1;
+	}
+
+	FOR_EACH_BUCKET(cur_bkt, sec_bkt) {
+		ret = search_and_update(h, data, key, cur_bkt, sig);
+		if (ret != -1) {
+			__hash_rw_writer_unlock(h);
+			*ret_val = ret;
+			return 1;
+		}
+	}
+
+	/* Insert new entry if there is room in the primary
+	 * bucket.
+	 */
+	for (i = 0; i < RTE_HASH_BUCKET_ENTRIES; i++) {
+		/* Check if slot is available */
+		if (likely(prim_bkt->key_idx[i] == EMPTY_SLOT)) {
+			prim_bkt->sig_current[i] = sig;
+			/* Store to signature and key should not
+			 * leak after the store to key_idx. i.e.
+			 * key_idx is the guard variable for signature
+			 * and key.
+			 */
+			__atomic_store_n(&prim_bkt->key_idx[i],
+				new_idx,
+				__ATOMIC_RELEASE);
+			break;
+		}
+	}
+	__hash_rw_writer_unlock(h);
+
+	if (i != RTE_HASH_BUCKET_ENTRIES)
+		return 0;
+
+	/* no empty entry */
+	return -1;
+}
+
 static inline uint32_t
 alloc_slot(const struct rte_hash* h, struct lcore_cache* cached_free_slots)
 {
@@ -158,7 +218,7 @@ __hash_rw_reader_unlock(const struct rte_hash* h)
 {
 	if (h->readwrite_concur_support && h->hw_trans_mem_support)
 		//rte_rwlock_read_unlock_tm(h->readwrite_lock);
-		rte_rwlock_read_unlock_(h->readwrite_lock);
+		rte_rwlock_read_unlock(h->readwrite_lock);
 	else if (h->readwrite_concur_support)
 		rte_rwlock_read_unlock(h->readwrite_lock);
 }
@@ -368,6 +428,7 @@ failure:
 
 }
 
+int32_t
 rte_hash_add_key(const struct rte_hash* h, const void* key)
 {
     RETURN_IF_TRUE(((h == NULL) || (key == NULL)), -EINVAL);
