@@ -25,6 +25,7 @@
  * This call is intended for tight loops which poll a shared resource or wait
  * for an event. A short pause within the loop may reduce the power consumption.
  */
+#include <emmintrin.h>
 //static inline void rte_pause(void);
 static inline void rte_pause(void)
 {
