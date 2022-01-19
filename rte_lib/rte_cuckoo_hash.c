@@ -39,13 +39,20 @@
 		CURRENT_BKT != NULL;                                          \
 		CURRENT_BKT = CURRENT_BKT->next)
 
+
+//arm version - does not work
+/*
 static inline void rte_prefetch0(const volatile void* p)
 {
 	//compiler complaint.. maybe we can do without prefetching
-	//asm volatile ("pld [%0]" : : "r" (p));
+	asm volatile ("pld [%0]" : : "r" (p));
 
 }
-
+*/
+static inline void rte_prefetch0(const volatile void* p)
+{
+	asm volatile ("prefetcht0 %[p]" : : [p] "m" (*(const volatile char*)p));
+}
 
 static inline struct rte_hash_bucket*
 rte_hash_get_last_bkt(struct rte_hash_bucket* lst_bkt)
