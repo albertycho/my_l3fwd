@@ -18,7 +18,7 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 
-#include <rte_common.h>
+#include "rte_common.h"
 
 /**
  * Takes string "string" parameter and splits it at character "delim"
