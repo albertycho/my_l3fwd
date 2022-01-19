@@ -41,7 +41,9 @@
 
 static inline void rte_prefetch0(const volatile void* p)
 {
-	asm volatile ("pld [%0]" : : "r" (p));
+	//compiler complaint.. maybe we can do without prefetching
+	//asm volatile ("pld [%0]" : : "r" (p));
+
 }
 
 

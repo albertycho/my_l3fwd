@@ -20,7 +20,7 @@
 
 #define rte_smp_mb() rte_mb()
 
-#define rte_smp_wmb() rte_wmb()
+#define rte_smp_wmb() rte_compiler_barrier()
 
 #define rte_smp_rmb() rte_rmb()
 
