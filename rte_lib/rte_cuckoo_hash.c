@@ -40,6 +40,10 @@
 		CURRENT_BKT != NULL;                                          \
 		CURRENT_BKT = CURRENT_BKT->next)
 
+static struct rte_tailq_elem rte_hash_tailq = {
+	.name = "RTE_HASH",
+};
+EAL_REGISTER_TAILQ(rte_hash_tailq)
 
 //arm version - does not work
 /*

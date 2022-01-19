@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 #include <stdio.h>
-#include <rte_debug.h>
+#include "rte_debug.h"
 
 /** dummy structure type used by the rte_tailq APIs */
 struct rte_tailq_entry {
