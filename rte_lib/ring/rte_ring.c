@@ -29,7 +29,7 @@
 //#include <rte_branch_prediction.h>
 //#include <rte_errno.h>
 #include "../include/rte_string_fns.h"
-#include "../include/generic/rte_spinlock.h"
+//#include "../include/generic/rte_spinlock.h"
 #include "../include/rte_tailq.h"
 
 #include "rte_ring.h"
