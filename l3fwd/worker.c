@@ -153,7 +153,7 @@ void* run_worker(void* arg) {
                 (void*) datastore_pointer,
                 params.sonuma_nid,
                 wrkr_lid,
-                &source_node_id,
+                (uint16_t *)(&source_node_id),
                 (uint16_t *)(&source_qp_to_reply),
                 client_done );
 

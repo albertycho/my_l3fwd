@@ -1,5 +1,6 @@
 #include "main.h"
 #include <getopt.h>
+#include <unistd.h>
 //#include "util_from_hrd.h"
 //#include "mica.h"
 //#include "rte_hash.h"
@@ -90,7 +91,8 @@ int main(int argc, char* argv[]) {
     unsigned int num_rem_threads = 0;
     unsigned int node_cnt = 0; // Msutherl
     unsigned int qps = 0; // Msutherl
-    int postlist = -1, update_percentage = -1;
+    int postlist = -1;
+    //int update_percentage = -1;
     int machine_id = 1;
     int base_port_index = -1, num_server_ports = -1, num_client_ports = -1;
     struct thread_params* param_arr;
@@ -254,9 +256,12 @@ int main(int argc, char* argv[]) {
         param_arr[i].num_client_threads = num_rem_threads;
         param_arr[i].num_serv_threads = num_threads;
 
-        int core = thread_pin[i];
+        //int core = thread_pin[i];
         printf("main launching pthread_create runworker\n");
         int err = pthread_create(&thread_arr[i], NULL, run_worker, &param_arr[i]);
+        if (err) {
+            printf("l3fwd main thread: pthread_create failed with err=%d\n", err);
+        }
 
     }
 
