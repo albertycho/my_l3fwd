@@ -18,11 +18,11 @@
  *
  */
 
-#include <rte_lcore.h>
+//#include <rte_lcore.h>
 #ifdef RTE_FORCE_INTRINSICS
-#include <rte_common.h>
+#include "../rte_common.h"
 #endif
-#include <rte_pause.h>
+#include "rte_pause.h"
 
 /**
  * The rte_spinlock_t type.
