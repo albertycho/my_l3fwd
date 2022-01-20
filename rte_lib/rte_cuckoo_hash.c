@@ -841,7 +841,7 @@ struct rte_hash*
 		/*buckets_ext = rte_zmalloc_socket(NULL,
 			num_buckets * sizeof(struct rte_hash_bucket),
 			RTE_CACHE_LINE_SIZE, params->socket_id);*/
-		buckets_ext = malloc(num_buckets * sizeof(struct rte_hash_bucekt));
+		buckets_ext = malloc(num_buckets * sizeof(struct rte_hash_bucket));
 		if (buckets_ext == NULL) {
 			//RTE_LOG(ERR, HASH, "ext buckets memory allocation " "failed\n");
 			goto err_unlock;
