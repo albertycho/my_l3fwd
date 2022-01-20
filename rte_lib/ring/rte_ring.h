@@ -39,8 +39,8 @@
 extern "C" {
 #endif
 
-#include <rte_ring_core.h>
-#include <rte_ring_elem.h>
+#include "rte_ring_core.h"
+#include "rte_ring_elem.h"
 
 /**
  * Calculate the memory size needed for a ring
