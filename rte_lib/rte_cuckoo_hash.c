@@ -786,8 +786,7 @@ struct rte_hash*
 			params->socket_id, 0);
 
 		if (r_ext == NULL) {
-			//RTE_LOG(ERR, HASH, "ext buckets memory allocation "
-				"failed\n");
+			//RTE_LOG(ERR, HASH, "ext buckets memory allocation " "failed\n");
 			goto err;
 		}
 	}
@@ -839,8 +838,7 @@ struct rte_hash*
 			num_buckets * sizeof(struct rte_hash_bucket),
 			RTE_CACHE_LINE_SIZE, params->socket_id);
 		if (buckets_ext == NULL) {
-			//RTE_LOG(ERR, HASH, "ext buckets memory allocation "
-				"failed\n");
+			//RTE_LOG(ERR, HASH, "ext buckets memory allocation " "failed\n");
 			goto err_unlock;
 		}
 		/* Populate ext bkt ring. We reserve 0 similar to the
