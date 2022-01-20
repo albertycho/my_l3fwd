@@ -810,23 +810,26 @@ struct rte_hash*
 		goto err_unlock;
 	}
 
-	te = rte_zmalloc("HASH_TAILQ_ENTRY", sizeof(*te), 0);
+	//te = rte_zmalloc("HASH_TAILQ_ENTRY", sizeof(*te), 0);
+	te = malloc(sizeof(*te));
 	if (te == NULL) {
 		//RTE_LOG(ERR, HASH, "tailq entry allocation failed\n");
 		goto err_unlock;
 	}
 
-	h = (struct rte_hash*)rte_zmalloc_socket(hash_name, sizeof(struct rte_hash),
-		RTE_CACHE_LINE_SIZE, params->socket_id);
+	//h = (struct rte_hash*)rte_zmalloc_socket(hash_name, sizeof(struct rte_hash), RTE_CACHE_LINE_SIZE, params->socket_id);
+	h = (struct rte_hash*)malloc(sizeof(struct rte_hash));
 
 	if (h == NULL) {
 		//RTE_LOG(ERR, HASH, "memory allocation failed\n");
 		goto err_unlock;
 	}
 
-	buckets = rte_zmalloc_socket(NULL,
+	/*buckets = rte_zmalloc_socket(NULL,
 		num_buckets * sizeof(struct rte_hash_bucket),
-		RTE_CACHE_LINE_SIZE, params->socket_id);
+		RTE_CACHE_LINE_SIZE, params->socket_id);*/
+
+	buckets = malloc(sizeof(struct rte_hash_bucket));
 
 	if (buckets == NULL) {
 		//RTE_LOG(ERR, HASH, "buckets memory allocation failed\n");
@@ -835,9 +838,10 @@ struct rte_hash*
 
 	/* Allocate same number of extendable buckets */
 	if (ext_table_support) {
-		buckets_ext = rte_zmalloc_socket(NULL,
+		/*buckets_ext = rte_zmalloc_socket(NULL,
 			num_buckets * sizeof(struct rte_hash_bucket),
-			RTE_CACHE_LINE_SIZE, params->socket_id);
+			RTE_CACHE_LINE_SIZE, params->socket_id);*/
+		bucket_ext = malloc(num_buckets * sizeof(struct rte_hash_bucekt));
 		if (buckets_ext == NULL) {
 			//RTE_LOG(ERR, HASH, "ext buckets memory allocation " "failed\n");
 			goto err_unlock;
@@ -851,8 +855,9 @@ struct rte_hash*
 			rte_ring_sp_enqueue_elem(r_ext, &i, sizeof(uint32_t));
 
 		if (readwrite_concur_lf_support) {
-			ext_bkt_to_free = rte_zmalloc(NULL, sizeof(uint32_t) *
-				num_key_slots, 0);
+			/*ext_bkt_to_free = rte_zmalloc(NULL, sizeof(uint32_t) *
+				num_key_slots, 0);*/
+			ext_bkt_to_free = malloc(sizeof(uint32_t) * num_key_slots);
 			if (ext_bkt_to_free == NULL) {
 				//RTE_LOG(ERR, HASH, "ext bkt to free memory allocation ""failed\n");
 				goto err_unlock;
@@ -865,16 +870,17 @@ struct rte_hash*
 			KEY_ALIGNMENT);
 	const uint64_t key_tbl_size = (uint64_t)key_entry_size * num_key_slots;
 
-	k = rte_zmalloc_socket(NULL, key_tbl_size,
-		RTE_CACHE_LINE_SIZE, params->socket_id);
+	/*k = rte_zmalloc_socket(NULL, key_tbl_size,
+		RTE_CACHE_LINE_SIZE, params->socket_id);*/
+	k = malloc(key_tbl_size);
 
 	if (k == NULL) {
 		//RTE_LOG(ERR, HASH, "memory allocation failed\n");
 		goto err_unlock;
 	}
 
-	tbl_chng_cnt = rte_zmalloc_socket(NULL, sizeof(uint32_t),
-		RTE_CACHE_LINE_SIZE, params->socket_id);
+	//tbl_chng_cnt = rte_zmalloc_socket(NULL, sizeof(uint32_t), RTE_CACHE_LINE_SIZE, params->socket_id);
+	tbl_chng_cnt = malloc(sizeof(uint32_t));
 
 	if (tbl_chng_cnt == NULL) {
 		//RTE_LOG(ERR, HASH, "memory allocation failed\n");
@@ -985,14 +991,15 @@ struct rte_hash*
 	 * 2) RTE_HASH_EXTRA_FLAGS_MULTI_WRITER_ADD is enabled
 	 */
 	if (h->writer_takes_lock) {
-		h->readwrite_lock = rte_malloc(NULL, sizeof(rte_rwlock_t),
-			RTE_CACHE_LINE_SIZE);
+		//h->readwrite_lock = rte_malloc(NULL, sizeof(rte_rwlock_t),RTE_CACHE_LINE_SIZE);
+		h->readwrite_lock = malloc(sizeof(rte_rwlock_t));
 		if (h->readwrite_lock == NULL)
 			goto err_unlock;
 
 		rte_rwlock_init(h->readwrite_lock);
 	}
-	h->tailq_lock = rte_malloc(NULL, sizeof(rte_rwlock_t), RTE_CACHE_LINE_SIZE);
+	//h->tailq_lock = rte_malloc(NULL, sizeof(rte_rwlock_t), RTE_CACHE_LINE_SIZE);
+	h->tailq_lock = malloc(sizeof(rte_rwlock_t));
 	if (h->tailq_lock == NULL) {
 		goto err_unlock;
 	}
