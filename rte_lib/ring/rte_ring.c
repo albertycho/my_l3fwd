@@ -15,22 +15,22 @@
 #include <errno.h>
 #include <sys/queue.h>
 
-#include <rte_common.h>
-#include <rte_log.h>
-#include <rte_memory.h>
-#include <rte_memzone.h>
-#include <rte_malloc.h>
+#include "../include/rte_common.h"
+//#include <rte_log.h>
+#include "../include/rte_memory.h"
+#include "../include/rte_memory.h"
+#include "../include/rte_malloc.h"
 #include <rte_launch.h>
 #include <rte_eal.h>
 #include <rte_eal_memconfig.h>
-#include <rte_atomic.h>
-#include <rte_per_lcore.h>
-#include <rte_lcore.h>
-#include <rte_branch_prediction.h>
-#include <rte_errno.h>
-#include <rte_string_fns.h>
-#include <rte_spinlock.h>
-#include <rte_tailq.h>
+#include "../include/generic/rte_atomic.h"
+//#include <rte_per_lcore.h>
+//#include <rte_lcore.h>
+//#include <rte_branch_prediction.h>
+//#include <rte_errno.h>
+#include "../include/rte_string_fns.h"
+#include "../include/generic/rte_spinlock.h"
+#include "../include/rte_tailq.h"
 
 #include "rte_ring.h"
 #include "rte_ring_elem.h"
@@ -61,16 +61,14 @@ rte_ring_get_memsize_elem(unsigned int esize, unsigned int count)
 
 	/* Check if element size is a multiple of 4B */
 	if (esize % 4 != 0) {
-		RTE_LOG(ERR, RING, "element size is not a multiple of 4\n");
+		//RTE_LOG(ERR, RING, "element size is not a multiple of 4\n");
 
 		return -EINVAL;
 	}
 
 	/* count must be a power of 2 */
 	if ((!POWEROF2(count)) || (count > RTE_RING_SZ_MASK )) {
-		RTE_LOG(ERR, RING,
-			"Requested number of elements is invalid, must be power of 2, and not exceed %u\n",
-			RTE_RING_SZ_MASK);
+		//RTE_LOG(ERR, RING,"Requested number of elements is invalid, must be power of 2, and not exceed %u\n",RTE_RING_SZ_MASK);
 
 		return -EINVAL;
 	}
@@ -204,8 +202,7 @@ rte_ring_init(struct rte_ring *r, const char *name, unsigned int count,
 
 	/* future proof flags, only allow supported values */
 	if (flags & ~RING_F_MASK) {
-		RTE_LOG(ERR, RING,
-			"Unsupported flags requested %#x\n", flags);
+		//RTE_LOG(ERR, RING, "Unsupported flags requested %#x\n", flags);
 		return -EINVAL;
 	}
 
@@ -225,9 +222,7 @@ rte_ring_init(struct rte_ring *r, const char *name, unsigned int count,
 		r->capacity = count;
 	} else {
 		if ((!POWEROF2(count)) || (count > RTE_RING_SZ_MASK)) {
-			RTE_LOG(ERR, RING,
-				"Requested size is invalid, must be power of 2, and not exceed the size limit %u\n",
-				RTE_RING_SZ_MASK);
+			//RTE_LOG(ERR, RING,"Requested size is invalid, must be power of 2, and not exceed the size limit %u\n",RTE_RING_SZ_MASK);
 			return -EINVAL;
 		}
 		r->size = count;
@@ -267,21 +262,21 @@ rte_ring_create_elem(const char *name, unsigned int esize, unsigned int count,
 
 	ring_size = rte_ring_get_memsize_elem(esize, count);
 	if (ring_size < 0) {
-		rte_errno = ring_size;
+		//rte_errno = ring_size;
 		return NULL;
 	}
 
 	ret = snprintf(mz_name, sizeof(mz_name), "%s%s",
 		RTE_RING_MZ_PREFIX, name);
 	if (ret < 0 || ret >= (int)sizeof(mz_name)) {
-		rte_errno = ENAMETOOLONG;
+		//rte_errno = ENAMETOOLONG;
 		return NULL;
 	}
 
 	te = rte_zmalloc("RING_TAILQ_ENTRY", sizeof(*te), 0);
 	if (te == NULL) {
-		RTE_LOG(ERR, RING, "Cannot reserve memory for tailq\n");
-		rte_errno = ENOMEM;
+		//RTE_LOG(ERR, RING, "Cannot reserve memory for tailq\n");
+		//rte_errno = ENOMEM;
 		return NULL;
 	}
 
@@ -304,7 +299,7 @@ rte_ring_create_elem(const char *name, unsigned int esize, unsigned int count,
 		TAILQ_INSERT_TAIL(ring_list, te, next);
 	} else {
 		r = NULL;
-		RTE_LOG(ERR, RING, "Cannot reserve memory\n");
+		//RTE_LOG(ERR, RING, "Cannot reserve memory\n");
 		rte_free(te);
 	}
 	rte_mcfg_tailq_write_unlock();
@@ -336,13 +331,12 @@ rte_ring_free(struct rte_ring *r)
 	 * therefore, there is no memzone to free.
 	 */
 	if (r->memzone == NULL) {
-		RTE_LOG(ERR, RING,
-			"Cannot free ring, not created with rte_ring_create()\n");
+		//RTE_LOG(ERR, RING, "Cannot free ring, not created with rte_ring_create()\n");
 		return;
 	}
 
 	if (rte_memzone_free(r->memzone) != 0) {
-		RTE_LOG(ERR, RING, "Cannot free memory\n");
+		//RTE_LOG(ERR, RING, "Cannot free memory\n");
 		return;
 	}
 
