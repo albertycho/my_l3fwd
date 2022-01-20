@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
     unsigned int node_cnt = 0; // Msutherl
     unsigned int qps = 0; // Msutherl
     int postlist = -1;
-    //int update_percentage = -1;
+    int update_percentage = -1;
     int machine_id = 1;
     int base_port_index = -1, num_server_ports = -1, num_client_ports = -1;
     struct thread_params* param_arr;
@@ -198,6 +198,7 @@ int main(int argc, char* argv[]) {
 
     /* Launch a single server thread or multiple client threads */
     printf("main: Using %d threads\n", num_threads);
+    printf("main - update_percentage: %d\n", update_percentage); //dunno if we need update percentage.. putting print to suppress unused error
     param_arr = (struct thread_params*) malloc(num_threads * sizeof(struct thread_params));
 
     // setup barriers & initialization lock
