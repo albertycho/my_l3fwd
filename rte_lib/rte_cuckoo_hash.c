@@ -467,7 +467,7 @@ __rte_hash_add_key_with_hash(const struct rte_hash* h, const void* key,
 	uint32_t ext_bkt_id = 0;
 	uint32_t slot_id;
 	int ret;
-	unsigned lcore_id;
+	//unsigned lcore_id;
 	unsigned int i;
 	struct lcore_cache* cached_free_slots = NULL;
 	int32_t ret_val;
@@ -793,7 +793,8 @@ struct rte_hash*
 
 	snprintf(hash_name, sizeof(hash_name), "HT_%s", params->name);
 
-	rte_mcfg_tailq_write_lock();
+	//rte_mcfg_tailq_write_lock();
+	rte_rwlock_write_lock(h->tailq_lock);
 
 	/* guarantee there's no existing: this is normally already checked
 	 * by ring creation above */
@@ -991,6 +992,11 @@ struct rte_hash*
 
 		rte_rwlock_init(h->readwrite_lock);
 	}
+	h->tailq_lock = rte_malloc(NULL, sizeof(rte_rwlock_t), RTE_CACHE_LINE_SIZE);
+	if (h->tailq_lock == NULL) {
+		goto err_unlock;
+	}
+	rte_rwlock_init(h->tailq_lock);
 
 	/* Populate free slots ring. Entry zero is reserved for key misses. */
 	for (i = 1; i < num_key_slots; i++)
@@ -998,11 +1004,13 @@ struct rte_hash*
 
 	te->data = (void*)h;
 	TAILQ_INSERT_TAIL(hash_list, te, next);
-	rte_mcfg_tailq_write_unlock();
+	//rte_mcfg_tailq_write_unlock();
+	rte_rwlock_write_unlock(h->tailq_lock);
 
 	return h;
 err_unlock:
-	rte_mcfg_tailq_write_unlock();
+	//rte_mcfg_tailq_write_unlock();
+	rte_rwlock_write_unlock(h->tailq_lock);
 err:
 	rte_ring_free(r);
 	rte_ring_free(r_ext);
