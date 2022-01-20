@@ -594,7 +594,7 @@ struct name {								\
 #define	TAILQ_CLASS_HEAD(name, type)					\
 struct name {								\
 	class type *tqh_first;	/* first element */			\
-	class type **tqh_last;	/* addr of last next element */		\				
+	class type **tqh_last;	/* addr of last next element */		\
 }
 
 #define	TAILQ_HEAD_INITIALIZER(head)					\
