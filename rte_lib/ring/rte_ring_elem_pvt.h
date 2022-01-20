@@ -10,8 +10,8 @@
 #ifndef _RTE_RING_ELEM_PVT_H_
 #define _RTE_RING_ELEM_PVT_H_
 
-//#define likely(x)       __builtin_expect((x),1)
-//#define unlikely(x)     __builtin_expect((x),0)
+#define likely(x)       __builtin_expect((x),1)
+#define unlikely(x)     __builtin_expect((x),0)
 
 static __rte_always_inline void
 __rte_ring_enqueue_elems_32(struct rte_ring *r, const uint32_t size,

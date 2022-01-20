@@ -416,7 +416,7 @@ rte_ring_lookup(const char *name)
 	rte_mcfg_tailq_read_unlock();
 
 	if (te == NULL) {
-		rte_errno = ENOENT;
+		//rte_errno = ENOENT;
 		return NULL;
 	}
 
