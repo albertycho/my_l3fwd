@@ -124,7 +124,8 @@ void* run_worker(void* arg) {
     //struct mica_pointers* datastore_pointer = (struct mica_pointers*) malloc(sizeof(struct mica_pointers*));
     //datastore_pointer->kv = &kv;
     //datastore_pointer->response_array = resp_arr;
-    rpcArg_t args;
+    
+    //rpcArg_t args;
     //args.pointerToAppData = datastore_pointer;
 
     pthread_barrier_wait(params.barrier);
@@ -147,13 +148,13 @@ void* run_worker(void* arg) {
         /* Begin new RPCValet */
         uint64_t source_node_id,source_qp_to_reply;
 	//notify_service_start(tmp_count);
-        void* datastore_pointer;
+        void* datastore_pointer=NULL;
         RPCWithHeader rpc = receiveRPCRequest_zsim_l3fwd( rpcContext,
                 (void*) datastore_pointer,
                 params.sonuma_nid,
                 wrkr_lid,
                 &source_node_id,
-                &source_qp_to_reply,
+                (uint16_t *)(&source_qp_to_reply),
                 client_done );
 
         printf("l3fwd: 2, rpc.payload: %lx\n", rpc.payload);
@@ -175,7 +176,7 @@ void* run_worker(void* arg) {
 
         printf("l3fwd: 1\n");
 
-        bool is_get = true; //put dummy for now, before implementing l3fwd callback
+        //bool is_get = true; //put dummy for now, before implementing l3fwd callback
 
         timestamp(tmp_count);
 
