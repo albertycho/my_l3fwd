@@ -855,8 +855,7 @@ struct rte_hash*
 			ext_bkt_to_free = rte_zmalloc(NULL, sizeof(uint32_t) *
 				num_key_slots, 0);
 			if (ext_bkt_to_free == NULL) {
-				//RTE_LOG(ERR, HASH, "ext bkt to free memory allocation "
-					"failed\n");
+				//RTE_LOG(ERR, HASH, "ext bkt to free memory allocation ""failed\n");
 				goto err_unlock;
 			}
 		}
