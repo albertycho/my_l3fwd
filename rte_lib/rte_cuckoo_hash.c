@@ -694,7 +694,7 @@ struct rte_hash*
 	hash_list = RTE_TAILQ_CAST(rte_hash_tailq.head, rte_hash_list);
 
 	if (params == NULL) {
-		RTE_LOG(ERR, HASH, "rte_hash_create has no parameters\n");
+		//RTE_LOG(ERR, HASH, "rte_hash_create has no parameters\n");
 		return NULL;
 	}
 
@@ -703,13 +703,13 @@ struct rte_hash*
 		(params->entries < RTE_HASH_BUCKET_ENTRIES) ||
 		(params->key_len == 0)) {
 		//rte_errno = EINVAL;
-		RTE_LOG(ERR, HASH, "rte_hash_create has invalid parameters\n");
+		//RTE_LOG(ERR, HASH, "rte_hash_create has invalid parameters\n");
 		return NULL;
 	}
 
 	if (params->extra_flag & ~RTE_HASH_EXTRA_FLAGS_MASK) {
 		//rte_errno = EINVAL;
-		RTE_LOG(ERR, HASH, "rte_hash_create: unsupported extra flags\n");
+		//RTE_LOG(ERR, HASH, "rte_hash_create: unsupported extra flags\n");
 		return NULL;
 	}
 
@@ -717,8 +717,7 @@ struct rte_hash*
 	if ((params->extra_flag & RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY) &&
 		(params->extra_flag & RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY_LF)) {
 		//rte_errno = EINVAL;
-		RTE_LOG(ERR, HASH, "rte_hash_create: choose rw concurrency or "
-			"rw concurrency lock free\n");
+		//RTE_LOG(ERR, HASH, "rte_hash_create: choose rw concurrency or ""rw concurrency lock free\n");
 		return NULL;
 	}
 
@@ -771,7 +770,7 @@ struct rte_hash*
 	r = rte_ring_create_elem(ring_name, sizeof(uint32_t),
 		rte_align32pow2(num_key_slots), params->socket_id, 0);
 	if (r == NULL) {
-		RTE_LOG(ERR, HASH, "memory allocation failed\n");
+		//RTE_LOG(ERR, HASH, "memory allocation failed\n");
 		goto err;
 	}
 
@@ -787,7 +786,7 @@ struct rte_hash*
 			params->socket_id, 0);
 
 		if (r_ext == NULL) {
-			RTE_LOG(ERR, HASH, "ext buckets memory allocation "
+			//RTE_LOG(ERR, HASH, "ext buckets memory allocation "
 				"failed\n");
 			goto err;
 		}
@@ -813,7 +812,7 @@ struct rte_hash*
 
 	te = rte_zmalloc("HASH_TAILQ_ENTRY", sizeof(*te), 0);
 	if (te == NULL) {
-		RTE_LOG(ERR, HASH, "tailq entry allocation failed\n");
+		//RTE_LOG(ERR, HASH, "tailq entry allocation failed\n");
 		goto err_unlock;
 	}
 
@@ -821,7 +820,7 @@ struct rte_hash*
 		RTE_CACHE_LINE_SIZE, params->socket_id);
 
 	if (h == NULL) {
-		RTE_LOG(ERR, HASH, "memory allocation failed\n");
+		//RTE_LOG(ERR, HASH, "memory allocation failed\n");
 		goto err_unlock;
 	}
 
@@ -830,7 +829,7 @@ struct rte_hash*
 		RTE_CACHE_LINE_SIZE, params->socket_id);
 
 	if (buckets == NULL) {
-		RTE_LOG(ERR, HASH, "buckets memory allocation failed\n");
+		//RTE_LOG(ERR, HASH, "buckets memory allocation failed\n");
 		goto err_unlock;
 	}
 
@@ -840,7 +839,7 @@ struct rte_hash*
 			num_buckets * sizeof(struct rte_hash_bucket),
 			RTE_CACHE_LINE_SIZE, params->socket_id);
 		if (buckets_ext == NULL) {
-			RTE_LOG(ERR, HASH, "ext buckets memory allocation "
+			//RTE_LOG(ERR, HASH, "ext buckets memory allocation "
 				"failed\n");
 			goto err_unlock;
 		}
@@ -856,7 +855,7 @@ struct rte_hash*
 			ext_bkt_to_free = rte_zmalloc(NULL, sizeof(uint32_t) *
 				num_key_slots, 0);
 			if (ext_bkt_to_free == NULL) {
-				RTE_LOG(ERR, HASH, "ext bkt to free memory allocation "
+				//RTE_LOG(ERR, HASH, "ext bkt to free memory allocation "
 					"failed\n");
 				goto err_unlock;
 			}
@@ -872,7 +871,7 @@ struct rte_hash*
 		RTE_CACHE_LINE_SIZE, params->socket_id);
 
 	if (k == NULL) {
-		RTE_LOG(ERR, HASH, "memory allocation failed\n");
+		//RTE_LOG(ERR, HASH, "memory allocation failed\n");
 		goto err_unlock;
 	}
 
@@ -880,7 +879,7 @@ struct rte_hash*
 		RTE_CACHE_LINE_SIZE, params->socket_id);
 
 	if (tbl_chng_cnt == NULL) {
-		RTE_LOG(ERR, HASH, "memory allocation failed\n");
+		//RTE_LOG(ERR, HASH, "memory allocation failed\n");
 		goto err_unlock;
 	}
 
