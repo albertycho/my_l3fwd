@@ -89,7 +89,7 @@ rte_hash_cmp_eq(const void* key1, const void* key2, const struct rte_hash* h) {
 static inline uint32_t
 alloc_slot(const struct rte_hash* h, struct lcore_cache* cached_free_slots)
 {
-	unsigned int n_slots;
+	//unsigned int n_slots;
 	uint32_t slot_id;
 
 	if (rte_ring_sc_dequeue_elem(h->free_slots, &slot_id,
@@ -948,7 +948,8 @@ struct rte_hash*
 		default_hash_func = (rte_hash_function)rte_hash_crc;
 #endif
 	/* Setup hash context */
-	strlcpy(h->name, params->name, sizeof(h->name));
+	//strlcpy(h->name, params->name, sizeof(h->name));
+	strncpy(h->name, params->name, sizeof(h->name));
 	h->entries = params->entries;
 	h->key_len = params->key_len;
 	h->key_entry_size = key_entry_size;
