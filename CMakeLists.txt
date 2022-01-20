@@ -62,7 +62,7 @@ set(RTE_SOURCES
     rte_lib/rte_cuckoo_hash.h
     rte_lib/rte_jhash.h
     rte_lib/rte_hash.h
-    rte_lib/include/eal_common_tailqs.c
+    #rte_lib/include/eal_common_tailqs.c
 	)
 
 set(RPC_SHM_SOURCES
