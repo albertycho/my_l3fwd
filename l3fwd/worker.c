@@ -89,7 +89,8 @@ void* run_worker(void* arg) {
 
     uint32_t socket_id = params.id % 16;
     struct rte_hash* worker_hash = setup_hash(socket_id);
-    printf("core %d setuphash complete\n", params.id);
+    printf("core %d setuphash complete. hash.name=%s\n", params.id, worker_hash->name);
+    printf("hash.freelost.name = %s\n", worker_hash->free_slots->name);
 
     uint32_t portid;
     /* pre-init dst MACs for all ports to 02:00:00:00:00:xx */

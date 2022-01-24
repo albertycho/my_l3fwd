@@ -4,6 +4,7 @@
         "em_l3f.h": "c",
         "rte_cuckoo_hash.h": "c",
         "queue.h": "c",
-        "rte_common.h": "c"
+        "rte_common.h": "c",
+        "typeinfo": "c"
     }
 }
