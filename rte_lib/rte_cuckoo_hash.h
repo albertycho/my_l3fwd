@@ -13,11 +13,11 @@
 #define _RTE_CUCKOO_HASH_H_
 
 #if defined(RTE_ARCH_X86)
-#include "rte_cmp_x86.h"
+//#include "rte_cmp_x86.h"
 #endif
 
 #if defined(RTE_ARCH_ARM64)
-#include "rte_cmp_arm64.h"
+//#include "rte_cmp_arm64.h"
 #endif
 
   /* Macro to enable/disable run-time checking of function parameters */
