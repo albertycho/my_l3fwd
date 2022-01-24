@@ -668,7 +668,7 @@ struct rte_hash*
 {
 	struct rte_hash* h = NULL;
 	struct rte_tailq_entry* te = NULL;
-	struct rte_hash_list* hash_list;
+	//struct rte_hash_list* hash_list;
 	struct rte_ring* r = NULL;
 	struct rte_ring* r_ext = NULL;
 	char hash_name[RTE_HASH_NAMESIZE];
@@ -691,7 +691,7 @@ struct rte_hash*
 
 	rte_hash_function default_hash_func = (rte_hash_function)rte_jhash;
 
-	hash_list = RTE_TAILQ_CAST(rte_hash_tailq.head, rte_hash_list);
+	//hash_list = RTE_TAILQ_CAST(rte_hash_tailq.head, rte_hash_list);
 
 	if (params == NULL) {
 		//RTE_LOG(ERR, HASH, "rte_hash_create has no parameters\n");
@@ -793,22 +793,23 @@ struct rte_hash*
 
 	snprintf(hash_name, sizeof(hash_name), "HT_%s", params->name);
 
+	/////NO TAILQ for zsim test ver
 	//rte_mcfg_tailq_write_lock();
-	rte_rwlock_write_lock(h->tailq_lock);
+	//rte_rwlock_write_lock(h->tailq_lock);
 
 	/* guarantee there's no existing: this is normally already checked
 	 * by ring creation above */
-	TAILQ_FOREACH(te, (struct rte_hash_list *)hash_list, next) {
-		h = (struct rte_hash*)te->data;
-		if (strncmp(params->name, h->name, RTE_HASH_NAMESIZE) == 0)
-			break;
-	}
-	h = NULL;
-	if (te != NULL) {
-		//rte_errno = EEXIST;
-		te = NULL;
-		goto err_unlock;
-	}
+	// TAILQ_FOREACH(te, (struct rte_hash_list *)hash_list, next) {
+	// 	h = (struct rte_hash*)te->data;
+	// 	if (strncmp(params->name, h->name, RTE_HASH_NAMESIZE) == 0)
+	// 		break;
+	// }
+	// h = NULL;
+	// if (te != NULL) {
+	// 	//rte_errno = EEXIST;
+	// 	te = NULL;
+	// 	goto err_unlock;
+	// }
 
 	//te = rte_zmalloc("HASH_TAILQ_ENTRY", sizeof(*te), 0);
 	te = malloc(sizeof(*te));
@@ -822,6 +823,7 @@ struct rte_hash*
 
 	if (h == NULL) {
 		//RTE_LOG(ERR, HASH, "memory allocation failed\n");
+		printf("malloc for h failed in hash_create\n");
 		goto err_unlock;
 	}
 
@@ -829,10 +831,11 @@ struct rte_hash*
 		num_buckets * sizeof(struct rte_hash_bucket),
 		RTE_CACHE_LINE_SIZE, params->socket_id);*/
 
-	buckets = malloc(sizeof(struct rte_hash_bucket));
+	buckets = malloc(num_buckets * sizeof(struct rte_hash_bucket));
 
 	if (buckets == NULL) {
 		//RTE_LOG(ERR, HASH, "buckets memory allocation failed\n");
+		printf("malloc for buckets failed in hash_create\n");
 		goto err_unlock;
 	}
 
@@ -876,6 +879,7 @@ struct rte_hash*
 
 	if (k == NULL) {
 		//RTE_LOG(ERR, HASH, "memory allocation failed\n");
+		printf("malloc for key table failed in hash_create\n");
 		goto err_unlock;
 	}
 
@@ -1000,35 +1004,37 @@ struct rte_hash*
 		rte_rwlock_init(h->readwrite_lock);
 	}
 	//h->tailq_lock = rte_malloc(NULL, sizeof(rte_rwlock_t), RTE_CACHE_LINE_SIZE);
-	h->tailq_lock = malloc(sizeof(rte_rwlock_t));
-	if (h->tailq_lock == NULL) {
-		goto err_unlock;
-	}
-	rte_rwlock_init(h->tailq_lock);
+	// h->tailq_lock = malloc(sizeof(rte_rwlock_t));
+	// if (h->tailq_lock == NULL) {
+	// 	goto err_unlock;
+	// }
+	// rte_rwlock_init(h->tailq_lock);
 
 	/* Populate free slots ring. Entry zero is reserved for key misses. */
 	for (i = 1; i < num_key_slots; i++)
 		rte_ring_sp_enqueue_elem(r, &i, sizeof(uint32_t));
 
-	te->data = (void*)h;
-	TAILQ_INSERT_TAIL(hash_list, te, next);
-	//rte_mcfg_tailq_write_unlock();
-	rte_rwlock_write_unlock(h->tailq_lock);
+	// te->data = (void*)h;
+	// TAILQ_INSERT_TAIL(hash_list, te, next);
+	// //rte_mcfg_tailq_write_unlock();
+	// rte_rwlock_write_unlock(h->tailq_lock);
 
 	return h;
 err_unlock:
 	//rte_mcfg_tailq_write_unlock();
-	rte_rwlock_write_unlock(h->tailq_lock);
+	//rte_rwlock_write_unlock(h->tailq_lock);
 err:
-	rte_ring_free(r);
-	rte_ring_free(r_ext);
-	rte_free(te);
-	rte_free(local_free_slots);
-	rte_free(h);
-	rte_free(buckets);
-	rte_free(buckets_ext);
-	rte_free(k);
-	rte_free(tbl_chng_cnt);
-	rte_free(ext_bkt_to_free);
+	//for us, getting an err at initialization means we'll just terminate
+	//	and let the garbage collector take care of things
+	// rte_ring_free(r);
+	// rte_ring_free(r_ext);
+	// rte_free(te);
+	// rte_free(local_free_slots);
+	// rte_free(h);
+	// rte_free(buckets);
+	// rte_free(buckets_ext);
+	// rte_free(k);
+	// rte_free(tbl_chng_cnt);
+	// rte_free(ext_bkt_to_free);
 	return NULL;
 }

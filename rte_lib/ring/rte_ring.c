@@ -241,20 +241,20 @@ rte_ring_init(struct rte_ring *r, const char *name, unsigned int count,
 
 /* create the ring for a given element size */
 struct rte_ring *
-rte_ring_create_elem(const char *name, unsigned int esize, unsigned int count,
+  rte_ring_create_elem(const char *name, unsigned int esize, unsigned int count,
 		int socket_id, unsigned int flags)
 {
 	char mz_name[RTE_MEMZONE_NAMESIZE];
 	struct rte_ring *r;
-	struct rte_tailq_entry *te;
+	//struct rte_tailq_entry *te;
 	const struct rte_memzone *mz;
 	ssize_t ring_size;
 	int mz_flags = 0;
-	struct rte_ring_list* ring_list = NULL;
+	//struct rte_ring_list* ring_list = NULL;
 	const unsigned int requested_count = count;
 	int ret;
 
-	ring_list = RTE_TAILQ_CAST(rte_ring_tailq.head, rte_ring_list);
+	//ring_list = RTE_TAILQ_CAST(rte_ring_tailq.head, rte_ring_list);
 
 	/* for an exact size ring, round up from count to a power of two */
 	if (flags & RING_F_EXACT_SZ)
@@ -266,43 +266,48 @@ rte_ring_create_elem(const char *name, unsigned int esize, unsigned int count,
 		return NULL;
 	}
 
-	ret = snprintf(mz_name, sizeof(mz_name), "%s%s",
-		RTE_RING_MZ_PREFIX, name);
-	if (ret < 0 || ret >= (int)sizeof(mz_name)) {
-		//rte_errno = ENAMETOOLONG;
-		return NULL;
-	}
+	// ret = snprintf(mz_name, sizeof(mz_name), "%s%s",
+	// 	RTE_RING_MZ_PREFIX, name);
+	// if (ret < 0 || ret >= (int)sizeof(mz_name)) {
+	// 	//rte_errno = ENAMETOOLONG;
+	// 	return NULL;
+	// }
 
-	te = rte_zmalloc("RING_TAILQ_ENTRY", sizeof(*te), 0);
-	if (te == NULL) {
-		//RTE_LOG(ERR, RING, "Cannot reserve memory for tailq\n");
-		//rte_errno = ENOMEM;
-		return NULL;
-	}
+	// te = rte_zmalloc("RING_TAILQ_ENTRY", sizeof(*te), 0);
+	// if (te == NULL) {
+	// 	//RTE_LOG(ERR, RING, "Cannot reserve memory for tailq\n");
+	// 	//rte_errno = ENOMEM;
+	// 	return NULL;
+	// }
 
-	rte_mcfg_tailq_write_lock();
+	//rte_mcfg_tailq_write_lock();
 
 	/* reserve a memory zone for this ring. If we can't get rte_config or
 	 * we are secondary process, the memzone_reserve function will set
 	 * rte_errno for us appropriately - hence no check in this this function */
-	mz = rte_memzone_reserve_aligned(mz_name, ring_size, socket_id,
-					 mz_flags, __alignof__(*r));
-	if (mz != NULL) {
-		r = mz->addr;
-		/* no need to check return value here, we already checked the
-		 * arguments above */
-		rte_ring_init(r, name, requested_count, flags);
+	// mz = rte_memzone_reserve_aligned(mz_name, ring_size, socket_id,
+	// 				 mz_flags, __alignof__(*r));
+	// if (mz != NULL) {
+	// 	r = mz->addr;
+	// 	/* no need to check return value here, we already checked the
+	// 	 * arguments above */
+	// 	rte_ring_init(r, name, requested_count, flags);
 
-		te->data = (void *) r;
-		r->memzone = mz;
+	// 	te->data = (void *) r;
+	// 	r->memzone = mz;
 
-		TAILQ_INSERT_TAIL(ring_list, te, next);
-	} else {
-		r = NULL;
-		//RTE_LOG(ERR, RING, "Cannot reserve memory\n");
-		rte_free(te);
-	}
-	rte_mcfg_tailq_write_unlock();
+	// 	TAILQ_INSERT_TAIL(ring_list, te, next);
+	// } else {
+	// 	r = NULL;
+	// 	//RTE_LOG(ERR, RING, "Cannot reserve memory\n");
+	// 	rte_free(te);
+	// }
+	// //rte_mcfg_tailq_write_unlock();
+
+	//No memzone, no tailq for zsim ver
+	r = malloc(ring_size);
+	rte_ring_init(r,name,requested_count,flags);
+
 
 	return r;
 }
