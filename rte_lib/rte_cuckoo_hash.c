@@ -1020,7 +1020,7 @@ struct rte_hash*
 	// //rte_mcfg_tailq_write_unlock();
 	// rte_rwlock_write_unlock(h->tailq_lock);
 
-	printf("in rte_hash_create\n");
+	//printf("in rte_hash_create\n");
 
 	return h;
 err_unlock:
