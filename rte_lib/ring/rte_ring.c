@@ -413,26 +413,26 @@ rte_ring_list_dump(FILE *f)
 struct rte_ring *
 rte_ring_lookup(const char *name)
 {
-	struct rte_tailq_entry *te;
-	struct rte_ring *r = NULL;
-	struct rte_ring_list *ring_list;
+	// struct rte_tailq_entry *te;
+	// struct rte_ring *r = NULL;
+	// struct rte_ring_list *ring_list;
 
-	ring_list = RTE_TAILQ_CAST(rte_ring_tailq.head, rte_ring_list);
+	// ring_list = RTE_TAILQ_CAST(rte_ring_tailq.head, rte_ring_list);
 
-	rte_mcfg_tailq_read_lock();
+	// rte_mcfg_tailq_read_lock();
 
-	TAILQ_FOREACH(te, ring_list, next) {
-		r = (struct rte_ring *) te->data;
-		if (strncmp(name, r->name, RTE_RING_NAMESIZE) == 0)
-			break;
-	}
+	// TAILQ_FOREACH(te, ring_list, next) {
+	// 	r = (struct rte_ring *) te->data;
+	// 	if (strncmp(name, r->name, RTE_RING_NAMESIZE) == 0)
+	// 		break;
+	// }
 
-	rte_mcfg_tailq_read_unlock();
+	// rte_mcfg_tailq_read_unlock();
 
-	if (te == NULL) {
-		//rte_errno = ENOENT;
-		return NULL;
-	}
+	// if (te == NULL) {
+	// 	//rte_errno = ENOENT;
+	// 	return NULL;
+	// }
 
-	return r;
+	// return r;
 }
