@@ -64,6 +64,8 @@ bool herdCallbackFunction(uint8_t* slot_ptr, rpcArg_t* rpc_arguments)
 }
 */
 
+#define RTE_MAX_ETHPORTS 32
+
 static uint64_t dest_eth_addr[RTE_MAX_ETHPORTS];
 extern int multithread_check;
 
