@@ -666,7 +666,6 @@ rte_hash_add_key(const struct rte_hash* h, const void* key)
 struct rte_hash*
 	rte_hash_create(const struct rte_hash_parameters* params)
 {
-	//printf("in rte_hash_create\n");
 	struct rte_hash* h = NULL;
 	//struct rte_tailq_entry* te = NULL;
 	//struct rte_hash_list* hash_list;
@@ -1019,8 +1018,6 @@ struct rte_hash*
 	// TAILQ_INSERT_TAIL(hash_list, te, next);
 	// //rte_mcfg_tailq_write_unlock();
 	// rte_rwlock_write_unlock(h->tailq_lock);
-
-	//printf("in rte_hash_create\n");
 
 	return h;
 err_unlock:
