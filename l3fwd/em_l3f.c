@@ -95,7 +95,7 @@ void setup_hash(int socket_id){
 		.hash_func_init_val = 0,
 	};
 
-	ipv6_l3fwd_hash_params.name = s;
+	ipv6_l3fwd_hash_params.name = "ipv6_l3fwd_hash";
 	ipv6_l3fwd_hash_params.socket_id = socketid;
 	ipv6_l3fwd_lookup = rte_hash_create(&ipv6_l3fwd_hash_params);
 	if(ipv6_l3fwd_lookup==NULL){
@@ -104,6 +104,6 @@ void setup_hash(int socket_id){
 	
 	//import this function
 	//populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, hash_entry_number);
-	
+
 
 }
