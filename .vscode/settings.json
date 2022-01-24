@@ -2,6 +2,8 @@
     "files.associations": {
         "rte_string_fns.h": "c",
         "em_l3f.h": "c",
-        "rte_cuckoo_hash.h": "c"
+        "rte_cuckoo_hash.h": "c",
+        "queue.h": "c",
+        "rte_common.h": "c"
     }
 }

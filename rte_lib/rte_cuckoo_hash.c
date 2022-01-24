@@ -891,45 +891,45 @@ struct rte_hash*
 		goto err_unlock;
 	}
 
-	/*
-	 * If x86 architecture is used, select appropriate compare function,
-	 * which may use x86 intrinsics, otherwise use memcmp
-	 */
-#if defined(RTE_ARCH_X86) || defined(RTE_ARCH_ARM64)
-	 /* Select function to compare keys */
-	switch (params->key_len) {
-	case 16:
-		h->cmp_jump_table_idx = KEY_16_BYTES;
-		break;
-	case 32:
-		h->cmp_jump_table_idx = KEY_32_BYTES;
-		break;
-	case 48:
-		h->cmp_jump_table_idx = KEY_48_BYTES;
-		break;
-	case 64:
-		h->cmp_jump_table_idx = KEY_64_BYTES;
-		break;
-	case 80:
-		h->cmp_jump_table_idx = KEY_80_BYTES;
-		break;
-	case 96:
-		h->cmp_jump_table_idx = KEY_96_BYTES;
-		break;
-	case 112:
-		h->cmp_jump_table_idx = KEY_112_BYTES;
-		break;
-	case 128:
-		h->cmp_jump_table_idx = KEY_128_BYTES;
-		break;
-	default:
-		/* If key is not multiple of 16, use generic memcmp */
-		h->cmp_jump_table_idx = KEY_OTHER_BYTES;
-	}
-#else
+// 	/*
+// 	 * If x86 architecture is used, select appropriate compare function,
+// 	 * which may use x86 intrinsics, otherwise use memcmp
+// 	 */
+// #if defined(RTE_ARCH_X86) || defined(RTE_ARCH_ARM64)
+// 	 /* Select function to compare keys */
+// 	switch (params->key_len) {
+// 	case 16:
+// 		h->cmp_jump_table_idx = KEY_16_BYTES;
+// 		break;
+// 	case 32:
+// 		h->cmp_jump_table_idx = KEY_32_BYTES;
+// 		break;
+// 	case 48:
+// 		h->cmp_jump_table_idx = KEY_48_BYTES;
+// 		break;
+// 	case 64:
+// 		h->cmp_jump_table_idx = KEY_64_BYTES;
+// 		break;
+// 	case 80:
+// 		h->cmp_jump_table_idx = KEY_80_BYTES;
+// 		break;
+// 	case 96:
+// 		h->cmp_jump_table_idx = KEY_96_BYTES;
+// 		break;
+// 	case 112:
+// 		h->cmp_jump_table_idx = KEY_112_BYTES;
+// 		break;
+// 	case 128:
+// 		h->cmp_jump_table_idx = KEY_128_BYTES;
+// 		break;
+// 	default:
+// 		/* If key is not multiple of 16, use generic memcmp */
+// 		h->cmp_jump_table_idx = KEY_OTHER_BYTES;
+// 	}
+// #else
+// 	h->cmp_jump_table_idx = KEY_OTHER_BYTES;
+// #endif
 	h->cmp_jump_table_idx = KEY_OTHER_BYTES;
-#endif
-
 	//not using local cache
 
 	//if (use_local_cache) {
