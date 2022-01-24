@@ -47,7 +47,7 @@
 #include "include/rte_common.h"
 #include "include/generic/rte_rwlock.h"
 
-#if defined(RTE_ARCH_X86) || defined(RTE_ARCH_ARM64)
+//#if defined(RTE_ARCH_X86) || defined(RTE_ARCH_ARM64)
 // /*
 //  * All different options to select a key compare function,
 //  * based on the key size and custom function.
@@ -82,7 +82,7 @@
 // 	rte_hash_k128_cmp_eq,
 // 	memcmp
 // };
-#else
+//#else
 /*
  * All different options to select a key compare function,
  * based on the key size and custom function.
@@ -97,14 +97,14 @@ enum cmp_jump_table_case {
  * Table storing all different key compare functions
  * (multi-process supported)
  */
-/*
+
 static inline rte_hash_cmp_eq_t cmp_jump_table[NUM_KEY_CMP_CASES] = {
 	NULL,
 	memcmp
 };
-*/
 
-#endif
+
+//#endif
 
 
 /**
