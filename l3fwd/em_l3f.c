@@ -33,6 +33,20 @@ struct ipv6_5tuple {
 	uint8_t  proto;
 } __rte_packed;
 
+typedef __m128i xmm_t;
+union ipv4_5tuple_host {
+	struct {
+		uint8_t  pad0;
+		uint8_t  proto;
+		uint16_t pad1;
+		uint32_t ip_src;
+		uint32_t ip_dst;
+		uint16_t port_src;
+		uint16_t port_dst;
+	};
+	xmm_t xmm;
+};
+
 struct ipv6_l3fwd_em_route {
 	struct ipv6_5tuple key;
 	uint8_t if_out;
@@ -83,7 +97,7 @@ ipv6_hash_crc(const void* data, uint32_t init_val){
 
 void setup_hash(int socket_id){
 
-	rte_hash * ipv6_l3fwd_lookup;
+	struct rte_hash * ipv6_l3fwd_lookup;
 	
 	uint32_t hash_entry_number = 16; //16 is default, make it programmable?
 
@@ -96,7 +110,7 @@ void setup_hash(int socket_id){
 	};
 
 	ipv6_l3fwd_hash_params.name = "ipv6_l3fwd_hash";
-	ipv6_l3fwd_hash_params.socket_id = socketid;
+	ipv6_l3fwd_hash_params.socket_id = socket_id;
 	ipv6_l3fwd_lookup = rte_hash_create(&ipv6_l3fwd_hash_params);
 	if(ipv6_l3fwd_lookup==NULL){
 		printf("setup hash failed - rte_hash_create fail\n");
