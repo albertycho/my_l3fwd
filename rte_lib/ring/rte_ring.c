@@ -28,19 +28,19 @@
 //#include <rte_lcore.h>
 //#include <rte_branch_prediction.h>
 //#include <rte_errno.h>
-#include "../include/rte_string_fns.h"
+//#include "../include/rte_string_fns.h"
 //#include "../include/generic/rte_spinlock.h"
 #include "../include/rte_tailq.h"
 
 #include "rte_ring.h"
 #include "rte_ring_elem.h"
 
-TAILQ_HEAD(rte_ring_list, rte_tailq_entry);
+// TAILQ_HEAD(rte_ring_list, rte_tailq_entry);
 
-static struct rte_tailq_elem rte_ring_tailq = {
-	.name = RTE_TAILQ_RING_NAME,
-};
-EAL_REGISTER_TAILQ(rte_ring_tailq)
+// static struct rte_tailq_elem rte_ring_tailq = {
+// 	.name = RTE_TAILQ_RING_NAME,
+// };
+// EAL_REGISTER_TAILQ(rte_ring_tailq)
 
 /* mask of all valid flag values to ring_create() */
 #define RING_F_MASK (RING_F_SP_ENQ | RING_F_SC_DEQ | RING_F_EXACT_SZ | \
@@ -244,15 +244,15 @@ struct rte_ring *
   rte_ring_create_elem(const char *name, unsigned int esize, unsigned int count,
 		int socket_id, unsigned int flags)
 {
-	char mz_name[RTE_MEMZONE_NAMESIZE];
+	//char mz_name[RTE_MEMZONE_NAMESIZE];
 	struct rte_ring *r;
 	//struct rte_tailq_entry *te;
-	const struct rte_memzone *mz;
+	//const struct rte_memzone *mz;
 	ssize_t ring_size;
-	int mz_flags = 0;
+	//int mz_flags = 0;
 	//struct rte_ring_list* ring_list = NULL;
 	const unsigned int requested_count = count;
-	int ret;
+	//int ret;
 
 	//ring_list = RTE_TAILQ_CAST(rte_ring_tailq.head, rte_ring_list);
 
@@ -306,6 +306,10 @@ struct rte_ring *
 
 	//No memzone, no tailq for zsim ver
 	r = malloc(ring_size);
+	if(r==NULL){
+		printf("malloc for r failed in ring_create_elem\n");
+		return NULL;
+	}
 	rte_ring_init(r,name,requested_count,flags);
 
 
@@ -325,45 +329,50 @@ rte_ring_create(const char *name, unsigned int count, int socket_id,
 void
 rte_ring_free(struct rte_ring *r)
 {
-	struct rte_ring_list *ring_list = NULL;
-	struct rte_tailq_entry *te;
+	// struct rte_ring_list *ring_list = NULL;
+	// struct rte_tailq_entry *te;
 
-	if (r == NULL)
-		return;
+	//we only free if if we're done or erroring out. in both cases whole zsim simulation will terminate,
+	// malloc'd mem will be garbage collected.
+	// in short, dont' think fancy free is required for our zsim ver
+	free(r);
 
-	/*
-	 * Ring was not created with rte_ring_create,
-	 * therefore, there is no memzone to free.
-	 */
-	if (r->memzone == NULL) {
-		//RTE_LOG(ERR, RING, "Cannot free ring, not created with rte_ring_create()\n");
-		return;
-	}
+	// if (r == NULL)
+	// 	return;
 
-	if (rte_memzone_free(r->memzone) != 0) {
-		//RTE_LOG(ERR, RING, "Cannot free memory\n");
-		return;
-	}
+	// /*
+	//  * Ring was not created with rte_ring_create,
+	//  * therefore, there is no memzone to free.
+	//  */
+	// if (r->memzone == NULL) {
+	// 	//RTE_LOG(ERR, RING, "Cannot free ring, not created with rte_ring_create()\n");
+	// 	return;
+	// }
 
-	ring_list = RTE_TAILQ_CAST(rte_ring_tailq.head, rte_ring_list);
-	rte_mcfg_tailq_write_lock();
+	// if (rte_memzone_free(r->memzone) != 0) {
+	// 	//RTE_LOG(ERR, RING, "Cannot free memory\n");
+	// 	return;
+	// }
 
-	/* find out tailq entry */
-	TAILQ_FOREACH(te, ring_list, next) {
-		if (te->data == (void *) r)
-			break;
-	}
+	// ring_list = RTE_TAILQ_CAST(rte_ring_tailq.head, rte_ring_list);
+	// rte_mcfg_tailq_write_lock();
 
-	if (te == NULL) {
-		rte_mcfg_tailq_write_unlock();
-		return;
-	}
+	// /* find out tailq entry */
+	// TAILQ_FOREACH(te, ring_list, next) {
+	// 	if (te->data == (void *) r)
+	// 		break;
+	// }
 
-	TAILQ_REMOVE(ring_list, te, next);
+	// if (te == NULL) {
+	// 	rte_mcfg_tailq_write_unlock();
+	// 	return;
+	// }
 
-	rte_mcfg_tailq_write_unlock();
+	// TAILQ_REMOVE(ring_list, te, next);
 
-	rte_free(te);
+	// rte_mcfg_tailq_write_unlock();
+
+	// rte_free(te);
 }
 
 /* dump the status of the ring on the console */
@@ -386,18 +395,18 @@ rte_ring_dump(FILE *f, const struct rte_ring *r)
 void
 rte_ring_list_dump(FILE *f)
 {
-	const struct rte_tailq_entry *te;
-	struct rte_ring_list *ring_list;
+	// const struct rte_tailq_entry *te;
+	// struct rte_ring_list *ring_list;
 
-	ring_list = RTE_TAILQ_CAST(rte_ring_tailq.head, rte_ring_list);
+	// ring_list = RTE_TAILQ_CAST(rte_ring_tailq.head, rte_ring_list);
 
-	rte_mcfg_tailq_read_lock();
+	// rte_mcfg_tailq_read_lock();
 
-	TAILQ_FOREACH(te, ring_list, next) {
-		rte_ring_dump(f, (struct rte_ring *) te->data);
-	}
+	// TAILQ_FOREACH(te, ring_list, next) {
+	// 	rte_ring_dump(f, (struct rte_ring *) te->data);
+	// }
 
-	rte_mcfg_tailq_read_unlock();
+	// rte_mcfg_tailq_read_unlock();
 }
 
 /* search a ring from its name */
