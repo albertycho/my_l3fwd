@@ -124,5 +124,6 @@ struct rte_hash* setup_hash(int socket_id){
 	//import this function
 	//populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, hash_entry_number);
 
+	return ipv6_l3fwd_lookup;
 
 }
