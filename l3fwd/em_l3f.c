@@ -24,7 +24,7 @@ int em_dummy_print_func(){
 int multithread_check;
 
 
-
+#define XMM_NUM_IN_IPV6_5TUPLE 3
 struct ipv6_5tuple {
 	uint8_t  ip_dst[IPV6_ADDR_LEN];
 	uint8_t  ip_src[IPV6_ADDR_LEN];
@@ -34,18 +34,22 @@ struct ipv6_5tuple {
 } __rte_packed;
 
 typedef __m128i xmm_t;
-union ipv4_5tuple_host {
+
+
+union ipv6_5tuple_host {
 	struct {
-		uint8_t  pad0;
+		uint16_t pad0;
 		uint8_t  proto;
-		uint16_t pad1;
-		uint32_t ip_src;
-		uint32_t ip_dst;
+		uint8_t  pad1;
+		uint8_t  ip_src[IPV6_ADDR_LEN];
+		uint8_t  ip_dst[IPV6_ADDR_LEN];
 		uint16_t port_src;
 		uint16_t port_dst;
+		uint64_t reserve;
 	};
-	xmm_t xmm;
+	xmm_t xmm[XMM_NUM_IN_IPV6_5TUPLE];
 };
+
 
 struct ipv6_l3fwd_em_route {
 	struct ipv6_5tuple key;
