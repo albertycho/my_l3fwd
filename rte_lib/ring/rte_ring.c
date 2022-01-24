@@ -208,7 +208,7 @@ rte_ring_init(struct rte_ring *r, const char *name, unsigned int count,
 
 	/* init the ring structure */
 	memset(r, 0, sizeof(*r));
-	ret = strlcpy(r->name, name, sizeof(r->name));
+	ret = strncpy(r->name, name, sizeof(r->name));
 	if (ret < 0 || ret >= (int)sizeof(r->name))
 		return -ENAMETOOLONG;
 	r->flags = flags;
