@@ -1,5 +1,6 @@
 #include <stdint.h>                                                             
 #include <stddef.h>    
+#include <rte_jhash.h>
 
 #ifndef _RTE_HASH_H_
 #define _RTE_HASH_H_
@@ -39,8 +40,6 @@
  */                                                                             
 #define RTE_HASH_EXTRA_FLAGS_RW_CONCURRENCY_LF 0x20                             
                
-
-
 
 typedef uint32_t hash_sig_t;                                                    
                                                                                 
