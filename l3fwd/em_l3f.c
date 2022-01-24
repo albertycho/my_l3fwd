@@ -121,6 +121,7 @@ struct rte_hash* setup_hash(int socket_id){
 		printf("setup hash failed - rte_hash_create fail\n");
 	}
 	
+	
 	//import this function
 	//populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, hash_entry_number);
 
