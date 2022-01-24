@@ -812,11 +812,11 @@ struct rte_hash*
 	// }
 
 	//te = rte_zmalloc("HASH_TAILQ_ENTRY", sizeof(*te), 0);
-	te = malloc(sizeof(*te));
-	if (te == NULL) {
-		//RTE_LOG(ERR, HASH, "tailq entry allocation failed\n");
-		goto err_unlock;
-	}
+	// te = malloc(sizeof(*te));
+	// if (te == NULL) {
+	// 	//RTE_LOG(ERR, HASH, "tailq entry allocation failed\n");
+	// 	goto err_unlock;
+	// }
 
 	//h = (struct rte_hash*)rte_zmalloc_socket(hash_name, sizeof(struct rte_hash), RTE_CACHE_LINE_SIZE, params->socket_id);
 	h = (struct rte_hash*)malloc(sizeof(struct rte_hash));
@@ -980,15 +980,15 @@ struct rte_hash*
 	h->no_free_on_del = no_free_on_del;
 	h->readwrite_concur_lf_support = readwrite_concur_lf_support;
 
-#if defined(RTE_ARCH_X86)
-	if (rte_cpu_get_flag_enabled(RTE_CPUFLAG_SSE2))
-		h->sig_cmp_fn = RTE_HASH_COMPARE_SSE;
-	else
-#elif defined(RTE_ARCH_ARM64)
-	if (rte_cpu_get_flag_enabled(RTE_CPUFLAG_NEON))
-		h->sig_cmp_fn = RTE_HASH_COMPARE_NEON;
-	else
-#endif
+// #if defined(RTE_ARCH_X86)
+// 	if (rte_cpu_get_flag_enabled(RTE_CPUFLAG_SSE2))
+// 		h->sig_cmp_fn = RTE_HASH_COMPARE_SSE;
+// 	else
+// #elif defined(RTE_ARCH_ARM64)
+// 	if (rte_cpu_get_flag_enabled(RTE_CPUFLAG_NEON))
+// 		h->sig_cmp_fn = RTE_HASH_COMPARE_NEON;
+// 	else
+// #endif
 		h->sig_cmp_fn = RTE_HASH_COMPARE_SCALAR;
 
 	/* Writer threads need to take the lock when:
