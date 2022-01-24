@@ -87,6 +87,9 @@ void* run_worker(void* arg) {
 
     multithread_check = params.id;
 
+    uint32_t socket_id = params.id % 16;
+    struct rte_hash* worker_hash = setup_hash(socket_id);
+    printf("core %d setuphash complete\n", params.id);
 
     uint32_t portid;
     /* pre-init dst MACs for all ports to 02:00:00:00:00:xx */

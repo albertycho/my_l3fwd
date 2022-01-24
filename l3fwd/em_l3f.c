@@ -99,7 +99,8 @@ ipv6_hash_crc(const void* data, uint32_t init_val){
 }
 
 
-void setup_hash(int socket_id){
+struct rte_hash* setup_hash(int socket_id){
+//void setup_hash(int socket_id){
 
 	struct rte_hash * ipv6_l3fwd_lookup;
 	

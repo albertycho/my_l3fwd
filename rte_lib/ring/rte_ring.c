@@ -209,8 +209,8 @@ rte_ring_init(struct rte_ring *r, const char *name, unsigned int count,
 	/* init the ring structure */
 	memset(r, 0, sizeof(*r));
 	ret = strncpy(r->name, name, sizeof(r->name));
-	if (ret < 0 || ret >= (int)sizeof(r->name))
-		return -ENAMETOOLONG;
+	// if (ret < 0 || ret >= (int)sizeof(r->name))
+	// 	return -ENAMETOOLONG;
 	r->flags = flags;
 	ret = get_sync_type(flags, &r->prod.sync_type, &r->cons.sync_type);
 	if (ret != 0)
@@ -435,4 +435,5 @@ rte_ring_lookup(const char *name)
 	// }
 
 	// return r;
+	return NULL;
 }

@@ -667,7 +667,7 @@ struct rte_hash*
 	rte_hash_create(const struct rte_hash_parameters* params)
 {
 	struct rte_hash* h = NULL;
-	struct rte_tailq_entry* te = NULL;
+	//struct rte_tailq_entry* te = NULL;
 	//struct rte_hash_list* hash_list;
 	struct rte_ring* r = NULL;
 	struct rte_ring* r_ext = NULL;
