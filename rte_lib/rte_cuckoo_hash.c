@@ -666,6 +666,7 @@ rte_hash_add_key(const struct rte_hash* h, const void* key)
 struct rte_hash*
 	rte_hash_create(const struct rte_hash_parameters* params)
 {
+	printf("in rte_hash_create\n");
 	struct rte_hash* h = NULL;
 	//struct rte_tailq_entry* te = NULL;
 	//struct rte_hash_list* hash_list;
