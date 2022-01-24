@@ -233,7 +233,7 @@ struct rte_hash {
 	 * to the key table.
 	 */
 	rte_rwlock_t* readwrite_lock; /**< Read-write lock thread-safety. */
-	rte_rwlock_t* tailq_lock; /**< TAILQ lock thread-safety. */
+	//rte_rwlock_t* tailq_lock; /**< TAILQ lock thread-safety. */
 	struct rte_hash_bucket* buckets_ext; /**< Extra buckets array */
 	struct rte_ring* free_ext_bkts; /**< Ring of indexes of free buckets */
 	/* Stores index of an empty ext bkt to be recycled on calling
