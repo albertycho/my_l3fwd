@@ -79,3 +79,31 @@ ipv6_hash_crc(const void* data, uint32_t init_val){
 
 	return 0;
 }
+
+
+void setup_hash(int socket_id){
+
+	rte_hash * ipv6_l3fwd_lookup;
+	
+	uint32_t hash_entry_number = 16; //16 is default, make it programmable?
+
+	struct rte_hash_parameters ipv6_l3fwd_hash_params = {
+		.name = NULL,
+		.entries = L3FWD_HASH_ENTRIES,
+		.key_len = sizeof(union ipv6_5tuple_host),
+		.hash_func = ipv6_hash_crc,
+		.hash_func_init_val = 0,
+	};
+
+	ipv6_l3fwd_hash_params.name = s;
+	ipv6_l3fwd_hash_params.socket_id = socketid;
+	ipv6_l3fwd_lookup = rte_hash_create(&ipv6_l3fwd_hash_params);
+	if(ipv6_l3fwd_lookup==NULL){
+		printf("setup hash failed - rte_hash_create fail\n");
+	}
+	
+	//import this function
+	//populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, hash_entry_number);
+	
+
+}
