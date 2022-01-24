@@ -48,40 +48,40 @@
 #include "include/generic/rte_rwlock.h"
 
 #if defined(RTE_ARCH_X86) || defined(RTE_ARCH_ARM64)
-/*
- * All different options to select a key compare function,
- * based on the key size and custom function.
- */
-enum cmp_jump_table_case {
-	KEY_CUSTOM = 0,
-	KEY_16_BYTES,
-	KEY_32_BYTES,
-	KEY_48_BYTES,
-	KEY_64_BYTES,
-	KEY_80_BYTES,
-	KEY_96_BYTES,
-	KEY_112_BYTES,
-	KEY_128_BYTES,
-	KEY_OTHER_BYTES,
-	NUM_KEY_CMP_CASES,
-};
+// /*
+//  * All different options to select a key compare function,
+//  * based on the key size and custom function.
+//  */
+// enum cmp_jump_table_case {
+// 	KEY_CUSTOM = 0,
+// 	KEY_16_BYTES,
+// 	KEY_32_BYTES,
+// 	KEY_48_BYTES,
+// 	KEY_64_BYTES,
+// 	KEY_80_BYTES,
+// 	KEY_96_BYTES,
+// 	KEY_112_BYTES,
+// 	KEY_128_BYTES,
+// 	KEY_OTHER_BYTES,
+// 	NUM_KEY_CMP_CASES,
+// };
 
-/*
- * Table storing all different key compare functions
- * (multi-process supported)
- */
-const rte_hash_cmp_eq_t cmp_jump_table[NUM_KEY_CMP_CASES] = {
-	NULL,
-	rte_hash_k16_cmp_eq,
-	rte_hash_k32_cmp_eq,
-	rte_hash_k48_cmp_eq,
-	rte_hash_k64_cmp_eq,
-	rte_hash_k80_cmp_eq,
-	rte_hash_k96_cmp_eq,
-	rte_hash_k112_cmp_eq,
-	rte_hash_k128_cmp_eq,
-	memcmp
-};
+// /*
+//  * Table storing all different key compare functions
+//  * (multi-process supported)
+//  */
+// const rte_hash_cmp_eq_t cmp_jump_table[NUM_KEY_CMP_CASES] = {
+// 	NULL,
+// 	rte_hash_k16_cmp_eq,
+// 	rte_hash_k32_cmp_eq,
+// 	rte_hash_k48_cmp_eq,
+// 	rte_hash_k64_cmp_eq,
+// 	rte_hash_k80_cmp_eq,
+// 	rte_hash_k96_cmp_eq,
+// 	rte_hash_k112_cmp_eq,
+// 	rte_hash_k128_cmp_eq,
+// 	memcmp
+// };
 #else
 /*
  * All different options to select a key compare function,

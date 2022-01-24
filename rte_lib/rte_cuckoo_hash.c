@@ -12,7 +12,7 @@
 
 #include "include/rte_common.h"
 #include "ring/rte_ring_elem.h"
-#include "include/rte_tailq.h"
+//#include "include/rte_tailq.h"
 #include "include/queue.h"
 
 /*
