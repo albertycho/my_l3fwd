@@ -111,9 +111,10 @@ static rte_xmm_t mask1;
 static rte_xmm_t mask2;
 
 static inline uint32_t
-ipv6_hash_crc(const void* data, uint32_t init_val){
-	printf("ipv6_hash_crc called\n");
-	return 0;
+ipv6_hash_crc(const void* data, uint32_t data_len, uint32_t init_val){
+	printf("ipv6_hash_crc called, data = %d, init_val = %d\n", (uint32_t)data, init_val);
+
+	return (uint32_t) data;
 }
 
 
