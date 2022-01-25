@@ -663,8 +663,9 @@ rte_hash_add_key(const struct rte_hash* h, const void* key)
 }
 
 //uint64_t
-struct rte_hash*
-	rte_hash_create(const struct rte_hash_parameters* params)
+//struct rte_hash*
+//	rte_hash_create(const struct rte_hash_parameters* params)
+void rte_hash_create(const struct rte_hash_parameters* params, struct rte_hash* ret_ptr)
 {
 	struct rte_hash* h = NULL;
 	//struct rte_tailq_entry* te = NULL;
@@ -1021,12 +1022,17 @@ struct rte_hash*
 	// //rte_mcfg_tailq_write_unlock();
 	// rte_rwlock_write_unlock(h->tailq_lock);
 
-	printf("returning from hash_create, h->name = %s\n",h->name);
+
 	printf("size of rte_hash:%d\n", sizeof(h));
 	printf("h's addr = %lx\n", (uint64_t)h);
 	printf("h->freeslot's addr = %lx\n", (uint64_t)(h->free_slots));
+	
+	*ret_ptr = h;
+	printf("ret_ptr's addr = %lx\n", (uint64_t)(*ret_ptr));
+	printf("returning from hash_create, h->name = %s\n", h->name);
+	return;
 	//return h;
-	return (uint64_t)h;
+	//return (uint64_t)h;
 
 
 err_unlock:
