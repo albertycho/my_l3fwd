@@ -102,7 +102,7 @@ ipv6_hash_crc(const void* data, uint32_t init_val){
 struct rte_hash* setup_hash(int socket_id){
 //void setup_hash(int socket_id){
 
-	struct rte_hash * ipv6_l3fwd_lookup;
+	struct rte_hash * ipv6_l3fwd_lookup=NULL;
 	
 	uint32_t hash_entry_number = 16; //16 is default, make it programmable?
 
@@ -123,9 +123,12 @@ struct rte_hash* setup_hash(int socket_id){
 
 	//ipv6_l3fwd_lookup = (struct rte_hash*)hash_addr;
 	
-	rte_hash_create(&ipv6_l3fwd_hash_params, &ipv6_l3fwd_lookup);
+	int hcret = rte_hash_create(&ipv6_l3fwd_hash_params, &ipv6_l3fwd_lookup);
 	
 	//ipv6_l3fwd_lookup = rte_hash_create(&ipv6_l3fwd_hash_params);
+	if (hcret!=1) {
+		printf("setup hash failed - rte_hash_create fail\n");
+	}
 	if(ipv6_l3fwd_lookup==NULL){
 		printf("setup hash failed - rte_hash_create fail\n");
 	}
