@@ -1085,7 +1085,15 @@ void print_hash_names(struct rte_hash* h) {
 }
 
 //debug func
-void dump_buckets(struct rte_hash* h){
+void dump_keys_buckets(struct rte_hash* h){
+	
+	uint32_t num_keys = h->key_entry_size;
+	struct rte_hash_key* keys = h->key_store;
+	for(uint32_t k=0;k<num_keys;k++){
+		printf("key %d: %d\n", k, keys[k].idata);		
+
+	}
+	
 	uint32_t num_buckets = h->num_buckets;
 
 	for(uint32_t i=0;i<num_buckets;i++){
