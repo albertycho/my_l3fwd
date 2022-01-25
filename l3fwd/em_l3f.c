@@ -112,8 +112,10 @@ static rte_xmm_t mask2;
 
 static inline uint32_t
 ipv6_hash_crc(const void* data, uint32_t data_len, uint32_t init_val){
-	printf("ipv6_hash_crc called, data = %d, init_val = %d\n", (uint32_t)data, init_val);
-
+	printf("ipv6_hash_crc called, data = %llx, init_val = %d\n", (uint32_t)data, init_val);
+	uint32_t printData[4];
+	memcpy(printData, &data, sizeof(__m128i));
+	printf("data: %d %d %d %d\n", printData[0], printData[1],printData[2],printData[3]);
 	return (uint32_t) data;
 }
 
@@ -157,6 +159,7 @@ populate_ipv6_few_flow_into_table(const struct rte_hash* h)
 
 		entry = ipv6_l3fwd_em_route_array[i];
 		convert_ipv6_5tuple(&entry.key, &newkey);
+		printf("i = %d, ")
 		ret = rte_hash_add_key(h, (void*)&newkey);
 		if (ret < 0) {
 			//rte_exit(EXIT_FAILURE, "Unable to add entry %u to the l3fwd hash.\n", i);
