@@ -689,6 +689,8 @@ struct rte_hash*
 	unsigned int readwrite_concur_lf_support = 0;
 	uint32_t i;
 
+	printf("starting hash_create\n");
+
 	rte_hash_function default_hash_func = (rte_hash_function)rte_jhash;
 
 	//hash_list = RTE_TAILQ_CAST(rte_hash_tailq.head, rte_hash_list);
@@ -1019,7 +1021,10 @@ struct rte_hash*
 	// //rte_mcfg_tailq_write_unlock();
 	// rte_rwlock_write_unlock(h->tailq_lock);
 
+	printf("returning from hash_create\n");
 	return h;
+
+
 err_unlock:
 	//rte_mcfg_tailq_write_unlock();
 	//rte_rwlock_write_unlock(h->tailq_lock);
