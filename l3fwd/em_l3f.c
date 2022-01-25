@@ -157,7 +157,9 @@ populate_ipv6_few_flow_into_table(const struct rte_hash* h)
 		convert_ipv6_5tuple(&entry.key, &newkey);
 		ret = rte_hash_add_key(h, (void*)&newkey);
 		if (ret < 0) {
-			rte_exit(EXIT_FAILURE, "Unable to add entry %u to the l3fwd hash.\n", i);
+			//rte_exit(EXIT_FAILURE, "Unable to add entry %u to the l3fwd hash.\n", i);
+			printf("Unable to add entry %u to the l3fwd hash.\n", i);
+			exit(1);
 		}
 		ipv6_l3fwd_out_if[ret] = entry.if_out;
 	}
