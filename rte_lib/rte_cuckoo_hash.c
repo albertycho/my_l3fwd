@@ -1022,7 +1022,7 @@ struct rte_hash*
 	// rte_rwlock_write_unlock(h->tailq_lock);
 
 	printf("returning from hash_create, h->name = %s\n",h->name);
-	printf("size of rte_hash:%d\n", sizeof(h);
+	printf("size of rte_hash:%d\n", sizeof(h));
 	printf("h's addr = %lx\n", (uint64_t)h);
 	//return h;
 	return (uint64_t)h;
@@ -1050,7 +1050,7 @@ err:
 // sanity check function
 void print_hash_names(struct rte_hash* h) {
 	printf("print_hash_names\n");
-	printf("size of rte_hash:%d\n", sizeof(h);
+	printf("size of rte_hash:%d\n", sizeof(h));
 	printf("h addr: %lx\n", (uint64_t)h);
 	printf("hash name: %s\n", h->name);
 	printf("free_list name: %s\n", h->free_slots->name);
