@@ -1073,6 +1073,35 @@ err:
 	return NULL;
 }
 
+/* Search one bucket to find the match key - uses rw lock */
+static inline int32_t
+search_one_bucket_l(const struct rte_hash *h, const void *key,
+		uint16_t sig, void **data,
+		const struct rte_hash_bucket *bkt)
+{
+	int i;
+	struct rte_hash_key *k, *keys = h->key_store;
+
+	for (i = 0; i < RTE_HASH_BUCKET_ENTRIES; i++) {
+		if (bkt->sig_current[i] == sig &&
+				bkt->key_idx[i] != EMPTY_SLOT) {
+			k = (struct rte_hash_key *) ((char *)keys +
+					bkt->key_idx[i] * h->key_entry_size);
+
+			if (rte_hash_cmp_eq(key, k->key, h) == 0) {
+				if (data != NULL)
+					*data = k->pdata;
+				/*
+				 * Return index where key is stored,
+				 * subtracting the first dummy index
+				 */
+				return bkt->key_idx[i] - 1;
+			}
+		}
+	}
+	return -1;
+}
+
 static inline int32_t
 __rte_hash_lookup_with_hash_l(const struct rte_hash *h, const void *key,
 				hash_sig_t sig, void **data)
