@@ -115,7 +115,7 @@ ipv6_hash_crc(const void* data, uint32_t data_len, uint32_t init_val){
 	printf("ipv6_hash_crc called, data = %llx, init_val = %d\n", (uint32_t)data, init_val);
 	uint32_t printData[4];
 	memcpy(printData, &data, sizeof(__m128i));
-	printf("data: %ux %ux %ux %ux\n", printData[0], printData[1],printData[2],printData[3]);
+	printf("data: %lx %lx %lx %lx\n", printData[0], printData[1],printData[2],printData[3]);
 	return (uint32_t) data;
 }
 
