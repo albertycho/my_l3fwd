@@ -122,15 +122,31 @@ void print128_num(__m128i var)
 static inline uint32_t
 ipv6_hash_crc(const void* data, uint32_t data_len, uint32_t init_val){
 	printf("ipv6_hash_crc called, data = %llx, init_val = %d\n", (uint32_t)data, init_val);
-	xmm_t printData[3];
-	memcpy(printData, &data, sizeof(union ipv6_5tuple_host));
+	//xmm_t printData[3];
+	//memcpy(printData, &data, sizeof(union ipv6_5tuple_host));
 
-	//printf("data: %lx %lx %lx\n", printData[0], printData[1],printData[2];
-	print128_num(printData[0]);
-	print128_num(printData[1]);
-	print128_num(printData[2]);
+	// //printf("data: %lx %lx %lx\n", printData[0], printData[1],printData[2];
+	// print128_num(printData[0]);
+	// print128_num(printData[1]);
+	// print128_num(printData[2]);
 
-	return (uint32_t) data;
+	const union ipv6_5tuple_host *k;
+	uint32_t t;
+	const uint32_t *p;
+
+	k = data;
+	t = k->proto;
+	p = (const uint32_t *)&k->port_src;
+
+	init_val = rte_jhash_1word(t, init_val);
+	init_val = rte_jhash(k->ip_src,
+			sizeof(uint8_t) * IPV6_ADDR_LEN, init_val);
+	init_val = rte_jhash(k->ip_dst,
+			sizeof(uint8_t) * IPV6_ADDR_LEN, init_val);
+	init_val = rte_jhash_1word(*p, init_val);
+	return init_val;
+
+	//return (uint32_t) data;
 }
 
 
