@@ -118,6 +118,7 @@ struct rte_hash* setup_hash(int socket_id){
 	ipv6_l3fwd_hash_params.socket_id = socket_id;
 
 	uint64_t hash_addr = rte_hash_create(&ipv6_l3fwd_hash_params);
+	hash_addr = hash_addr & 0x7FFFFFFFFFFF
 
 	ipv6_l3fwd_lookup = (struct rte_hash*)hash_addr;
 	//ipv6_l3fwd_lookup = rte_hash_create(&ipv6_l3fwd_hash_params);
