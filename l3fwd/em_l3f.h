@@ -6,6 +6,15 @@
 
 #define NB_SOCKETS 8
 
+struct rte_ipv6_hdr {
+	uint32_t vtc_flow;	/**< IP version, traffic class & flow label. */
+	uint16_t payload_len;	/**< IP payload size, including ext. headers */
+	uint8_t  proto;		/**< Protocol, next header. */
+	uint8_t  hop_limits;	/**< Hop limits. */
+	uint8_t  src_addr[16];	/**< IP address of source host. */
+	uint8_t  dst_addr[16];	/**< IP address of destination host(s). */
+};
+
 int em_dummy_print_func();
 
 int multithread_check;

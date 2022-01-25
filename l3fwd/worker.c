@@ -64,6 +64,17 @@ bool herdCallbackFunction(uint8_t* slot_ptr, rpcArg_t* rpc_arguments)
 }
 */
 
+
+static uint64_t l3fwd_em_handle_ipv6(RPCWithHeader rpc){
+    //get header from rpc
+    struct rte_ipv6_hdr *ipv6_hdr;
+    //ipv6_hdr = get_ipv6_hdr(rpc);
+    uint64_t dst_port;
+    dst_port = em_get_ipv6_dst_port(ipv6_hdr,port_id);
+    return dst_port;
+
+}
+
 #define RTE_MAX_ETHPORTS 32
 
 static uint64_t dest_eth_addr[RTE_MAX_ETHPORTS];
@@ -186,6 +197,10 @@ void* run_worker(void* arg) {
       //bool is_get = herdCallbackFunction((uint8_t*) rpc.payload, &args );
 
         printf("l3fwd: 1\n");
+
+        //TODO: write callback function for taking the packet and calling hash_lookup to find dst_port
+        //uint64_t dst_port;
+        //dst_port = l3fwd_em_handle_ipv6(rpc);
 
         //bool is_get = true; //put dummy for now, before implementing l3fwd callback
 

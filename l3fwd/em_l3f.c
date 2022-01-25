@@ -291,3 +291,45 @@ struct rte_hash* setup_hash(int socket_id){
 	return ipv6_l3fwd_lookup;
 
 }
+static inline xmm_t
+em_mask_key(void *key, xmm_t mask)
+{
+	__m128i data = _mm_loadu_si128((__m128i *)(key));
+
+	return _mm_and_si128(data, mask);
+}
+static inline uint16_t
+em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
+{
+	int ret = 0;
+	union ipv6_5tuple_host key;
+	struct rte_hash *ipv6_l3fwd_lookup_struct =
+		(struct rte_hash *)lookup_struct;
+
+	ipv6_hdr = (uint8_t *)ipv6_hdr +
+		offsetof(struct rte_ipv6_hdr, payload_len);
+	void *data0 = ipv6_hdr;
+	void *data1 = ((uint8_t *)ipv6_hdr) + sizeof(xmm_t);
+	void *data2 = ((uint8_t *)ipv6_hdr) + sizeof(xmm_t) + sizeof(xmm_t);
+
+	/* Get part of 5 tuple: src IP address lower 96 bits and protocol */
+	key.xmm[0] = em_mask_key(data0, mask1.x);
+
+	/*
+	 * Get part of 5 tuple: dst IP address lower 96 bits
+	 * and src IP address higher 32 bits.
+	 */
+
+	key.xmm[1] = *(xmm_t *)data1;
+
+
+	/*
+	 * Get part of 5 tuple: dst port and src port
+	 * and dst IP address higher 32 bits.
+	 */
+	key.xmm[2] = em_mask_key(data2, mask2.x);
+
+	/* Find destination port */
+	ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void *)&key);
+	return (ret < 0) ? portid : ipv6_l3fwd_out_if[ret];
+}

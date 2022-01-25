@@ -1073,6 +1073,61 @@ err:
 	return NULL;
 }
 
+static inline int32_t
+__rte_hash_lookup_with_hash_l(const struct rte_hash *h, const void *key,
+				hash_sig_t sig, void **data)
+{
+	uint32_t prim_bucket_idx, sec_bucket_idx;
+	struct rte_hash_bucket *bkt, *cur_bkt;
+	int ret;
+	uint16_t short_sig;
+
+	short_sig = get_short_sig(sig);
+	prim_bucket_idx = get_prim_bucket_index(h, sig);
+	sec_bucket_idx = get_alt_bucket_index(h, prim_bucket_idx, short_sig);
+
+	bkt = &h->buckets[prim_bucket_idx];
+
+	__hash_rw_reader_lock(h);
+
+	/* Check if key is in primary location */
+	ret = search_one_bucket_l(h, key, short_sig, data, bkt);
+	if (ret != -1) {
+		__hash_rw_reader_unlock(h);
+		return ret;
+	}
+	/* Calculate secondary hash */
+	bkt = &h->buckets[sec_bucket_idx];
+
+	/* Check if key is in secondary location */
+	FOR_EACH_BUCKET(cur_bkt, bkt) {
+		ret = search_one_bucket_l(h, key, short_sig,
+					data, cur_bkt);
+		if (ret != -1) {
+			__hash_rw_reader_unlock(h);
+			return ret;
+		}
+	}
+
+	__hash_rw_reader_unlock(h);
+
+	return -ENOENT;
+}
+
+static inline int32_t
+__rte_hash_lookup_with_hash(const struct rte_hash *h, const void *key,
+					hash_sig_t sig, void **data)
+{
+	return __rte_hash_lookup_with_hash_l(h, key, sig, data);
+}
+
+int32_t
+rte_hash_lookup(const struct rte_hash *h, const void *key)
+{
+	RETURN_IF_TRUE(((h == NULL) || (key == NULL)), -EINVAL);
+	return __rte_hash_lookup_with_hash(h, key, rte_hash_hash(h, key), NULL);
+}
+
 // sanity check function
 void print_hash_names(struct rte_hash* h) {
 	printf("print_hash_names\n");
