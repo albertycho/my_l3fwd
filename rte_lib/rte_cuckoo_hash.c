@@ -1049,6 +1049,7 @@ err:
 // sanity check function
 void print_hash_names(struct rte_hash* h) {
 	printf("print_hash_names\n");
+	printf("h addr: %lx\n", (uint64_t)h);
 	printf("hash name: %s\n", h->name);
 	printf("free_list name: %s\n", h->free_slots->name);
 	return;
