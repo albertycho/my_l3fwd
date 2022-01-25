@@ -116,7 +116,11 @@ struct rte_hash* setup_hash(int socket_id){
 
 	ipv6_l3fwd_hash_params.name = "ipv6_l3fwd_hash";
 	ipv6_l3fwd_hash_params.socket_id = socket_id;
-	ipv6_l3fwd_lookup = rte_hash_create(&ipv6_l3fwd_hash_params);
+
+	uint64_t hash_addr = rte_hash_create(&ipv6_l3fwd_hash_params);
+
+	ipv6_l3fwd_lookup = (struct rte_hash*)hash_addr;
+	//ipv6_l3fwd_lookup = rte_hash_create(&ipv6_l3fwd_hash_params);
 	if(ipv6_l3fwd_lookup==NULL){
 		printf("setup hash failed - rte_hash_create fail\n");
 	}

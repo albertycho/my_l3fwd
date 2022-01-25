@@ -662,8 +662,8 @@ rte_hash_add_key(const struct rte_hash* h, const void* key)
     return __rte_hash_add_key_with_hash(h, key, rte_hash_hash(h, key), 0);
 }
 
-
-struct rte_hash*
+uint64_t
+//struct rte_hash*
 	rte_hash_create(const struct rte_hash_parameters* params)
 {
 	struct rte_hash* h = NULL;
@@ -1023,7 +1023,8 @@ struct rte_hash*
 
 	printf("returning from hash_create, h->name = %s\n",h->name);
 	printf("h's addr = %lx\n", (uint64_t)h);
-	return h;
+	//return h;
+	return (uint64_t)h;
 
 
 err_unlock:
