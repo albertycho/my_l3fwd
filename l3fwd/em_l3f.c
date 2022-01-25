@@ -120,7 +120,8 @@ struct rte_hash* setup_hash(int socket_id){
 	if(ipv6_l3fwd_lookup==NULL){
 		printf("setup hash failed - rte_hash_create fail\n");
 	}
-	//printf("rte_hash_create returned in setup_hash\n");
+	printf("rte_hash_create returned in setup_hash\n");
+	printf("setup_hash: hash.name = %s\n",ipv6_l3fwd_lookup->name);
 	
 	
 	//import this function
