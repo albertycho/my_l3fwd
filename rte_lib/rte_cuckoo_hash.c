@@ -1083,3 +1083,19 @@ void print_hash_names(struct rte_hash* h) {
 	printf("free_list name: %s\n", h->free_slots->name);
 	return;
 }
+
+//debug func
+void dump_buckets(struct rte_hash* h){
+	uint32_t num_buckets = h->num_buckets;
+
+	for(uint32_t i=0;i<num_buckets;i++){
+		printf("bucket[%d]:\n", i);
+		for(uint32_t j=0; j<RTE_HASH_BUCKET_ENTRIES;j++){	
+			uint16_t sig_cur = h->buckets[i].sig_current[j];
+			uint32_t key_idx = h->buckets[i].key_idx[j];
+			printf("\tentry %d:\n", j);
+			printf("\t\tsig_cur: %d, key_idx: %d, next: %lx\n", sig_cur, key_idx, h->buckets[i].next);
+		}
+	}
+
+}
