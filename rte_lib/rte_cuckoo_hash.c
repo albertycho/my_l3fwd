@@ -473,6 +473,10 @@ __rte_hash_add_key_with_hash(const struct rte_hash* h, const void* key,
 	int32_t ret_val;
 	struct rte_hash_bucket* last;
 
+	
+	uint32_t ringcount = rte_ring_count(h->free_slots);
+	printf("free_slot size: %d\n", ringcount);
+
 	short_sig = get_short_sig(sig);
 	prim_bucket_idx = get_prim_bucket_index(h, sig);
 	sec_bucket_idx = get_alt_bucket_index(h, prim_bucket_idx, short_sig);
