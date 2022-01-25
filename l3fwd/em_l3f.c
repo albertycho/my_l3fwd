@@ -224,11 +224,12 @@ populate_ipv6_many_flow_into_table(const struct rte_hash *h,
 		convert_ipv6_5tuple(&entry.key, &newkey);
 		int32_t ret = rte_hash_add_key(h, (void *) &newkey);
 
-		if (ret < 0)
+		if (ret < 0){
 			//rte_exit(EXIT_FAILURE, "Unable to add entry %u\n", i);
 			printf("Unable to add entry %u to the l3fwd hash.\n", i);
 			exit(1);
-
+		}
+		printf("ret= %d, val(entry.if_out)= %d\n", ret, entry.if_out);
 		ipv6_l3fwd_out_if[ret] = (uint8_t) entry.if_out;
 
 	}
@@ -283,7 +284,8 @@ struct rte_hash* setup_hash(int socket_id){
 	
 	//import this function
 	//populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, hash_entry_number);
-	populate_ipv6_few_flow_into_table(ipv6_l3fwd_lookup);
+	//populate_ipv6_few_flow_into_table(ipv6_l3fwd_lookup);
+	populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, 1024);
 
 	return ipv6_l3fwd_lookup;
 
