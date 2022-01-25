@@ -1021,7 +1021,7 @@ struct rte_hash*
 	// //rte_mcfg_tailq_write_unlock();
 	// rte_rwlock_write_unlock(h->tailq_lock);
 
-	printf("returning from hash_create\n");
+	printf("returning from hash_create, h->name = %s\n",h->name);
 	return h;
 
 
