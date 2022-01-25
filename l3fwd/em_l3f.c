@@ -130,7 +130,7 @@ struct rte_hash* setup_hash(int socket_id){
 	printf("ipv6_l3fwd_lookup's addr = %lx\n", (uint64_t)ipv6_l3fwd_lookup);
 	printf("setup_hash: hash.name = %s\n",ipv6_l3fwd_lookup->name);
 	char* ringname = (char*)(ipv6_l3fwd_lookup->free_slots);
-	printf(ringname);
+	printf("ringname: %s\n",ringname);
 	
 	
 	//import this function
