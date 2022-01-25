@@ -1022,6 +1022,7 @@ struct rte_hash*
 	// rte_rwlock_write_unlock(h->tailq_lock);
 
 	printf("returning from hash_create, h->name = %s\n",h->name);
+	printf("h's addr = %lx\n", (uint64_t)h);
 	return h;
 
 
