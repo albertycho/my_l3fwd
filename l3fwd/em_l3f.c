@@ -115,7 +115,7 @@ ipv6_hash_crc(const void* data, uint32_t data_len, uint32_t init_val){
 	printf("ipv6_hash_crc called, data = %llx, init_val = %d\n", (uint32_t)data, init_val);
 	uint32_t printData[4];
 	memcpy(printData, &data, sizeof(__m128i));
-	printf("data: %d %d %d %d\n", printData[0], printData[1],printData[2],printData[3]);
+	printf("data: %ux %ux %ux %ux\n", printData[0], printData[1],printData[2],printData[3]);
 	return (uint32_t) data;
 }
 
@@ -127,7 +127,7 @@ convert_ipv6_5tuple(struct ipv6_5tuple* key1,
 	printf("convert_ipv6_tuple: port_dst = %d, port_src = %d\n", key1->port_dst, key1->port_src);
 	uint32_t i;
 
-	for (i = 0; i < 16; i++) {
+	for (i = 0; i < IPV6_ADDR_LEN; i++) {
 		key2->ip_dst[i] = key1->ip_dst[i];
 		key2->ip_src[i] = key1->ip_src[i];
 	}
