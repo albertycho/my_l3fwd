@@ -112,7 +112,7 @@ static rte_xmm_t mask2;
 
 static inline uint32_t
 ipv6_hash_crc(const void* data, uint32_t init_val){
-
+	printf("ipv6_hash_crc called\n");
 	return 0;
 }
 
