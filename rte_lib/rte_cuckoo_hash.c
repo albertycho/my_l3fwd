@@ -1027,6 +1027,12 @@ int rte_hash_create(const struct rte_hash_parameters* params, struct rte_hash** 
 	printf("h's addr = %lx\n", (uint64_t)h);
 	printf("h->freeslot's addr = %lx\n", (uint64_t)(h->free_slots));
 	
+
+	/* original function returns h. After porting over, returning the pointer itself 1 extends the address when returned, giving a different address
+	 * as a workaround, passing in an existing pointer and assigning value to it before returning
+	 * 
+	 */
+
 	*ret_ptr = h;
 	printf("ret_ptr's addr = %lx\n", (uint64_t)(*ret_ptr));
 	printf("returning from hash_create, h->name = %s\n", h->name);

@@ -34,7 +34,17 @@ struct ipv6_5tuple {
 } __rte_packed;
 
 typedef __m128i xmm_t;
+#define	XMM_SIZE	(sizeof(xmm_t))
+#define	XMM_MASK	(XMM_SIZE - 1)
 
+typedef union rte_xmm {
+	xmm_t    x;
+	uint8_t  u8[XMM_SIZE / sizeof(uint8_t)];
+	uint16_t u16[XMM_SIZE / sizeof(uint16_t)];
+	uint32_t u32[XMM_SIZE / sizeof(uint32_t)];
+	uint64_t u64[XMM_SIZE / sizeof(uint64_t)];
+	double   pd[XMM_SIZE / sizeof(double)];
+} rte_xmm_t;
 
 union ipv6_5tuple_host {
 	struct {
@@ -92,10 +102,68 @@ static const struct ipv6_l3fwd_em_route ipv6_l3fwd_em_route_array[] = {
 
 static uint8_t ipv6_l3fwd_out_if[L3FWD_HASH_ENTRIES] __rte_cache_aligned;
 
+#define ALL_32_BITS 0xffffffff
+#define BIT_16_TO_23 0x00ff0000
+
+
+static rte_xmm_t mask0;
+static rte_xmm_t mask1;
+static rte_xmm_t mask2;
+
 static inline uint32_t
 ipv6_hash_crc(const void* data, uint32_t init_val){
 
 	return 0;
+}
+
+
+static void
+convert_ipv6_5tuple(struct ipv6_5tuple* key1,
+	union ipv6_5tuple_host* key2)
+{
+	uint32_t i;
+
+	for (i = 0; i < 16; i++) {
+		key2->ip_dst[i] = key1->ip_dst[i];
+		key2->ip_src[i] = key1->ip_src[i];
+	}
+	key2->port_dst = (key1->port_dst);
+	key2->port_src = (key1->port_src);
+	key2->proto = key1->proto;
+	key2->pad0 = 0;
+	key2->pad1 = 0;
+	key2->reserve = 0;
+}
+
+#define IPV6_L3FWD_EM_NUM_ROUTES RTE_DIM(ipv6_l3fwd_em_route_array)
+
+
+static inline void
+populate_ipv6_few_flow_into_table(const struct rte_hash* h)
+{
+	uint32_t i;
+	int32_t ret;
+
+	mask1 = (rte_xmm_t){ .u32 = {BIT_16_TO_23, ALL_32_BITS,
+				ALL_32_BITS, ALL_32_BITS} };
+
+	mask2 = (rte_xmm_t){ .u32 = {ALL_32_BITS, ALL_32_BITS, 0, 0} };
+
+	for (i = 0; i < IPV6_L3FWD_EM_NUM_ROUTES; i++) {
+		struct ipv6_l3fwd_em_route entry;
+		union ipv6_5tuple_host newkey;
+
+		entry = ipv6_l3fwd_em_route_array[i];
+		convert_ipv6_5tuple(&entry.key, &newkey);
+		ret = rte_hash_add_key(h, (void*)&newkey);
+		if (ret < 0) {
+			rte_exit(EXIT_FAILURE, "Unable to add entry %" PRIu32
+				" to the l3fwd hash.\n", i);
+		}
+		ipv6_l3fwd_out_if[ret] = entry.if_out;
+	}
+	printf("Hash: Adding 0x%llx keys\n",
+		(uint64_t)IPV6_L3FWD_EM_NUM_ROUTES);
 }
 
 
