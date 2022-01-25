@@ -455,7 +455,14 @@ rte_hash_hash(const struct rte_hash* h, const void* key)
     return h->hash_func(key, h->key_len, h->hash_func_init_val);
 }
 
-
+static inline unsigned int
+rte_ring_count(const struct rte_ring *r)
+{
+	uint32_t prod_tail = r->prod.tail;
+	uint32_t cons_tail = r->cons.tail;
+	uint32_t count = (prod_tail - cons_tail) & r->mask;
+	return (count > r->capacity) ? r->capacity : count;
+}
 static inline int32_t
 __rte_hash_add_key_with_hash(const struct rte_hash* h, const void* key,
 	hash_sig_t sig, void* data)
