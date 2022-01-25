@@ -121,7 +121,7 @@ void print128_num(__m128i var)
 
 static inline uint32_t
 ipv6_hash_crc(const void* data, uint32_t data_len, uint32_t init_val){
-	printf("ipv6_hash_crc called, data = %llx, init_val = %d\n", (uint32_t)data, init_val);
+	//printf("ipv6_hash_crc called, data = %llx, init_val = %d\n", (uint32_t)data, init_val);
 	//xmm_t printData[3];
 	//memcpy(printData, &data, sizeof(union ipv6_5tuple_host));
 
@@ -201,6 +201,38 @@ populate_ipv6_few_flow_into_table(const struct rte_hash* h)
 	}
 	printf("Hash: Adding 0x%llx keys\n",
 		(uint64_t)IPV6_L3FWD_EM_NUM_ROUTES);
+}
+static inline void
+populate_ipv6_many_flow_into_table(const struct rte_hash *h,
+		unsigned int nr_flow)
+{
+	unsigned i;
+
+	mask1 = (rte_xmm_t){.u32 = {BIT_16_TO_23, ALL_32_BITS,
+				ALL_32_BITS, ALL_32_BITS} };
+	mask2 = (rte_xmm_t){.u32 = {ALL_32_BITS, ALL_32_BITS, 0, 0} };
+
+	for (i = 0; i < nr_flow; i++) {
+		uint8_t port = i % 16;//NUMBER_PORT_USED;
+		struct ipv6_l3fwd_em_route entry;
+		union ipv6_5tuple_host newkey;
+
+		/* Create the ipv6 exact match flow */
+		memset(&entry, 0, sizeof(entry));
+		entry = ipv6_l3fwd_em_route_array[port];
+		entry.key.ip_dst[15] = (port + 1) % 256;//BYTE_VALUE_MAX;
+		convert_ipv6_5tuple(&entry.key, &newkey);
+		int32_t ret = rte_hash_add_key(h, (void *) &newkey);
+
+		if (ret < 0)
+			//rte_exit(EXIT_FAILURE, "Unable to add entry %u\n", i);
+			printf("Unable to add entry %u to the l3fwd hash.\n", i);
+			exit(1);
+
+		ipv6_l3fwd_out_if[ret] = (uint8_t) entry.if_out;
+
+	}
+	printf("Hash: Adding 0x%x keys\n", nr_flow);
 }
 
 
