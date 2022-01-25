@@ -65,7 +65,7 @@ bool herdCallbackFunction(uint8_t* slot_ptr, rpcArg_t* rpc_arguments)
 */
 
 
-static uint64_t l3fwd_em_handle_ipv6(RPCWithHeader rpc){
+static uint64_t l3fwd_em_handle_ipv6(RPCWithHeader rpc, uint32_t port_id){
     //get header from rpc
     struct rte_ipv6_hdr *ipv6_hdr;
     //ipv6_hdr = get_ipv6_hdr(rpc);
