@@ -121,6 +121,7 @@ static void
 convert_ipv6_5tuple(struct ipv6_5tuple* key1,
 	union ipv6_5tuple_host* key2)
 {
+	printf("convert_ipv6_tuple: port_dst = %d, port_src = %d\n", key1->port_dst, key1->prot_src);
 	uint32_t i;
 
 	for (i = 0; i < 16; i++) {
@@ -161,6 +162,7 @@ populate_ipv6_few_flow_into_table(const struct rte_hash* h)
 			printf("Unable to add entry %u to the l3fwd hash.\n", i);
 			exit(1);
 		}
+		printf("ret= %d, val(entry.if_out)= %d\n", ret, entry.if_out);
 		ipv6_l3fwd_out_if[ret] = entry.if_out;
 	}
 	printf("Hash: Adding 0x%llx keys\n",
