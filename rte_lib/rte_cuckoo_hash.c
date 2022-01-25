@@ -1024,6 +1024,7 @@ struct rte_hash*
 	printf("returning from hash_create, h->name = %s\n",h->name);
 	printf("size of rte_hash:%d\n", sizeof(h));
 	printf("h's addr = %lx\n", (uint64_t)h);
+	printf("h->freeslot's addr = %lx\n", (uint64_t)(h->free_slots));
 	//return h;
 	return (uint64_t)h;
 
@@ -1052,6 +1053,7 @@ void print_hash_names(struct rte_hash* h) {
 	printf("print_hash_names\n");
 	printf("size of rte_hash:%d\n", sizeof(h));
 	printf("h addr: %lx\n", (uint64_t)h);
+	printf("h->freeslot's addr = %lx\n", (uint64_t)(h->free_slots));
 	printf("hash name: %s\n", h->name);
 	printf("free_list name: %s\n", h->free_slots->name);
 	return;

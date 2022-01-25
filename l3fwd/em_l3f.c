@@ -117,19 +117,19 @@ struct rte_hash* setup_hash(int socket_id){
 	ipv6_l3fwd_hash_params.name = "ipv6_l3fwd_hash";
 	ipv6_l3fwd_hash_params.socket_id = socket_id;
 
-	//uint64_t hash_addr = rte_hash_create(&ipv6_l3fwd_hash_params);
-	//////TODO: FIXME: There is a bug where returned pointer's address is 1 extended..
-	//hash_addr = hash_addr & 0x7FFFFFFFFFFF;
+	uint64_t hash_addr = rte_hash_create(&ipv6_l3fwd_hash_params);
+	////TODO: FIXME: There is a bug where returned pointer's address is 1 extended..
+	hash_addr = hash_addr & 0x7FFFFFFFFFFF;
 
-	//ipv6_l3fwd_lookup = (struct rte_hash*)hash_addr;
-	//
+	ipv6_l3fwd_lookup = (struct rte_hash*)hash_addr;
 	
-	ipv6_l3fwd_lookup = rte_hash_create(&ipv6_l3fwd_hash_params);
+	
+	//ipv6_l3fwd_lookup = rte_hash_create(&ipv6_l3fwd_hash_params);
 	if(ipv6_l3fwd_lookup==NULL){
 		printf("setup hash failed - rte_hash_create fail\n");
 	}
 	print_hash_names(ipv6_l3fwd_lookup);
-
+	printf("h->freeslot's addr = %lx\n", (uint64_t)(ipv6_l3fwd_lookup->free_slots));
 	//printf("rte_hash_create returned in setup_hash\n");
 	//printf("ipv6_l3fwd_lookup's addr = %lx\n", (uint64_t)ipv6_l3fwd_lookup);
 	//printf("setup_hash: hash.name = %s\n",ipv6_l3fwd_lookup->name);
