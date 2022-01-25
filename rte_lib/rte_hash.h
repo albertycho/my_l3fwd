@@ -1,6 +1,6 @@
 #include <stdint.h>                                                             
 #include <stddef.h>    
-#include <rte_jhash.h>
+#include "rte_jhash.h"
 
 #ifndef _RTE_HASH_H_
 #define _RTE_HASH_H_
