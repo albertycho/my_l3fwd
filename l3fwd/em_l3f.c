@@ -110,12 +110,26 @@ static rte_xmm_t mask0;
 static rte_xmm_t mask1;
 static rte_xmm_t mask2;
 
+void print128_num(__m128i var)
+{
+    uint16_t val[8];
+    memcpy(val, &var, sizeof(val));
+    printf("Numerical: %i %i %i %i %i %i %i %i \n", 
+           val[0], val[1], val[2], val[3], val[4], val[5], 
+           val[6], val[7]);
+}
+
 static inline uint32_t
 ipv6_hash_crc(const void* data, uint32_t data_len, uint32_t init_val){
 	printf("ipv6_hash_crc called, data = %llx, init_val = %d\n", (uint32_t)data, init_val);
-	uint32_t printData[4];
-	memcpy(printData, &data, sizeof(__m128i));
-	printf("data: %lx %lx %lx %lx\n", printData[0], printData[1],printData[2],printData[3]);
+	xmm_t printData[3];
+	memcpy(printData, &data, sizeof(union ipv6_5tuple_host));
+
+	//printf("data: %lx %lx %lx\n", printData[0], printData[1],printData[2];
+	print128_num(printData[0]);
+	print128_num(printData[1]);
+	print128_num(printData[2]);
+
 	return (uint32_t) data;
 }
 
