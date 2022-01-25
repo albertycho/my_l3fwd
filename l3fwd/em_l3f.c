@@ -121,7 +121,7 @@ static void
 convert_ipv6_5tuple(struct ipv6_5tuple* key1,
 	union ipv6_5tuple_host* key2)
 {
-	printf("convert_ipv6_tuple: port_dst = %d, port_src = %d\n", key1->port_dst, key1->prot_src);
+	printf("convert_ipv6_tuple: port_dst = %d, port_src = %d\n", key1->port_dst, key1->port_src);
 	uint32_t i;
 
 	for (i = 0; i < 16; i++) {
