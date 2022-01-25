@@ -89,6 +89,9 @@ void* run_worker(void* arg) {
 
     uint32_t socket_id = params.id % 16;
     struct rte_hash* worker_hash = setup_hash(socket_id);
+    char name[RTE_HASH_NAMESIZE];
+    memcpy(name, worker_hash->name, sizeof(name));
+    printf("hash.name = %s\n",name);
     //printf("core %d setuphash complete. hash.name=%s\n", params.id, worker_hash->name);
     //printf("hash.freelost.name = %s\n", worker_hash->free_slots->name);
 
