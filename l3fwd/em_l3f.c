@@ -325,9 +325,11 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 	 * and src IP address higher 32 bits.
 	 */
 
+	printf("before dereferencing\n");
+
 	key.xmm[1] = *(xmm_t *)data1;
 
-
+	printf("before calling em_mask_key 2\n");
 	/*
 	 * Get part of 5 tuple: dst port and src port
 	 * and dst IP address higher 32 bits.
