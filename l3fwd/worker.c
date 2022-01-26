@@ -214,8 +214,10 @@ void* run_worker(void* arg) {
         printf("l3fwd: 1\n");
 
         //TODO: write callback function for taking the packet and calling hash_lookup to find dst_port
-        //uint64_t dst_port;
-        //dst_port = l3fwd_em_handle_ipv6(rpc);
+        uint64_t dst_port;
+        uint8_t port_id = tmp_count % 16;
+        dst_port = l3fwd_em_handle_ipv6(rpc, port_id, (void*)worker_hash, port_id);
+        printf("l3fwdloop: dst_port = %d\n", dst_port);
 
         //bool is_get = true; //put dummy for now, before implementing l3fwd callback
 
