@@ -86,6 +86,7 @@ static uint64_t l3fwd_em_handle_ipv6(RPCWithHeader rpc, uint32_t port_id, void* 
     struct rte_ipv6_hdr ipv6hdr_var = get_ipv6_hdr(port);
     ipv6_hdr = &ipv6hdr_var;
     printf("before calling eM-get_ipv6_dst_port\n");
+    printf("ipv6_hdr = %lx\n", ipv6_hdr);
     dst_port = em_get_ipv6_dst_port(ipv6_hdr,port_id, h);
     return dst_port;
 

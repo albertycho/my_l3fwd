@@ -326,6 +326,7 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 	 */
 
 	printf("before dereferencing\n");
+	printf("data1(addr) = %lx\n", data1);
 
 	key.xmm[1] = *(xmm_t *)data1;
 
