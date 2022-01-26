@@ -285,7 +285,8 @@ struct rte_hash* setup_hash(int socket_id){
 	//import this function
 	//populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, hash_entry_number);
 	//populate_ipv6_few_flow_into_table(ipv6_l3fwd_lookup);
-	populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, 1024);
+	//populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, 1024);
+	populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, 16);
 
 	//dump_keys_buckets(ipv6_l3fwd_lookup);
 	return ipv6_l3fwd_lookup;
@@ -331,6 +332,7 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 	 */
 	key.xmm[2] = em_mask_key(data2, mask2.x);
 
+	printf("before calling hash_lookup\n");
 	/* Find destination port */
 	ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void *)&key);
 	printf("hash_lookup returned %d\n", ret);

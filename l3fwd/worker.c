@@ -82,9 +82,10 @@ static uint64_t l3fwd_em_handle_ipv6(RPCWithHeader rpc, uint32_t port_id, void* 
     // entry.key.ip_dst[15] = (port + 1) % 256;//BYTE_VALUE_MAX;
     // convert_ipv6_5tuple(&entry.key, &newkey);
 
+    printf("before calling get_ipv6_hdr\n");
     struct rte_ipv6_hdr ipv6hdr_var = get_ipv6_hdr(port);
     ipv6_hdr = &ipv6hdr_var;
-
+    printf("before calling eM-get_ipv6_dst_port\n");
     dst_port = em_get_ipv6_dst_port(ipv6_hdr,port_id, h);
     return dst_port;
 
