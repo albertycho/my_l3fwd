@@ -298,6 +298,7 @@ em_mask_key(void *key, xmm_t mask)
 
 	return _mm_and_si128(data, mask);
 }
+
 static inline uint16_t
 em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 {
