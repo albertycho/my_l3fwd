@@ -345,7 +345,7 @@ struct rte_ipv6_hdr get_ipv6_hdr(uint8_t port){
 
 	struct ipv6_5tuple* key1 = &(entry.key);
 
-	for (i = 0; i < IPV6_ADDR_LEN; i++) {
+	for (uint32_t i = 0; i < IPV6_ADDR_LEN; i++) {
 		new_hdr.dst_addr[i] = key1->ip_dst[i];
 		new_hdr.src_addr[i] = key1->ip_src[i];
 	}
