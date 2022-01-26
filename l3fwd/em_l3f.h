@@ -6,6 +6,10 @@
 
 #define NB_SOCKETS 8
 
+#define NUMBER_PORT_USED 16
+//#define NUMBER_PORT_USED 1024
+
+
 struct rte_ipv6_hdr {
 	uint32_t vtc_flow;	/**< IP version, traffic class & flow label. */
 	uint16_t payload_len;	/**< IP payload size, including ext. headers */

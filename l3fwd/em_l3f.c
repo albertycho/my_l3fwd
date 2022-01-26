@@ -17,7 +17,6 @@
 #define __rte_cache_aligned __rte_aligned(RTE_CACHE_LINE_SIZE)
 */
 
-#define NUMBER_PORT_USED 1024
 
 int em_dummy_print_func(){
 	printf("EM_DUMMY_PRINT\n");
@@ -223,7 +222,8 @@ populate_ipv6_many_flow_into_table(const struct rte_hash *h,
 		/* Create the ipv6 exact match flow */
 		memset(&entry, 0, sizeof(entry));
 		entry = ipv6_l3fwd_em_route_array[port];
-		entry.key.ip_dst[15] = (port + 1) % 256;//BYTE_VALUE_MAX;
+		//entry.key.ip_dst[15] = (port + 1) % 256;//BYTE_VALUE_MAX;
+		entry.key.ip_dst[15] = (i + 1) % 256;//BYTE_VALUE_MAX;
 		convert_ipv6_5tuple(&entry.key, &newkey);
 		int32_t ret = rte_hash_add_key(h, (void *) &newkey);
 

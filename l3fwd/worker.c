@@ -71,7 +71,7 @@ static uint64_t l3fwd_em_handle_ipv6(RPCWithHeader rpc, uint32_t port_id, void* 
     //ipv6_hdr = get_ipv6_hdr(rpc);
     uint64_t dst_port;
 
-    uint8_t port = ival % 16;
+    uint8_t port = ival % NUMBER_PORT_USED;
     // // FIXME: temporary code for generating ipv6_hdr
     // struct ipv6_l3fwd_em_route entry;
     // union ipv6_5tuple_host newkey;
