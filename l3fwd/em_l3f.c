@@ -287,7 +287,7 @@ struct rte_hash* setup_hash(int socket_id){
 	//populate_ipv6_few_flow_into_table(ipv6_l3fwd_lookup);
 	populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, 1024);
 
-	dump_keys_buckets(ipv6_l3fwd_lookup);
+	//dump_keys_buckets(ipv6_l3fwd_lookup);
 	return ipv6_l3fwd_lookup;
 
 }
