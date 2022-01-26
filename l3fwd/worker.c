@@ -65,11 +65,26 @@ bool herdCallbackFunction(uint8_t* slot_ptr, rpcArg_t* rpc_arguments)
 */
 
 
-static uint64_t l3fwd_em_handle_ipv6(RPCWithHeader rpc, uint32_t port_id){
+static uint64_t l3fwd_em_handle_ipv6(RPCWithHeader rpc, uint32_t port_id, uint32_t ival /*ival is temp wa for sanity check testing*/){
     //get header from rpc
     struct rte_ipv6_hdr *ipv6_hdr;
     //ipv6_hdr = get_ipv6_hdr(rpc);
     uint64_t dst_port;
+
+    uint8_t port = ival % 16;
+    // // FIXME: temporary code for generating ipv6_hdr
+    // struct ipv6_l3fwd_em_route entry;
+    // union ipv6_5tuple_host newkey;
+
+    // /* Create the ipv6 exact match flow */
+    // memset(&entry, 0, sizeof(entry));
+    // entry = ipv6_l3fwd_em_route_array[port];
+    // entry.key.ip_dst[15] = (port + 1) % 256;//BYTE_VALUE_MAX;
+    // convert_ipv6_5tuple(&entry.key, &newkey);
+
+    struct rte_ipv6_hdr ipv6hdr_var = get_ipv6_hdr(port);
+    ipv6_hdr = &ipv6hdr_var;
+
     dst_port = em_get_ipv6_dst_port(ipv6_hdr,port_id);
     return dst_port;
 

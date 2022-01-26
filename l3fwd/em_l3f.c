@@ -331,5 +331,27 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 
 	/* Find destination port */
 	ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void *)&key);
+	printf("hash_lookup returned %d\n", ret);
 	return (ret < 0) ? portid : ipv6_l3fwd_out_if[ret];
+}
+
+struct rte_ipv6_hdr get_ipv6_hdr(uint8_t port){
+	struct rte_ipv6_hdr new_hdr;
+	memset(&new_hdr, 0, sizeof(new_hdr));
+
+	struct ipv6_l3fwd_em_route entry;
+	entry = ipv6_l3fwd_em_route_array[port];
+	entry.key.ip_dst[15] = (port + 1) % 256;//BYTE_VALUE_MAX;
+
+	struct ipv6_5tuple* key1 = &(entry.key);
+
+	for (i = 0; i < IPV6_ADDR_LEN; i++) {
+		new_hdr.dst_addr[i] = key1->ip_dst[i];
+		new_hdr.src_addr[i] = key1->ip_src[i];
+	}
+	new_hdr.proto = key1->proto;
+	new_hdr.payload_len = 10;
+
+	return new_hdr;
+
 }
