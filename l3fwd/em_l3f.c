@@ -315,6 +315,8 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 	void *data1 = ((uint8_t *)ipv6_hdr) + sizeof(xmm_t);
 	void *data2 = ((uint8_t *)ipv6_hdr) + sizeof(xmm_t) + sizeof(xmm_t);
 
+	printf("before calling em_mask_key\n");
+
 	/* Get part of 5 tuple: src IP address lower 96 bits and protocol */
 	key.xmm[0] = em_mask_key(data0, mask1.x);
 
