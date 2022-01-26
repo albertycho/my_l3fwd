@@ -65,30 +65,23 @@ bool herdCallbackFunction(uint8_t* slot_ptr, rpcArg_t* rpc_arguments)
 */
 
 
-static uint64_t l3fwd_em_handle_ipv6(RPCWithHeader rpc, uint32_t port_id, void* h, uint32_t ival /*ival is temp wa for sanity check testing*/){
+static uint64_t l3fwd_em_handle_ipv6(char* payload, uint32_t port_id, void* h, uint32_t ival /*ival is temp wa for sanity check testing*/){
     //get header from rpc
     struct rte_ipv6_hdr *ipv6_hdr;
-    //ipv6_hdr = get_ipv6_hdr(rpc);
+    //ipv6_hdr = get_ipv6_hdr(payload);
     uint64_t dst_port;
 
     uint8_t port = ival % NUMBER_PORT_USED;
-    // // FIXME: temporary code for generating ipv6_hdr
-    // struct ipv6_l3fwd_em_route entry;
-    // union ipv6_5tuple_host newkey;
 
-    // /* Create the ipv6 exact match flow */
-    // memset(&entry, 0, sizeof(entry));
-    // entry = ipv6_l3fwd_em_route_array[port];
-    // entry.key.ip_dst[15] = (port + 1) % 256;//BYTE_VALUE_MAX;
-    // convert_ipv6_5tuple(&entry.key, &newkey);
-
+    /// Following to be used once header format is updated
     printf("before calling get_ipv6_hdr\n");
     struct rte_ipv6_hdr ipv6hdr_var = get_ipv6_hdr(port);
     ipv6_hdr = &ipv6hdr_var;
     printf("before calling eM-get_ipv6_dst_port\n");
     printf("ipv6_hdr = %lx\n", ipv6_hdr);
     printf("payload_len: %d\n",ipv6_hdr->payload_len);
-    dst_port = em_get_ipv6_dst_port(ipv6_hdr,port, h);
+    //dst_port = em_get_ipv6_dst_port(ipv6_hdr,port, h);
+    dst_port = em_get_ipv6_dst_port(payload, port, h);
     return dst_port;
 
 }
@@ -219,7 +212,7 @@ void* run_worker(void* arg) {
         //TODO: write callback function for taking the packet and calling hash_lookup to find dst_port
         uint64_t dst_port;
         uint8_t port_id = tmp_count % 16;
-        dst_port = l3fwd_em_handle_ipv6(rpc, port_id, (void*)worker_hash, port_id);
+        dst_port = l3fwd_em_handle_ipv6(rpc.payload, port_id, (void*)worker_hash, port_id);
         printf("l3fwdloop: dst_port = %d\n", dst_port);
 
         //bool is_get = true; //put dummy for now, before implementing l3fwd callback

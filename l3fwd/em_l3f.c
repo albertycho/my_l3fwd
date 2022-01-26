@@ -307,6 +307,8 @@ em_mask_key(void *key, xmm_t mask)
 uint16_t
 em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 {
+	//FIXME: remove after updating header format
+	union ipv6_5tuple_host* payload = ipv6_hdr;
 	int ret = 0;
 	union ipv6_5tuple_host key;
 	struct rte_hash *ipv6_l3fwd_lookup_struct =
@@ -354,7 +356,9 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 		entry = ipv6_l3fwd_em_route_array[portid];
 		entry.key.ip_dst[15] = (portid + 1) % 256;//BYTE_VALUE_MAX;
 		convert_ipv6_5tuple(&entry.key, &newkey);
-	ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void *)&newkey);
+	//ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void *)&newkey);
+		//FIXME: WA for now without header format
+		ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void*)payload);
 
 	printf("hash_lookup returned %d\n", ret);
 	return (ret < 0) ? portid : ipv6_l3fwd_out_if[ret];
