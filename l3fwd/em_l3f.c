@@ -16,6 +16,9 @@
 //Force alignment to cache line. 
 #define __rte_cache_aligned __rte_aligned(RTE_CACHE_LINE_SIZE)
 */
+
+#define NUMBER_PORT_USED 1024
+
 int em_dummy_print_func(){
 	printf("EM_DUMMY_PRINT\n");
 	return 0;
@@ -213,7 +216,7 @@ populate_ipv6_many_flow_into_table(const struct rte_hash *h,
 	mask2 = (rte_xmm_t){.u32 = {ALL_32_BITS, ALL_32_BITS, 0, 0} };
 
 	for (i = 0; i < nr_flow; i++) {
-		uint8_t port = i % 16;//NUMBER_PORT_USED;
+		uint8_t port = i % NUMBER_PORT_USED;//NUMBER_PORT_USED;
 		struct ipv6_l3fwd_em_route entry;
 		union ipv6_5tuple_host newkey;
 
@@ -285,8 +288,8 @@ struct rte_hash* setup_hash(int socket_id){
 	//import this function
 	//populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, hash_entry_number);
 	//populate_ipv6_few_flow_into_table(ipv6_l3fwd_lookup);
-	//populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, 1024);
-	populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, 16);
+	populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, 1024);
+	//populate_ipv6_many_flow_into_table(ipv6_l3fwd_lookup, 16);
 
 	//dump_keys_buckets(ipv6_l3fwd_lookup);
 	return ipv6_l3fwd_lookup;
