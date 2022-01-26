@@ -349,7 +349,7 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 		/* Create the ipv6 exact match flow */
 		memset(&entry, 0, sizeof(entry));
 		entry = ipv6_l3fwd_em_route_array[portid];
-		entry.key.ip_dst[15] = (port + 1) % 256;//BYTE_VALUE_MAX;
+		entry.key.ip_dst[15] = (portid + 1) % 256;//BYTE_VALUE_MAX;
 		convert_ipv6_5tuple(&entry.key, &newkey);
 	ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void *)&newkey);
 
