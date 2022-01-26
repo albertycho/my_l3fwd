@@ -22,3 +22,5 @@ int multithread_check;
 //struct rte_hash* ipv6_l3fwd_em_lookup_struct[NB_SOCKETS];
 static inline uint32_t ipv6_hash_crc(const void* data, uint32_t data_len, uint32_t init_val);
 struct rte_hash* setup_hash(int socket_id);
+static inline uint16_t em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct);
+struct rte_ipv6_hdr get_ipv6_hdr(uint8_t port);
