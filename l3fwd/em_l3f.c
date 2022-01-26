@@ -314,8 +314,8 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 	struct rte_hash *ipv6_l3fwd_lookup_struct =
 		(struct rte_hash *)lookup_struct;
 
-	ipv6_hdr = (uint8_t *)ipv6_hdr +
-		offsetof(struct rte_ipv6_hdr, payload_len);
+	//ipv6_hdr = (uint8_t *)ipv6_hdr +
+	//	offsetof(struct rte_ipv6_hdr, payload_len);
 	void *data0 = ipv6_hdr;
 	void *data1 = ((uint8_t *)ipv6_hdr) + sizeof(xmm_t);
 	void *data2 = ((uint8_t *)ipv6_hdr) + sizeof(xmm_t) + sizeof(xmm_t);
@@ -358,7 +358,8 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 		convert_ipv6_5tuple(&entry.key, &newkey);
 	//ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void *)&newkey);
 		//FIXME: WA for now without header format
-		ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void*)payload);
+		//ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void*)payload);
+		ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void*)&key);
 
 	printf("hash_lookup returned %d\n", ret);
 	return (ret < 0) ? portid : ipv6_l3fwd_out_if[ret];
