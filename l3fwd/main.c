@@ -87,6 +87,7 @@ int main(int argc, char* argv[]) {
     unsigned int i;
     int c;
     int run_debug_mode = 0;
+    unsigned int packet_size=512; // default 512 byte packet
     unsigned int num_threads = 0; // Msutherl: Fixed for -Wpedantic c++14 
     unsigned int num_rem_threads = 0;
     unsigned int node_cnt = 0; // Msutherl
@@ -120,6 +121,7 @@ int main(int argc, char* argv[]) {
         {.name = "num-server-buckets", .has_arg = 1,.flag = NULL, .val = 'B'},
         {.name = "log-capacity-bytes", .has_arg = 1,.flag = NULL, .val = 'L'},
         {.name = "debug", .has_arg = 1,.flag = NULL, .val = 'D'},
+        {.name = "packet-size", .has_arg = 1,.flag = NULL, .val = 'r'},
         {.name = "postlist", .has_arg = 1,.flag = NULL, .val = 'p'} };
 
     /* Parse and check arguments */
@@ -173,6 +175,9 @@ int main(int argc, char* argv[]) {
                 break;
             case 'q':
                 qps = atoi(optarg);
+                break;
+            case 'r':
+                packet_size = atoi(optarg);
                 break;
             default:
                 printf("Invalid argument %d\n", c);
@@ -256,6 +261,7 @@ int main(int argc, char* argv[]) {
         /* Msutherl: Always set # of other threads */
         param_arr[i].num_client_threads = num_rem_threads;
         param_arr[i].num_serv_threads = num_threads;
+        param_arr[i].packet_size = packet_size;
 
         //int core = thread_pin[i];
         printf("main launching pthread_create runworker\n");

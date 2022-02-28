@@ -105,11 +105,12 @@ void* run_worker(void* arg) {
     } else {
         printf("Bound worker thread %d to core %d\n", params.id, params.id+3);
     }
-    dummy_func_link_check();
-	em_dummy_print_func();
-    int dummyint = rte_jhash_dummy_int();
-    printf("dummyint = %d\n", dummyint);
+    //dummy_func_link_check();
+	//em_dummy_print_func();
+    //int dummyint = rte_jhash_dummy_int();
+    //printf("dummyint = %d\n", dummyint);
 
+    unsigned int packet_size = params.packet_size;
     multithread_check = params.id;
 
     uint32_t socket_id = params.id % 16;
@@ -211,14 +212,17 @@ void* run_worker(void* arg) {
 
       /* the netpipe start/ends are only for direct on-cpu time, output by flexus stats
        * in the file core-occupancies.txt */
-      //bool is_get = herdCallbackFunction((uint8_t*) rpc.payload, &args );
+      
+        char raw_data[2048];
+        memcpy(raw_data,rpc.payload, packet_size);
+
 
         //printf("l3fwd: 1\n");
-
         //TODO: write callback function for taking the packet and calling hash_lookup to find dst_port
         uint64_t dst_port;
         uint8_t port_id = tmp_count % 16;
-        dst_port = l3fwd_em_handle_ipv6(rpc.payload, port_id, (void*)worker_hash, port_id);
+        //dst_port = l3fwd_em_handle_ipv6(rpc.payload, port_id, (void*)worker_hash, port_id);
+        dst_port = l3fwd_em_handle_ipv6(raw_data, port_id, (void*)worker_hash, port_id);
         //printf("l3fwdloop: dst_port = %d\n", dst_port);
 
         //bool is_get = true; //put dummy for now, before implementing l3fwd callback
@@ -230,7 +234,7 @@ void* run_worker(void* arg) {
 
       //bool skip_ret_cpy = (resp_arr[0].val_len == 0);
         bool skip_ret_cpy = true;
-        char raw_data[1024];
+
       // resp_arr is already filled by the callback function, through the hacked
       // datastore pointer. This is ugly, would be nice to fix.
       sendToNode_zsim( rpcContext, 
