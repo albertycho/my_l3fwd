@@ -10,6 +10,9 @@
 #include "em_l3f.h"
 
 //#include "zsim_nic_defines.hpp"
+#include "/nethome/acho44/zsim/zSim/misc/hooks/zsim_hooks.h"
+
+
 
 #define CPU_FREQ 2.0 // Flexus
 
@@ -74,12 +77,12 @@ static uint64_t l3fwd_em_handle_ipv6(char* payload, uint32_t port_id, void* h, u
     uint8_t port = ival % NUMBER_PORT_USED;
 
     /// Following to be used once header format is updated
-    printf("before calling get_ipv6_hdr\n");
+    //printf("before calling get_ipv6_hdr\n");
     struct rte_ipv6_hdr ipv6hdr_var = get_ipv6_hdr(port);
     ipv6_hdr = &ipv6hdr_var;
-    printf("before calling eM-get_ipv6_dst_port\n");
-    printf("ipv6_hdr = %lx\n", ipv6_hdr);
-    printf("payload_len: %d\n",ipv6_hdr->payload_len);
+    //printf("before calling eM-get_ipv6_dst_port\n");
+    //printf("ipv6_hdr = %lx\n", ipv6_hdr);
+    //printf("payload_len: %d\n",ipv6_hdr->payload_len);
     //dst_port = em_get_ipv6_dst_port(ipv6_hdr,port, h);
     dst_port = em_get_ipv6_dst_port(payload, port, h);
     return dst_port;
@@ -177,7 +180,7 @@ void* run_worker(void* arg) {
 	
 	printf("l3fwd: before entering while loop\n");
     while (1) {
-		printf("l3fwd: after entering while loop, tmp_count=%d\n", tmp_count);
+		//printf("l3fwd: after entering while loop, tmp_count=%d\n", tmp_count);
         /* Begin new RPCValet */
         uint64_t source_node_id,source_qp_to_reply;
 	//notify_service_start(tmp_count);
@@ -190,30 +193,33 @@ void* run_worker(void* arg) {
                 (uint16_t *)(&source_qp_to_reply),
                 client_done );
 
-        printf("l3fwd: 2, rpc.payload: %lx\n", rpc.payload);
+        //printf("l3fwd: 2, rpc.payload: %lx\n", rpc.payload);
        
 		
         if((rpc.payload_len==0xdead))
             break;
 //
 	  tmp_count++;
+	  if(rolling_iter==0){
+		  zsim_heartbeat();
+	  }
 
         timestamp(tmp_count);
 
-     // printf("HERD: after recvRPCReq\n");
+     //printf("HERD: after recvRPCReq\n");
 	//notify_service_start(tmp_count);
 
       /* the netpipe start/ends are only for direct on-cpu time, output by flexus stats
        * in the file core-occupancies.txt */
       //bool is_get = herdCallbackFunction((uint8_t*) rpc.payload, &args );
 
-        printf("l3fwd: 1\n");
+        //printf("l3fwd: 1\n");
 
         //TODO: write callback function for taking the packet and calling hash_lookup to find dst_port
         uint64_t dst_port;
         uint8_t port_id = tmp_count % 16;
         dst_port = l3fwd_em_handle_ipv6(rpc.payload, port_id, (void*)worker_hash, port_id);
-        printf("l3fwdloop: dst_port = %d\n", dst_port);
+        //printf("l3fwdloop: dst_port = %d\n", dst_port);
 
         //bool is_get = true; //put dummy for now, before implementing l3fwd callback
 
@@ -242,13 +248,13 @@ void* run_worker(void* arg) {
           ); 
 
         timestamp(tmp_count);
-        printf("l3fwd: 2, rpc.payload: %lx\n", rpc.payload);
+        //printf("l3fwd: 2, rpc.payload: %lx\n", rpc.payload);
       //printf("HERD: after sendtoNode\n");
 
         do_Recv_zsim(rpcContext, params.sonuma_nid, wrkr_lid, 0, rpc.payload, 64);
           //(is_get ? 64 : sizeof(struct mica_op))  // GETS only allocated 64B in reassembler. puts are a full op
           //);
-        printf("l3fwd: 3\n");
+        //printf("l3fwd: 3\n");
         timestamp(tmp_count);
 
       //printf("HERD: after recvtoNode\n");
@@ -260,6 +266,7 @@ void* run_worker(void* arg) {
 		//notify_service_end(tmp_count);
     } // end infinite loop
     //free(datastore_pointer);
+	zsim_heartbeat();
 	printf("L3FWD worker: requests serviced:%d\n", tmp_count);
 
     printf("multithread check: %d\n", multithread_check );

@@ -156,7 +156,7 @@ static void
 convert_ipv6_5tuple(struct ipv6_5tuple* key1,
 	union ipv6_5tuple_host* key2)
 {
-	printf("convert_ipv6_tuple: port_dst = %d, port_src = %d\n", key1->port_dst, key1->port_src);
+	//printf("convert_ipv6_tuple: port_dst = %d, port_src = %d\n", key1->port_dst, key1->port_src);
 	uint32_t i;
 
 	for (i = 0; i < IPV6_ADDR_LEN; i++) {
@@ -320,7 +320,7 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 	void *data1 = ((uint8_t *)ipv6_hdr) + sizeof(xmm_t);
 	void *data2 = ((uint8_t *)ipv6_hdr) + sizeof(xmm_t) + sizeof(xmm_t);
 
-	printf("before calling em_mask_key\n");
+	//printf("before calling em_mask_key\n");
 
 	/* Get part of 5 tuple: src IP address lower 96 bits and protocol */
 	key.xmm[0] = em_mask_key(data0, mask1.x);
@@ -330,20 +330,20 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 	 * and src IP address higher 32 bits.
 	 */
 
-	printf("before dereferencing\n");
-	printf("data1(addr) = %lx\n", data1);
+	//printf("before dereferencing\n");
+	//printf("data1(addr) = %lx\n", data1);
 
 	//key.xmm[1] = *(xmm_t *)data1;
 	key.xmm[1] = _mm_loadu_si128(data1);
 	
-	printf("before calling em_mask_key 2\n");
+	//printf("before calling em_mask_key 2\n");
 	/*
 	 * Get part of 5 tuple: dst port and src port
 	 * and dst IP address higher 32 bits.
 	 */
 	key.xmm[2] = em_mask_key(data2, mask2.x);
 
-	printf("before calling hash_lookup\n");
+	//printf("before calling hash_lookup\n");
 	/* Find destination port */
 	//ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void *)&key);
 
@@ -361,7 +361,7 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 		//ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void*)payload);
 		ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void*)&key);
 
-	printf("hash_lookup returned %d\n", ret);
+	//printf("hash_lookup returned %d\n", ret);
 	return (ret < 0) ? portid : ipv6_l3fwd_out_if[ret];
 }
 
