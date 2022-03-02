@@ -198,7 +198,8 @@ int main(int argc, char* argv[]) {
         0, // clocal-pages (FIXME: what is this?)
         1, // true if senders context
         num_threads, // used to make cbufs
-        num_rem_threads // used to make cbufs (PER CLIENT NODE)
+        num_rem_threads, // used to make cbufs (PER CLIENT NODE)
+		packet_size
     );
 
     /* Launch a single server thread or multiple client threads */

@@ -173,7 +173,7 @@ typedef void (herdCallback)(uint8_t* slot_ptr, rpcArg_t* rpc_arguments);
 /* Messaging library functions, can swap in any underlying impl
  * (e.g., WRITE+SEND, SEND+RECV x2, SRx2 + LB)
  */
-rpcNUMAContext* createRPCNUMAContext(int dev_fd, unsigned int aNodeID, unsigned int totalNodes, unsigned int qp_start, unsigned int qp_end, size_t context_local_pages, bool isSendingCtx, unsigned int serverThreadCount, unsigned int clientThreadCount );
+rpcNUMAContext* createRPCNUMAContext(int dev_fd, unsigned int aNodeID, unsigned int totalNodes, unsigned int qp_start, unsigned int qp_end, size_t context_local_pages, bool isSendingCtx, unsigned int serverThreadCount, unsigned int clientThreadCount, unsigned int packet_size );
 void destroyRPCNUMAContext(/*...*/);
 NIExposedBuffer* registerNewLocalBuffer(rpcNUMAContext* ctx, uint32_t** tptr,size_t buf_size,size_t tidx);
 soNUMAQP_T* registerNewSONUMAQP(rpcNUMAContext* ctx, size_t tidx);

@@ -233,13 +233,13 @@ void* run_worker(void* arg) {
 	  //printf("app: is_get = %s, serviced %d\n", is_get ? "true":"false", tmp_count);
 
       //bool skip_ret_cpy = (resp_arr[0].val_len == 0);
-        bool skip_ret_cpy = true;
+        bool skip_ret_cpy = false;
 
       // resp_arr is already filled by the callback function, through the hacked
       // datastore pointer. This is ugly, would be nice to fix.
       sendToNode_zsim( rpcContext, 
           myLocalBuffer, // where the response will come from
-          64, //(is_get && !skip_ret_cpy) ? resp_arr[0].val_len : 64, // sizeof is a full resp. for GET, CB for PUT
+          packet_size, //(is_get && !skip_ret_cpy) ? resp_arr[0].val_len : 64, // sizeof is a full resp. for GET, CB for PUT
           source_node_id, // node id to reply to comes from the cq entry
           params.sonuma_nid,  // my nodeid
           source_qp_to_reply, // qp to reply to comes from the payload 

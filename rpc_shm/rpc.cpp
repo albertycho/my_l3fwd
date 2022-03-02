@@ -130,7 +130,7 @@ void notify_fruitless_cq_check(int count){
 
 // parses some parameters and makes the rpcNUMA context with underlying
 // soNUMA calls 
-rpcNUMAContext* createRPCNUMAContext(int dev_fd, unsigned int aNodeID, unsigned int totalNodes, unsigned int qp_start, unsigned int qp_end, size_t context_local_pages, bool isSendingCtx, unsigned int serverThreadCount, unsigned int clientThreadCount )
+rpcNUMAContext* createRPCNUMAContext(int dev_fd, unsigned int aNodeID, unsigned int totalNodes, unsigned int qp_start, unsigned int qp_end, size_t context_local_pages, bool isSendingCtx, unsigned int serverThreadCount, unsigned int clientThreadCount, unsigned int packet_size )
 {
     // defined in sonuma.h
     uint64_t ctx_size = EMULATOR_SW_PAGE_SIZE * 2;
@@ -187,7 +187,7 @@ rpcNUMAContext* createRPCNUMAContext(int dev_fd, unsigned int aNodeID, unsigned 
 
     ctx->msg_domain->ctx_struct.ctx_id = SR_CTX_ID;
     int msg_size,num_nodes,msgs_per_node;
-    msg_size = RPC_MAX_PAYLOAD;
+    msg_size = packet_size;
     num_nodes = totalNodes;
     msgs_per_node = MSGS_PER_PAIR;
 
@@ -246,8 +246,6 @@ void destroyRPCNUMAContext(rpcNUMAContext* ctx)
 void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer, size_t messageByteSize, unsigned int destNode, unsigned int clientFrom, unsigned int qpTarget, unsigned int sendQP, bool send_qp_terminate,char* raw_payload_data, bool skipcpy, unsigned int rpc_send_count)
 {
     DRPC("Client [%d] calls sendToNode [%d], sendQP [%d], qpTarget [%d]",clientFrom,destNode,sendQP,qpTarget);
-
-
 
     /* Calculate local buffer address based on rpc_send_count, wrapping around when its greater than num msgs outstanding. */
     ctx_entry_t *the_ctx = &(rpcContext->msg_domain->ctx_struct);
