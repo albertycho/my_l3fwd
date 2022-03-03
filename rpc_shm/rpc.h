@@ -199,7 +199,7 @@ void remoteBufferWrite(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffe
 void do_Recv_flex( rpcNUMAContext* rpcContext, unsigned int cl_nid , unsigned int cl_tid, unsigned int serv_tid,char* rbuf_slot_ptr,unsigned int freeSizeBytes);
 
 void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer, size_t messageByteSize, unsigned int destNode, unsigned int clientFrom, unsigned int qpTarget, unsigned int sendQP, bool send_qp_terminate,char* raw_payload_data, bool skipcpy,unsigned int rpc_send_count);
-RPCWithHeader receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, void* pointer_to_data_store, unsigned int serv_nid, unsigned int serv_qp_id, uint16_t* source_node_id,uint16_t* source_qp_id,bool* client_done);
+RPCWithHeader receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, unsigned int serv_qp_id, uint16_t* source_node_id,uint16_t* source_qp_id,bool* client_done);
 void do_Recv_zsim( rpcNUMAContext* rpcContext, unsigned int cl_nid , unsigned int cl_tid, unsigned int serv_tid,char* rbuf_slot_ptr,unsigned int freeSizeBytes);
 
 
