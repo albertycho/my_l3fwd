@@ -88,6 +88,7 @@ int main(int argc, char* argv[]) {
     int c;
     int run_debug_mode = 0;
     unsigned int packet_size=512; // default 512 byte packet
+    unsigned int batch_size = 1;
     unsigned int num_threads = 0; // Msutherl: Fixed for -Wpedantic c++14 
     unsigned int num_rem_threads = 0;
     unsigned int node_cnt = 0; // Msutherl
@@ -122,6 +123,7 @@ int main(int argc, char* argv[]) {
         {.name = "log-capacity-bytes", .has_arg = 1,.flag = NULL, .val = 'L'},
         {.name = "debug", .has_arg = 1,.flag = NULL, .val = 'D'},
         {.name = "packet-size", .has_arg = 1,.flag = NULL, .val = 'r'},
+        {.name = "batch_size", .has_arg = 1,.flag = NULL, .val = 'g'},
         {.name = "postlist", .has_arg = 1,.flag = NULL, .val = 'p'} };
 
     /* Parse and check arguments */
@@ -178,6 +180,9 @@ int main(int argc, char* argv[]) {
                 break;
             case 'r':
                 packet_size = atoi(optarg);
+                break;
+            case 'g':
+                batch_size = atoi(optarg);
                 break;
             default:
                 printf("Invalid argument %d\n", c);
@@ -263,6 +268,7 @@ int main(int argc, char* argv[]) {
         param_arr[i].num_client_threads = num_rem_threads;
         param_arr[i].num_serv_threads = num_threads;
         param_arr[i].packet_size = packet_size;
+        param_arr[i].batch_size= batch_size;
 
         //int core = thread_pin[i];
         printf("main launching pthread_create runworker\n");

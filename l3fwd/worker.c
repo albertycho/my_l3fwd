@@ -116,10 +116,10 @@ void* run_worker(void* arg) {
     uint32_t socket_id = params.id % 16;
     struct rte_hash* worker_hash = setup_hash(socket_id);
     char name[RTE_HASH_NAMESIZE];
-    printf("after setup hash\n");
+    //printf("after setup hash\n");
     memcpy(name, worker_hash->name, sizeof(name));
-    printf("after memcpy\n");
-    printf("hash.name = %s\n",name);
+    //printf("after memcpy\n");
+    //printf("hash.name = %s\n",name);
     //printf("core %d setuphash complete. hash.name=%s\n", params.id, worker_hash->name);
     //printf("hash.freelost.name = %s\n", worker_hash->free_slots->name);
 
@@ -132,6 +132,9 @@ void* run_worker(void* arg) {
     }
 
     unsigned int wrkr_lid = params.id; /* Local ID of this worker thread*/
+
+    unsigned int batch_size = params.batch_size;
+    printf("l3fwd batch size: %d\n", batch_size);
 
     /* MICA instance id = wrkr_lid, NUMA node = 0 */
     //struct mica_kv kv;
@@ -178,6 +181,11 @@ void* run_worker(void* arg) {
 #endif
 
 	int tmp_count=0;
+
+    uint32_t batch_counter = 0;
+    RPCWithHeader* rpcs = calloc(batch_size, sizeof(RPCWithHeader));
+
+
 	
 	printf("l3fwd: before entering while loop\n");
     while (1) {
@@ -187,7 +195,6 @@ void* run_worker(void* arg) {
 	//notify_service_start(tmp_count);
         void* datastore_pointer=NULL;
         RPCWithHeader rpc = receiveRPCRequest_zsim_l3fwd( rpcContext,
-                (void*) datastore_pointer,
                 params.sonuma_nid,
                 wrkr_lid,
                 (uint16_t *)(&source_node_id),
@@ -225,6 +232,8 @@ void* run_worker(void* arg) {
         dst_port = l3fwd_em_handle_ipv6(raw_data, port_id, (void*)worker_hash, port_id);
         //printf("l3fwdloop: dst_port = %d\n", dst_port);
 
+        memcpy(raw_data, &dst_port, sizeof(uint64_t));
+
         //bool is_get = true; //put dummy for now, before implementing l3fwd callback
 
         timestamp(tmp_count);
@@ -241,8 +250,8 @@ void* run_worker(void* arg) {
           myLocalBuffer, // where the response will come from
           packet_size, //(is_get && !skip_ret_cpy) ? resp_arr[0].val_len : 64, // sizeof is a full resp. for GET, CB for PUT
           source_node_id, // node id to reply to comes from the cq entry
-          params.sonuma_nid,  // my nodeid
-          source_qp_to_reply, // qp to reply to comes from the payload 
+          0,//params.sonuma_nid,  // my nodeid unused
+          0,//source_qp_to_reply, // qp to reply to comes from the payload unused
           wrkr_lid, // source qp
           true, // use true because response needs to go to a specific client
           //(char*) resp_arr[0].val_ptr, // raw data
