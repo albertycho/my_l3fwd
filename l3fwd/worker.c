@@ -95,7 +95,7 @@ static uint64_t dest_eth_addr[RTE_MAX_ETHPORTS];
 extern int multithread_check;
 
 
-void batch_process_l3fwd(rpcNUMAContext* rpcContext, RPCWithHeader* rpcs,  uint64_t *source_node_ids, struct rte_hash* worker_hash, NIExposedBuffer* myLocalBuffer, uint32_t batch_size, uint32_t packet_size, int tmp_count, int wrkr_lid){
+void batch_process_l3fwd(rpcNUMAContext* rpcContext, RPCWithHeader* rpcs,  uint64_t *source_node_ids, struct rte_hash* worker_hash, NIExposedBuffer* myLocalBuffer, uint32_t batch_size, uint32_t packet_size, int tmp_count, int wrkr_lid, uint32_t sonuma_nid){
     for(int i=0; i<batch_size;i++){
         char raw_data[2048];
         memcpy(raw_data,rpcs[i].payload, packet_size);
@@ -117,7 +117,7 @@ void batch_process_l3fwd(rpcNUMAContext* rpcContext, RPCWithHeader* rpcs,  uint6
           ((tmp_count-batch_size)+i)
         ); 
 
-        do_Recv_zsim(rpcContext, params.sonuma_nid, wrkr_lid, 0, rpcs[i].payload, 64);
+        do_Recv_zsim(rpcContext, sonuma_nid, wrkr_lid, 0, rpcs[i].payload, 64);
 
 
     }
@@ -261,7 +261,8 @@ void* run_worker(void* arg) {
         timestamp(tmp_count);
 
         if(batch_counter==batch_size){
-            batch_process_l3fwd(rpcContext, rpcs, source_node_ids, worker_hash, myLocalBuffer, batch_size, packet_size, tmp_count, wrkr_lid);
+            uint32_t sonuma_nid = params.sonuma_nid;
+            batch_process_l3fwd(rpcContext, rpcs, source_node_ids, worker_hash, myLocalBuffer, batch_size, packet_size, tmp_count, wrkr_lid, sonuma_nid);
 
             batch_counter = 0;
         }
