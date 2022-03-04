@@ -260,7 +260,7 @@ void* run_worker(void* arg) {
         timestamp(tmp_count);
         timestamp(tmp_count);
 
-        if(tmp_count<1000){ // disable batching for warmup closed loop packets
+        if(tmp_count<1010){ // disable batching for warmup closed loop packets
             batch_size=1;
         }
         else{
