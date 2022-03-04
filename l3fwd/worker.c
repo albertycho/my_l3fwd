@@ -102,7 +102,7 @@ void batch_process_l3fwd(rpcNUMAContext* rpcContext, RPCWithHeader* rpcs,  uint6
         uint64_t dst_port;
         uint8_t port_id = ((tmp_count-batch_size)+i) % 16;
         dst_port = l3fwd_em_handle_ipv6(raw_data, port_id, (void*)worker_hash, port_id);
-        memcpy(raw_data,&dst_port, sizeof(unit64_t));
+        memcpy(raw_data,&dst_port, sizeof(uint64_t));
         sendToNode_zsim( rpcContext, 
           myLocalBuffer, // where the response will come from
           packet_size, //(is_get && !skip_ret_cpy) ? resp_arr[0].val_len : 64, // sizeof is a full resp. for GET, CB for PUT
