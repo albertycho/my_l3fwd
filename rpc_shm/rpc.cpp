@@ -400,6 +400,7 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
 	//uint64_t check_count=0;
     successStruct retd_from_rmc;
     do {
+        printf("check while loop in receiveRPCRequest_zsim_l3fwd\n");
 		//check_count++;
         retd_from_rmc = rmc_check_cq(my_qp->wq,my_qp->cq);
     } while ( retd_from_rmc.op != (RMC_INCOMING_SEND) && !(*client_done));
