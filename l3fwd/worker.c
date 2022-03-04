@@ -260,6 +260,13 @@ void* run_worker(void* arg) {
         timestamp(tmp_count);
         timestamp(tmp_count);
 
+        if(tmp_count<1000){ // disable batching for warmup closed loop packets
+            batch_size=1;
+        }
+        else{
+            batch_size=params.batch_size;
+        }
+
         if(batch_counter==batch_size){
             uint32_t sonuma_nid = params.sonuma_nid;
             batch_process_l3fwd(rpcContext, rpcs, source_node_ids, worker_hash, myLocalBuffer, batch_size, packet_size, tmp_count, wrkr_lid, sonuma_nid);
