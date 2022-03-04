@@ -401,7 +401,7 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
     int count=0;
     successStruct retd_from_rmc;
     do {
-        count++
+        count++;
         if(count>100) printf("looping in dowhielloop\n");
 		//check_count++;
         retd_from_rmc = rmc_check_cq(my_qp->wq,my_qp->cq);
