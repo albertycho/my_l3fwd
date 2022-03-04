@@ -94,6 +94,36 @@ static uint64_t l3fwd_em_handle_ipv6(char* payload, uint32_t port_id, void* h, u
 static uint64_t dest_eth_addr[RTE_MAX_ETHPORTS];
 extern int multithread_check;
 
+
+void batch_process_l3fwd(rpcNUMAContext* rpcContext, RPCWithHeader* rpcs,  uint64_t *source_node_ids, struct rte_hash* worker_hash, uint32_t batch_size, uint32_t packet_size, int tmp_count, int wrkr_lid){
+    for(int i=0; i<batch_size;i++){
+        char raw_data[2048];
+        memcpy(raw_data,rpc[i].payload, packet_size);
+        uint64_t dst_port;
+        uint8_t port_id = ((tmp_count-batch_size)+i) % 16;
+        dst_port = l3fwd_em_handle_ipv6(raw_data, port_id, (void*)worker_hash, port_id);
+        memcpy(raw_data,&dst_port, sizeof(unit64_t));
+        sendToNode_zsim( rpcContext, 
+          myLocalBuffer, // where the response will come from
+          packet_size, //(is_get && !skip_ret_cpy) ? resp_arr[0].val_len : 64, // sizeof is a full resp. for GET, CB for PUT
+          source_node_ids[i], // node id to reply to comes from the cq entry
+          0,//params.sonuma_nid,  // my nodeid unused
+          0,//source_qp_to_reply, // qp to reply to comes from the payload unused
+          wrkr_lid, // source qp
+          true, // use true because response needs to go to a specific client
+          //(char*) resp_arr[0].val_ptr, // raw data
+          (char*) raw_data,
+          false, //always cpy forwarded packet
+          ((tmp_count-batch_size)+i)
+        ); 
+
+        do_Recv_zsim(rpcContext, params.sonuma_nid, wrkr_lid, 0, rpc[i].payload, 64);
+
+
+    }
+}
+
+
 void* run_worker(void* arg) {
     struct thread_params params = *(struct thread_params*)arg;
     cpu_set_t cpuset;
@@ -184,6 +214,7 @@ void* run_worker(void* arg) {
 
     uint32_t batch_counter = 0;
     RPCWithHeader* rpcs = calloc(batch_size, sizeof(RPCWithHeader));
+    uint64_t *source_node_ids=calloc(batch_size, sizeof(uint64_t));
 
 
 	
@@ -191,93 +222,53 @@ void* run_worker(void* arg) {
     while (1) {
 		//printf("l3fwd: after entering while loop, tmp_count=%d\n", tmp_count);
         /* Begin new RPCValet */
-        uint64_t source_node_id,source_qp_to_reply;
-	//notify_service_start(tmp_count);
-        void* datastore_pointer=NULL;
-        RPCWithHeader rpc = receiveRPCRequest_zsim_l3fwd( rpcContext,
-                params.sonuma_nid,
-                wrkr_lid,
-                (uint16_t *)(&source_node_id),
-                (uint16_t *)(&source_qp_to_reply),
-                client_done );
+        //uint64_t source_node_id,source_qp_to_reply;
+        //void* datastore_pointer=NULL;
+        // RPCWithHeader rpc = receiveRPCRequest_zsim_l3fwd( rpcContext,
+        //         params.sonuma_nid,
+        //         wrkr_lid,
+        //         (uint16_t *)(&source_node_id),
+        //         (uint16_t *)(&source_qp_to_reply), //unused
+        //         client_done );
 
-        //printf("l3fwd: 2, rpc.payload: %lx\n", rpc.payload);
-       
+        rpcs[batch_counter] = receiveRPCRequest_zsim_l3fwd( rpcContext,
+                 params.sonuma_nid,
+                 wrkr_lid,
+                 (uint16_t *)(&(source_node_ids[batch_counter])),
+                 (uint16_t *)(&source_qp_to_reply), //unused
+                 client_done );
+
+        batch_counter++;
+
 		
         if((rpc.payload_len==0xdead))
             break;
 //
-	  tmp_count++;
-	  if(rolling_iter==0){
+	    tmp_count++;
+	    if(rolling_iter==0){
 		  zsim_heartbeat();
-	  }
+	    }
 
         timestamp(tmp_count);
 
-     //printf("HERD: after recvRPCReq\n");
-	//notify_service_start(tmp_count);
-
-      /* the netpipe start/ends are only for direct on-cpu time, output by flexus stats
-       * in the file core-occupancies.txt */
-      
-        char raw_data[2048];
-        memcpy(raw_data,rpc.payload, packet_size);
-
-
-        //printf("l3fwd: 1\n");
-        //TODO: write callback function for taking the packet and calling hash_lookup to find dst_port
-        uint64_t dst_port;
-        uint8_t port_id = tmp_count % 16;
-        //dst_port = l3fwd_em_handle_ipv6(rpc.payload, port_id, (void*)worker_hash, port_id);
-        dst_port = l3fwd_em_handle_ipv6(raw_data, port_id, (void*)worker_hash, port_id);
-        //printf("l3fwdloop: dst_port = %d\n", dst_port);
-
-        memcpy(raw_data, &dst_port, sizeof(uint64_t));
-
-        //bool is_get = true; //put dummy for now, before implementing l3fwd callback
-
+        // timestamp from core collection at zsim won't work with batching.
+        // not worth it to change zsim to support it now, 
+        // just send dummy timestamps to meet count
+        timestamp(tmp_count);
+        timestamp(tmp_count);
         timestamp(tmp_count);
 
-      //printf("HERD: after herdCallback\n");
-	  //printf("app: is_get = %s, serviced %d\n", is_get ? "true":"false", tmp_count);
+        if(batch_counter==batch_size){
+            batch_process_l3fwd(rpcContext, rpcs, source_node_ids, worker_hash, batch_size, packet_size, tmp_count, wrkr_lid);
 
-      //bool skip_ret_cpy = (resp_arr[0].val_len == 0);
-        bool skip_ret_cpy = false;
-
-      // resp_arr is already filled by the callback function, through the hacked
-      // datastore pointer. This is ugly, would be nice to fix.
-      sendToNode_zsim( rpcContext, 
-          myLocalBuffer, // where the response will come from
-          packet_size, //(is_get && !skip_ret_cpy) ? resp_arr[0].val_len : 64, // sizeof is a full resp. for GET, CB for PUT
-          source_node_id, // node id to reply to comes from the cq entry
-          0,//params.sonuma_nid,  // my nodeid unused
-          0,//source_qp_to_reply, // qp to reply to comes from the payload unused
-          wrkr_lid, // source qp
-          true, // use true because response needs to go to a specific client
-          //(char*) resp_arr[0].val_ptr, // raw data
-          (char*) raw_data,
-          skip_ret_cpy,
-          nb_tx_tot
-          ); 
-
-        timestamp(tmp_count);
-        //printf("l3fwd: 2, rpc.payload: %lx\n", rpc.payload);
-      //printf("HERD: after sendtoNode\n");
-
-        do_Recv_zsim(rpcContext, params.sonuma_nid, wrkr_lid, 0, rpc.payload, 64);
-          //(is_get ? 64 : sizeof(struct mica_op))  // GETS only allocated 64B in reassembler. puts are a full op
-          //);
-        //printf("l3fwd: 3\n");
-        timestamp(tmp_count);
-
-      //printf("HERD: after recvtoNode\n");
-	//notify_service_end(tmp_count);
-
+            batch_counter = 0;
+        }
 		/* End new RPCValet */
         rolling_iter++;
         nb_tx_tot++;
 		//notify_service_end(tmp_count);
     } // end infinite loop
+
     //free(datastore_pointer);
 	zsim_heartbeat();
 	printf("L3FWD worker: requests serviced:%d\n", tmp_count);
@@ -288,4 +279,115 @@ void* run_worker(void* arg) {
 
     return NULL;
 }
+
+///backup while loop before batching
+// 	printf("l3fwd: before entering while loop\n");
+//     while (1) {
+// 		//printf("l3fwd: after entering while loop, tmp_count=%d\n", tmp_count);
+//         /* Begin new RPCValet */
+//         //uint64_t source_node_id,source_qp_to_reply;
+//         //void* datastore_pointer=NULL;
+//         // RPCWithHeader rpc = receiveRPCRequest_zsim_l3fwd( rpcContext,
+//         //         params.sonuma_nid,
+//         //         wrkr_lid,
+//         //         (uint16_t *)(&source_node_id),
+//         //         (uint16_t *)(&source_qp_to_reply), //unused
+//         //         client_done );
+
+//         rpcs[batch_counter] = receiveRPCRequest_zsim_l3fwd( rpcContext,
+//                  params.sonuma_nid,
+//                  wrkr_lid,
+//                  (uint16_t *)(&(source_node_ids[batch_counter])),
+//                  (uint16_t *)(&source_qp_to_reply), //unused
+//                  client_done );
+
+//         batch_counter++;
+
+		
+//         if((rpc.payload_len==0xdead))
+//             break;
+// //
+// 	    tmp_count++;
+// 	    if(rolling_iter==0){
+// 		  zsim_heartbeat();
+// 	    }
+
+//         timestamp(tmp_count);
+
+        
+
+
+//         if(batch_counter==batch_size){
+//             //do batch process (rpcs, source_node_ids, worker_hash, batch_size, packet_size, tmp_count, wrkr_lid)
+
+//             batch_counter = 0;
+//         }
+       
+        
+
+//         //printf("HERD: after recvRPCReq\n");
+// 	    //notify_service_start(tmp_count);
+
+//       /* the netpipe start/ends are only for direct on-cpu time, output by flexus stats
+//        * in the file core-occupancies.txt */
+      
+//         char raw_data[2048];
+//         memcpy(raw_data,rpc.payload, packet_size);
+
+
+//         //printf("l3fwd: 1\n");
+//         //TODO: write callback function for taking the packet and calling hash_lookup to find dst_port
+//         uint64_t dst_port;
+//         uint8_t port_id = tmp_count % 16;
+//         //dst_port = l3fwd_em_handle_ipv6(rpc.payload, port_id, (void*)worker_hash, port_id);
+//         dst_port = l3fwd_em_handle_ipv6(raw_data, port_id, (void*)worker_hash, port_id);
+//         //printf("l3fwdloop: dst_port = %d\n", dst_port);
+
+//         memcpy(raw_data, &dst_port, sizeof(uint64_t));
+
+//         //bool is_get = true; //put dummy for now, before implementing l3fwd callback
+
+//         timestamp(tmp_count);
+
+//       //printf("HERD: after herdCallback\n");
+// 	  //printf("app: is_get = %s, serviced %d\n", is_get ? "true":"false", tmp_count);
+
+//       //bool skip_ret_cpy = (resp_arr[0].val_len == 0);
+//         bool skip_ret_cpy = false;
+
+//       // resp_arr is already filled by the callback function, through the hacked
+//       // datastore pointer. This is ugly, would be nice to fix.
+//       sendToNode_zsim( rpcContext, 
+//           myLocalBuffer, // where the response will come from
+//           packet_size, //(is_get && !skip_ret_cpy) ? resp_arr[0].val_len : 64, // sizeof is a full resp. for GET, CB for PUT
+//           source_node_id, // node id to reply to comes from the cq entry
+//           0,//params.sonuma_nid,  // my nodeid unused
+//           0,//source_qp_to_reply, // qp to reply to comes from the payload unused
+//           wrkr_lid, // source qp
+//           true, // use true because response needs to go to a specific client
+//           //(char*) resp_arr[0].val_ptr, // raw data
+//           (char*) raw_data,
+//           skip_ret_cpy,
+//           nb_tx_tot
+//           ); 
+
+//         timestamp(tmp_count);
+//         //printf("l3fwd: 2, rpc.payload: %lx\n", rpc.payload);
+//       //printf("HERD: after sendtoNode\n");
+
+//         do_Recv_zsim(rpcContext, params.sonuma_nid, wrkr_lid, 0, rpc.payload, 64);
+//           //(is_get ? 64 : sizeof(struct mica_op))  // GETS only allocated 64B in reassembler. puts are a full op
+//           //);
+//         //printf("l3fwd: 3\n");
+//         timestamp(tmp_count);
+
+//       //printf("HERD: after recvtoNode\n");
+// 	//notify_service_end(tmp_count);
+
+// 		/* End new RPCValet */
+//         rolling_iter++;
+//         nb_tx_tot++;
+// 		//notify_service_end(tmp_count);
+//     } // end infinite loop
+
  
