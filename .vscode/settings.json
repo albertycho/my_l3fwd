@@ -5,6 +5,7 @@
         "rte_cuckoo_hash.h": "c",
         "queue.h": "c",
         "rte_common.h": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "new": "cpp"
     }
 }

@@ -252,6 +252,10 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
 
     size_t lbuf_offset = ((rpc_send_count % the_ctx->msgs_per_dest) * the_ctx->msg_entry_size);
 
+    //adding size_t to uint32_t* adds the value*4 because pointer increments by 4..
+    //at least that's what we see here, so divide by 4 to accomodate            
+    lbuf_offset=lbuf_offset/4;       
+
     uint32_t* net_buffer_vaddr = messageBuffer->getUnderlyingAddress(lbuf_offset);
 	//printf("rpc_send_count: %d, lbuf_offset: %d, net_buffer_vaddr: %lx, underlying_buffer_base: %lx\n", rpc_send_count, lbuf_offset, net_buffer_vaddr, messageBuffer->underlyingBuffer);
 
