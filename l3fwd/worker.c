@@ -246,7 +246,7 @@ void* run_worker(void* arg) {
 
 		
         if((rpcs[batch_counter].payload_len==0xdead)){
-            printf("recved client done")
+            printf("recved client done");
             break;
         }
 //
