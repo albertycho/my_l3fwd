@@ -410,6 +410,7 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
 	//uint64_t check_count=0;
     int count=0;
     successStruct retd_from_rmc;
+    retd_from_rmc.op = RMC_INVAL;
     do {
         count++;
         if(count>100) printf("looping in dowhielloop\n");
@@ -428,7 +429,7 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
 
 	//printf("after rmc_check_cq\n");
     if((*done_sending)) {
-        if(retd_from_rmc.op==RMC_INVAL){
+        if(retd_from_rmc.op!=RMC_INCOMING_SEND){
             printf("done sending seen during rmccheck, no packet, serverid:  %d\n", serv_qp_id);
             RPCWithHeader rpc;
             rpc.payload_len=0xbeef;

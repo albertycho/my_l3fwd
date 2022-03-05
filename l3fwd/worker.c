@@ -287,6 +287,7 @@ void* run_worker(void* arg) {
         //if(rpcs[batch_counter].payload_len==0xbeef){
         else{
             batch_size=batch_counter;
+            printf("rpcrecv returned 0xbeef without packet, current batch_counter: %d\n", batch_counter);
         }
 
         if(batch_counter>=batch_size){
