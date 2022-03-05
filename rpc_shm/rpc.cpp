@@ -415,10 +415,14 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
         count++;
         if (count > 100) {
             printf("looping in dowhielloop\n");
+            RPCWithHeader rpc;
+            rpc.payload_len = 0xbeef;
+            return rpc;
         }
 		//check_count++;
         retd_from_rmc = rmc_check_cq(my_qp->wq,my_qp->cq);
-    } while ( retd_from_rmc.op != (RMC_INCOMING_SEND) && !(*client_done) && !(*done_sending));
+    //} while ( retd_from_rmc.op != (RMC_INCOMING_SEND) && !(*client_done) && !(*done_sending));
+    } while ( retd_from_rmc.op != (RMC_INCOMING_SEND) && !(*client_done));
 	//dbg
 	//if(check_count<2){
 	//	printf("rmc_check_cq count is less than 2 - does this happen?\n");
@@ -430,7 +434,7 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
 	//}
 
 	//printf("after rmc_check_cq\n");
-    if((*done_sending)) {
+    /*if((*done_sending)) {
         if(retd_from_rmc.op!=RMC_INCOMING_SEND){
             printf("done sending seen during rmccheck, no packet, serverid:  %d\n", serv_qp_id);
             RPCWithHeader rpc;
@@ -444,7 +448,7 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
         else {
             printf("valid packet but NOT RMC_INCOMING_SEND, serverid: %d\n", serv_qp_id);
         }
-    }
+    }*/
 
 
     if((*client_done)) {
