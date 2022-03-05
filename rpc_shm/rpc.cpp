@@ -439,8 +439,8 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
 
 
     if((*client_done)) {
-        if(){
-            printf("WARNING! client done recvd, but a valid packet also recvd")
+        if(retd_from_rmc.op!=RMC_INVAL){
+            printf("WARNING! client done recvd, but a valid packet also recvd");
         }
         RPCWithHeader rpc;
         rpc.payload_len=0xdead;
