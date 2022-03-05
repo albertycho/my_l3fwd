@@ -266,7 +266,7 @@ void* run_worker(void* arg) {
             timestamp(tmp_count);
             timestamp(tmp_count);
             if(*done_sending){
-                printf("WARNING: got done sending after rpcrecv\n")
+                printf("WARNING: got done sending after rpcrecv\n");
             }    
         }
         
