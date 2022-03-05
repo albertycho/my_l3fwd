@@ -436,7 +436,7 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
         }
         printf("done sending seen during rmccheck, with vaid packet\n");
         if (retd_from_rmc.op == RMC_INCOMING_SEND) {
-            printf("valid packet RMC_INCOMING_SEND, serverid: %d\n", source_qp_id)
+            printf("valid packet RMC_INCOMING_SEND, serverid: %d\n", source_qp_id);
         }
         else {
             printf("valid packet but NOT RMC_INCOMING_SEND, serverid: %d\n", source_qp_id);
