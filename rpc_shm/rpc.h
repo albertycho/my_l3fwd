@@ -182,6 +182,7 @@ void ctx_disable_arm_timers(rpcNUMAContext* ctx);
 
 void notify_done_to_zsim();
 void monitor_client_done(bool ** client_done);
+void register_done_sending(bool ** done_sending);
 void notify_service_start(int count);
 void notify_service_end(int count);
 void notify_fruitless_cq_check(int count);

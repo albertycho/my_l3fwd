@@ -201,9 +201,11 @@ void* run_worker(void* arg) {
     pthread_barrier_wait(params.barrier);
 
 	bool * client_done;
+    bool * done_sending; //for avoiding hang when batching
 
 #if defined ZSIM
 	monitor_client_done(&client_done);
+    register_done_sending(&done_sending);
 	printf("monitor_client_done register done, returned addr:%lx\n");
 #else
 	bool dummy_true = true;
@@ -237,7 +239,8 @@ void* run_worker(void* arg) {
                  wrkr_lid,
                  (uint16_t *)(&(source_node_ids[batch_counter])),
                  (uint16_t *)(&source_qp_to_reply), //unused
-                 client_done );
+                 client_done,
+                 done_sending );
 
  
 
@@ -245,8 +248,14 @@ void* run_worker(void* arg) {
         if((rpcs[batch_counter].payload_len==0xdead))
             break;
 //
-        batch_counter++;
-	    tmp_count++;
+
+        //don't increment if we broke out of recvRPCreq due to all packets sent
+        // (there could be the case where we get the last packet, AND all_packets_sent is set,
+        //   in which case we do increment batch couter)
+        if((rpcs[batch_counter].payload_len!=0xbeef)){
+            batch_counter++;
+	        tmp_count++;
+        }
 	    if(rolling_iter==0){
 		  zsim_heartbeat();
 	    }
@@ -265,6 +274,10 @@ void* run_worker(void* arg) {
         }
         else{
             batch_size=params.batch_size;
+        }
+
+        if(*done_sending){//no more packets will arrive, process what we have and be done
+            batch_size=batch_counter;
         }
 
         if(batch_counter>=batch_size){

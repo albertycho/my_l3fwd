@@ -106,6 +106,12 @@ void monitor_client_done(bool ** client_done){
 #endif
 
 }
+void register_done_sending(bool ** done_sending){
+#if defined ZSIM
+	register_buffer((void*) client_done, (void*) 0x16);
+#endif
+
+}
 
 void notify_service_start(int count){
 #if defined ZSIM
@@ -386,7 +392,7 @@ receiveRPCRequest(rpcNUMAContext* rpcContext, herdCallback* cb, void* pointer_to
 #endif
 
 RPCWithHeader
-receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, unsigned int serv_qp_id, uint16_t* source_node_id,uint16_t* source_qp_id, bool* client_done)
+receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, unsigned int serv_qp_id, uint16_t* source_node_id,uint16_t* source_qp_id, bool* client_done, bool* done_sending)
 {
 	//printf("inside RPCReq_zsim\n");
     /* Implementation using CQ polling ( raw rpc message will be in recv_slots )
@@ -409,7 +415,7 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
         if(count>100) printf("looping in dowhielloop\n");
 		//check_count++;
         retd_from_rmc = rmc_check_cq(my_qp->wq,my_qp->cq);
-    } while ( retd_from_rmc.op != (RMC_INCOMING_SEND) && !(*client_done));
+    } while ( retd_from_rmc.op != (RMC_INCOMING_SEND) && !(*client_done) && !(*done_sending));
 	//dbg
 	//if(check_count<2){
 	//	printf("rmc_check_cq count is less than 2 - does this happen?\n");
@@ -421,6 +427,14 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
 	//}
 
 	//printf("after rmc_check_cq\n");
+    if((*done_sending)) {
+        if(retd_from_rmc.op==RMC_INVAL){}
+            RPCWithHeader rpc;
+            rpc.payload_len=0xbeef;
+            return rpc;
+        }
+    }
+
 
     if((*client_done)) {
         RPCWithHeader rpc;

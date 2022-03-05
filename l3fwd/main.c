@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
         {.name = "log-capacity-bytes", .has_arg = 1,.flag = NULL, .val = 'L'},
         {.name = "debug", .has_arg = 1,.flag = NULL, .val = 'D'},
         {.name = "packet-size", .has_arg = 1,.flag = NULL, .val = 'r'},
-        {.name = "batch_size", .has_arg = 1,.flag = NULL, .val = 'g'},
+        {.name = "batch-size", .has_arg = 1,.flag = NULL, .val = 'g'},
         {.name = "postlist", .has_arg = 1,.flag = NULL, .val = 'p'} };
 
     /* Parse and check arguments */
@@ -180,9 +180,11 @@ int main(int argc, char* argv[]) {
                 break;
             case 'r':
                 packet_size = atoi(optarg);
+                printf("l3fwd packetsize set to %d\n", packet_size);
                 break;
             case 'g':
                 batch_size = atoi(optarg);
+                printf("l3fwd batchsize set to %d\n", batch_size);
                 break;
             default:
                 printf("Invalid argument %d\n", c);
