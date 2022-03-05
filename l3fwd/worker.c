@@ -283,7 +283,8 @@ void* run_worker(void* arg) {
             batch_size=params.batch_size;
         }
 
-        if(*done_sending){//no more packets will arrive, process what we have and be done
+        //if(*done_sending){//no more packets will arrive, process what we have and be done
+        if(rpcs[packet_counter].payload_len==0xbeef){
             batch_size=batch_counter;
         }
 
@@ -292,9 +293,9 @@ void* run_worker(void* arg) {
             batch_process_l3fwd(rpcContext, rpcs, source_node_ids, worker_hash, myLocalBuffer, batch_size, packet_size, tmp_count, wrkr_lid, sonuma_nid);
 
             batch_counter = 0;
-            if(*done_sending){
-                break;
-            }
+            //if(*done_sending){
+            //    break;
+            //}
         }
 		/* End new RPCValet */
         rolling_iter++;
