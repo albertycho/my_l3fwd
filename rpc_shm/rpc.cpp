@@ -108,7 +108,7 @@ void monitor_client_done(bool ** client_done){
 }
 void register_done_sending(bool ** done_sending){
 #if defined ZSIM
-	register_buffer((void*) client_done, (void*) 0x16);
+	register_buffer((void*) done_sending, (void*) 0x16);
 #endif
 
 }
