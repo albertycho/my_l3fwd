@@ -116,9 +116,8 @@ void batch_process_l3fwd(rpcNUMAContext* rpcContext, RPCWithHeader* rpcs,  uint6
           false, //always cpy forwarded packet
           ((tmp_count-batch_size)+i)
         ); 
-
         do_Recv_zsim(rpcContext, sonuma_nid, wrkr_lid, 0, rpcs[i].payload, 64);
-
+        
 
     }
 }
@@ -244,7 +243,7 @@ void* run_worker(void* arg) {
 
  
 
-		
+
         if((rpcs[batch_counter].payload_len==0xdead)){
             printf("recved client done");
             break;
@@ -287,10 +286,13 @@ void* run_worker(void* arg) {
         //if(rpcs[batch_counter].payload_len==0xbeef){
         else{
             batch_size=batch_counter;
-            printf("rpcrecv returned 0xbeef without packet, current batch_counter: %d\n", batch_counter);
+            printf("rpcrecv returned 0xbeef without packet servid: %d, current batch_counter: %d\n",wrkr_lid, batch_counter);
         }
 
         if(batch_counter>=batch_size){
+            if (batch_counter > batch_size) {
+                printf("WARNING: batch_counter > batch_size, servid: %d\n", wrkr_lid);
+            }
             //if(batch_size!=4){
             //    printf("batchsize %d\n", batch_size);
             //}
