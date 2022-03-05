@@ -428,7 +428,7 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
 
 	//printf("after rmc_check_cq\n");
     if((*done_sending)) {
-        if(retd_from_rmc.op==RMC_INVAL){}
+        if(retd_from_rmc.op==RMC_INVAL){
             RPCWithHeader rpc;
             rpc.payload_len=0xbeef;
             return rpc;
