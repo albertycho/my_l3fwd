@@ -280,7 +280,7 @@ void* run_worker(void* arg) {
             timestamp(tmp_count);
             timestamp(tmp_count);
             if(*done_sending){
-                printf("WARNING: got done sending after rpcrecv, serverid: %d\n",wrkr_lid);
+                printf("WARNING: got done sending after rpcrecv, serverid: %d, batch_counter: %d\n",wrkr_lid, batch_counter);
             }    
         }
         //if(*done_sending){//no more packets will arrive, process what we have and be done
