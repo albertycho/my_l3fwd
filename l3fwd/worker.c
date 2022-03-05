@@ -285,7 +285,6 @@ void* run_worker(void* arg) {
 
         if(*done_sending){//no more packets will arrive, process what we have and be done
             batch_size=batch_counter;
-            if(payload)
         }
 
         if(batch_counter>=batch_size){
