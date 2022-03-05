@@ -258,18 +258,7 @@ void* run_worker(void* arg) {
 	    if(rolling_iter==0){
 		  zsim_heartbeat();
 	    }
-        if((rpcs[batch_counter].payload_len!=0xbeef)){
-            batch_counter++;
-	        tmp_count++;
-            timestamp(tmp_count);
-            timestamp(tmp_count);
-            timestamp(tmp_count);
-            timestamp(tmp_count);
-            if(*done_sending){
-                printf("WARNING: got done sending after rpcrecv\n");
-            }    
-        }
-        
+
 
         // timestamp from core collection at zsim won't work with batching.
         // not worth it to change zsim to support it now, 
@@ -282,9 +271,21 @@ void* run_worker(void* arg) {
         else{
             batch_size=params.batch_size;
         }
-
+        
+        if((rpcs[batch_counter].payload_len!=0xbeef)){
+            batch_counter++;
+	        tmp_count++;
+            timestamp(tmp_count);
+            timestamp(tmp_count);
+            timestamp(tmp_count);
+            timestamp(tmp_count);
+            if(*done_sending){
+                printf("WARNING: got done sending after rpcrecv\n");
+            }    
+        }
         //if(*done_sending){//no more packets will arrive, process what we have and be done
-        if(rpcs[packet_counter].payload_len==0xbeef){
+        //if(rpcs[batch_counter].payload_len==0xbeef){
+        else{
             batch_size=batch_counter;
         }
 
