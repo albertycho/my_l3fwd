@@ -280,7 +280,7 @@ void* run_worker(void* arg) {
             timestamp(tmp_count);
             timestamp(tmp_count);
             if(*done_sending){
-                printf("WARNING: got done sending after rpcrecv\n");
+                printf("WARNING: got done sending after rpcrecv, serverid: %d\n",wrkr_lid);
             }    
         }
         //if(*done_sending){//no more packets will arrive, process what we have and be done
@@ -290,8 +290,8 @@ void* run_worker(void* arg) {
         }
 
         if(batch_counter>=batch_size){
-            if(batch_size==0){
-                printf("batchsize 0\n");
+            if(batch_size!=4){
+                printf("batchsize %d\n", batch_size);
             }
             uint32_t sonuma_nid = params.sonuma_nid;
             batch_process_l3fwd(rpcContext, rpcs, source_node_ids, worker_hash, myLocalBuffer, batch_size, packet_size, tmp_count, wrkr_lid, sonuma_nid);
