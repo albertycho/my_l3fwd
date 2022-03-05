@@ -252,22 +252,24 @@ void* run_worker(void* arg) {
         //don't increment if we broke out of recvRPCreq due to all packets sent
         // (there could be the case where we get the last packet, AND all_packets_sent is set,
         //   in which case we do increment batch couter)
-        if((rpcs[batch_counter].payload_len!=0xbeef)){
-            batch_counter++;
-	        tmp_count++;
-        }
+
 	    if(rolling_iter==0){
 		  zsim_heartbeat();
 	    }
-
-        timestamp(tmp_count);
+        if((rpcs[batch_counter].payload_len!=0xbeef)){
+            batch_counter++;
+	        tmp_count++;
+            timestamp(tmp_count);
+            timestamp(tmp_count);
+            timestamp(tmp_count);
+            timestamp(tmp_count);
+        }
+        
 
         // timestamp from core collection at zsim won't work with batching.
         // not worth it to change zsim to support it now, 
         // just send dummy timestamps to meet count
-        timestamp(tmp_count);
-        timestamp(tmp_count);
-        timestamp(tmp_count);
+
 
         if(tmp_count<1010){ // disable batching for warmup closed loop packets
             batch_size=1;
