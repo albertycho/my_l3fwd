@@ -429,24 +429,24 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
 	//printf("after rmc_check_cq\n");
     if((*done_sending)) {
         if(retd_from_rmc.op==RMC_INVAL){
-            printf("done sending seen during rmccheck, no packet, serverid:  %d\n", source_qp_id);
+            printf("done sending seen during rmccheck, no packet, serverid:  %d\n", serv_qp_id);
             RPCWithHeader rpc;
             rpc.payload_len=0xbeef;
             return rpc;
         }
         printf("done sending seen during rmccheck, with vaid packet\n");
         if (retd_from_rmc.op == RMC_INCOMING_SEND) {
-            printf("valid packet RMC_INCOMING_SEND, serverid: %d\n", source_qp_id);
+            printf("valid packet RMC_INCOMING_SEND, serverid: %d\n", serv_qp_id);
         }
         else {
-            printf("valid packet but NOT RMC_INCOMING_SEND, serverid: %d\n", source_qp_id);
+            printf("valid packet but NOT RMC_INCOMING_SEND, serverid: %d\n", serv_qp_id);
         }
     }
 
 
     if((*client_done)) {
         if(retd_from_rmc.op!=RMC_INVAL){
-            printf("WARNING! client done recvd, but a valid packet also recvd, serverid: %d\n", source_qp_id);
+            printf("WARNING! client done recvd, but a valid packet also recvd, serverid: %d\n", serv_qp_id);
         }
         RPCWithHeader rpc;
         rpc.payload_len=0xdead;
