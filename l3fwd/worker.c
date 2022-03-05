@@ -290,6 +290,9 @@ void* run_worker(void* arg) {
         }
 
         if(batch_counter>=batch_size){
+            if(batch_size==0){
+                printf("batchsize 0\n")
+            }
             uint32_t sonuma_nid = params.sonuma_nid;
             batch_process_l3fwd(rpcContext, rpcs, source_node_ids, worker_hash, myLocalBuffer, batch_size, packet_size, tmp_count, wrkr_lid, sonuma_nid);
 
