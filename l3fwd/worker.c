@@ -245,8 +245,9 @@ void* run_worker(void* arg) {
  
 
 		
-        if((rpcs[batch_counter].payload_len==0xdead))
+        if((rpcs[batch_counter].payload_len==0xdead)){
             break;
+        }
 //
 
         //don't increment if we broke out of recvRPCreq due to all packets sent
