@@ -429,12 +429,12 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
 	//printf("after rmc_check_cq\n");
     if((*done_sending)) {
         if(retd_from_rmc.op==RMC_INVAL){
-            printf("done sending seen during rmccheck, no packet\n")
+            printf("done sending seen during rmccheck, no packet\n");
             RPCWithHeader rpc;
             rpc.payload_len=0xbeef;
             return rpc;
         }
-        printf("done sending seen during rmccheck, with vaid packet\n")
+        printf("done sending seen during rmccheck, with vaid packet\n");
     }
 
 
