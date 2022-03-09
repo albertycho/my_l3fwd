@@ -99,7 +99,7 @@ static const struct ipv6_l3fwd_em_route ipv6_l3fwd_em_route_array[] = {
 	{{{32, 1, 2, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0},
 	  {32, 1, 2, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 1}, 9, 9, IPPROTO_UDP}, 14},
 	{{{32, 1, 2, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0},
-	  {32, 1, 2, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 1}, 9, 9, IPPROTO_UDP}, 15},
+	  {32, 1, 2, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 1}, 9, 9, IPPROTO_UDP}, 63},
 };
 
 static uint8_t ipv6_l3fwd_out_if[L3FWD_HASH_ENTRIES] __rte_cache_aligned;
@@ -361,7 +361,7 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 		//ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void*)payload);
 		ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void*)&key);
 
-	//printf("hash_lookup returned %d\n", ret);
+	printf("hash_lookup returned %d\n", ret);
 	return (ret < 0) ? portid : ipv6_l3fwd_out_if[ret];
 }
 
