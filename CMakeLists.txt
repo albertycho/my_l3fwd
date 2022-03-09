@@ -119,3 +119,14 @@ target_include_directories(l3fwd PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/rte_lib ${CM
 #target_link_libraries(mica_test ${LIBRARIES} sonuma mica)
 #target_link_libraries(mica_test ${LIBRARIES} zsim_nic mica)
 #target_include_directories(mica_test PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/mica)
+
+
+
+
+
+
+
+
+
+############ raze and build cmd:
+#cmake -DBUILD_ZSIM=1 -DOPT_MEASUREMENT=1 ..

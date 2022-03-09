@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
     int c;
     int run_debug_mode = 0;
     unsigned int packet_size=512; // default 512 byte packet
-    unsigned int batch_size = 4;
+    unsigned int batch_size = 1;
     unsigned int num_threads = 0; // Msutherl: Fixed for -Wpedantic c++14 
     unsigned int num_rem_threads = 0;
     unsigned int node_cnt = 0; // Msutherl
@@ -123,14 +123,14 @@ int main(int argc, char* argv[]) {
         {.name = "log-capacity-bytes", .has_arg = 1,.flag = NULL, .val = 'L'},
         {.name = "debug", .has_arg = 1,.flag = NULL, .val = 'D'},
         {.name = "packet-size", .has_arg = 1,.flag = NULL, .val = 'r'},
-        {.name = "batch-size", .has_arg = 1,.flag = NULL, .val = 'g'},
+        {.name = "batchsize", .has_arg = 1,.flag = NULL, .val = 'd'},
         {.name = "postlist", .has_arg = 1,.flag = NULL, .val = 'p'} };
 
     /* Parse and check arguments */
     while (1) {
-        c = getopt_long(argc, argv, "M:t:b:N:n:c:u:m:C:q:O:K:B:L:D:p", opts, NULL);
+        c = getopt_long(argc, argv, "M:t:b:N:n:c:u:m:C:q:O:K:B:L:D:r:d:p", opts, NULL);
         if (c == -1) {
-            printf("GETOPT FAILED (PROBABLY FOR BATCH-SIZE)\n");
+            printf("GETOPT FAILED (1 FAIL expected)\n");
             break;
         }
         switch (c) {
@@ -142,6 +142,7 @@ int main(int argc, char* argv[]) {
                 break;
             case 'L':
                 log_cap = atol(optarg);
+                printf("l3fwd log_cap set to %d\n", log_cap);
                 break;
             case 'B':
                 num_hash_buckets = atol(optarg);
@@ -151,6 +152,7 @@ int main(int argc, char* argv[]) {
                 break;
             case 't':
                 num_threads = atol(optarg);
+                printf("l3fwd num_threads set to %d\n", num_threads);
                 break;
             case 'b':
                 base_port_index = atoi(optarg);
@@ -178,12 +180,13 @@ int main(int argc, char* argv[]) {
                 break;
             case 'q':
                 qps = atoi(optarg);
+                printf("l3fwd qps set to %d\n", qps);
                 break;
             case 'r':
                 packet_size = atoi(optarg);
                 printf("l3fwd packetsize set to %d\n", packet_size);
                 break;
-            case 'g':
+            case 'd':
                 batch_size = atoi(optarg);
                 printf("l3fwd batchsize set to %d\n", batch_size);
                 break;
