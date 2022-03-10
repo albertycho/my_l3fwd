@@ -482,7 +482,7 @@ __rte_hash_add_key_with_hash(const struct rte_hash* h, const void* key,
 
 	
 	uint32_t ringcount = rte_ring_count(h->free_slots);
-	printf("free_slot size: %d\n", ringcount);
+	//printf("free_slot size: %d\n", ringcount);
 
 	short_sig = get_short_sig(sig);
 	prim_bucket_idx = get_prim_bucket_index(h, sig);
@@ -1036,9 +1036,9 @@ int rte_hash_create(const struct rte_hash_parameters* params, struct rte_hash** 
 	// rte_rwlock_write_unlock(h->tailq_lock);
 
 
-	printf("size of rte_hash:%d\n", sizeof(h));
-	printf("h's addr = %lx\n", (uint64_t)h);
-	printf("h->freeslot's addr = %lx\n", (uint64_t)(h->free_slots));
+	//printf("size of rte_hash:%d\n", sizeof(h));
+	//printf("h's addr = %lx\n", (uint64_t)h);
+	//printf("h->freeslot's addr = %lx\n", (uint64_t)(h->free_slots));
 	
 
 	/* original function returns h. After porting over, returning the pointer itself 1 extends the address when returned, giving a different address
@@ -1047,8 +1047,8 @@ int rte_hash_create(const struct rte_hash_parameters* params, struct rte_hash** 
 	 */
 
 	*ret_ptr = h;
-	printf("ret_ptr's addr = %lx\n", (uint64_t)(*ret_ptr));
-	printf("returning from hash_create, h->name = %s\n", h->name);
+	//printf("ret_ptr's addr = %lx\n", (uint64_t)(*ret_ptr));
+	//printf("returning from hash_create, h->name = %s\n", h->name);
 	return 1;
 	//return h;
 	//return (uint64_t)h;

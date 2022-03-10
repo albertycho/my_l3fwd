@@ -383,7 +383,7 @@ populate_ipv6_many_flow_into_table(const struct rte_hash *h,
 			printf("Unable to add entry %u to the l3fwd hash.\n", i);
 			exit(1);
 		}
-		printf("ret= %d, val(entry.if_out)= %d\n", ret, entry.if_out);
+		//printf("ret= %d, val(entry.if_out)= %d\n", ret, entry.if_out);
 		ipv6_l3fwd_out_if[ret] = (uint8_t) entry.if_out;
 
 	}
