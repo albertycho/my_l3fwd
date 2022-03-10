@@ -512,7 +512,8 @@ em_get_ipv6_dst_port(void *ipv6_hdr, uint16_t portid, void *lookup_struct)
 		//ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void*)payload);
 		ret = rte_hash_lookup(ipv6_l3fwd_lookup_struct, (const void*)&key);
 
-	printf("hash_lookup returned %d, out_if: %d\n", ret, ipv6_l3fwd_out_if[ret]);
+	//DEBUG / Sanity check print
+	//printf("hash_lookup returned %d, out_if: %d\n", ret, ipv6_l3fwd_out_if[ret]);
 	return (ret < 0) ? portid : ipv6_l3fwd_out_if[ret];
 }
 
