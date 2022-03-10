@@ -345,13 +345,7 @@ populate_ipv6_few_flow_into_table(const struct rte_hash* h)
 		(uint64_t)IPV6_L3FWD_EM_NUM_ROUTES);
 }
 
-////////
-for(int j=0; j<IPV6_ADDR_LEN-1;j++){
-	uint64_t a=i>>(j*2);
-	uint8_t b =a&3;
-	entry.key.ip_dst[j]+=b;
-	entry.key.ip_src[j]+=b;
-}
+
 
 static inline void
 populate_ipv6_many_flow_into_table(const struct rte_hash *h,
