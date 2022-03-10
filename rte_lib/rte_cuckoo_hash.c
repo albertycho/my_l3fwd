@@ -492,7 +492,7 @@ __rte_hash_add_key_with_hash(const struct rte_hash* h, const void* key,
 	rte_prefetch0(prim_bkt);
 	rte_prefetch0(sec_bkt);
 
-	printf("add_key_with_hash - prim_bucket_idx = %d, sec_bucket_idx = %d, short_sig = %d\n", prim_bucket_idx, sec_bucket_idx, short_sig);
+	//printf("add_key_with_hash - prim_bucket_idx = %d, sec_bucket_idx = %d, short_sig = %d\n", prim_bucket_idx, sec_bucket_idx, short_sig);
 
 	/* Check if key is already inserted in primary location */
 	__hash_rw_writer_lock(h);
