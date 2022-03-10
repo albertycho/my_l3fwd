@@ -136,6 +136,7 @@ int main(int argc, char* argv[]) {
         switch (c) {
             case 'K':
                 num_client_keys = atol(optarg);
+                printf("l3fwd num_keys set to %d\n", num_client_keys);
                 break;
             case 's':
                 start_core = atol(optarg);

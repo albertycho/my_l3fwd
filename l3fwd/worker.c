@@ -143,7 +143,7 @@ void* run_worker(void* arg) {
     multithread_check = params.id;
 
     uint32_t socket_id = params.id % 16;
-    struct rte_hash* worker_hash = setup_hash(socket_id);
+    struct rte_hash* worker_hash = setup_hash(socket_id, params.num_keys);
     char name[RTE_HASH_NAMESIZE];
     //printf("after setup hash\n");
     memcpy(name, worker_hash->name, sizeof(name));
