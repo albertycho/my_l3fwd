@@ -82,7 +82,7 @@ soNUMAQP_T* registerNewSONUMAQP(rpcNUMAContext* ctx, size_t tidx)
     }
     //register CQs
     register_buffer((void*) (&cq), (void*) 1);
-    //DLog("New cq registered at address %lld\n", cq);
+    printf("New cq registered at address %lld\n", cq);
     if( rcode < 0 ) {
         printf("Failed to register CQ from thread %lu.\n",tidx);
         return nullptr;
