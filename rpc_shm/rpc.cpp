@@ -283,6 +283,7 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
     //rmc_hw_send(my_qp->wq,the_ctx->ctx_id,net_buffer_vaddr,messageByteSize,destNode);
     int send_ret;
     do {
+
         send_ret=rmc_hw_send(my_qp->wq, the_ctx->ctx_id, net_buffer_vaddr, messageByteSize, destNode);
     } while (send_ret);
 

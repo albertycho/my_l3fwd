@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
         {.name = "num-client-ports", .has_arg = 1, .flag = NULL,.val = 'n'},
         {.name = "is-client", .has_arg = 1,.flag = NULL, .val = 'c'},
         {.name = "update-percentage", .has_arg = 1,.flag = NULL, .val = 'u'},
-        {.name = "machine-id", .has_arg = 1,.flag = NULL, .val = 'm'},
+        {.name = "packet-size", .has_arg = 1,.flag = NULL, .val = 'm'},
         {.name = "total-nodes", .has_arg = 1,.flag = NULL, .val = 'C'},
         {.name = "qps-to-create", .has_arg = 1,.flag = NULL, .val = 'q'},
         {.name = "num-remote-threads", .has_arg = 1,.flag = NULL, .val = 'O'},
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
         {.name = "num-server-buckets", .has_arg = 1,.flag = NULL, .val = 'B'},
         {.name = "log-capacity-bytes", .has_arg = 1,.flag = NULL, .val = 'L'},
         {.name = "debug", .has_arg = 1,.flag = NULL, .val = 'D'},
-        {.name = "packet-size", .has_arg = 1,.flag = NULL, .val = 'r'},
+        //{.name = "packet-size", .has_arg = 1,.flag = NULL, .val = 'r'},
         {.name = "batchsize", .has_arg = 1,.flag = NULL, .val = 'd'},
         {.name = "postlist", .has_arg = 1,.flag = NULL, .val = 'p'} };
 
@@ -168,7 +168,8 @@ int main(int argc, char* argv[]) {
                 update_percentage = atoi(optarg);
                 break;
             case 'm':
-                machine_id = atoi(optarg);
+                packet_size = atoi(optarg);
+                printf("l3fwd packetsize set to %d\n", packet_size);
                 break;
             case 'p':
                 postlist = atoi(optarg);
@@ -183,10 +184,10 @@ int main(int argc, char* argv[]) {
                 qps = atoi(optarg);
                 printf("l3fwd qps set to %d\n", qps);
                 break;
-            case 'r':
-                packet_size = atoi(optarg);
-                printf("l3fwd packetsize set to %d\n", packet_size);
-                break;
+            //case 'r':
+            //    packet_size = atoi(optarg);
+            //    printf("l3fwd packetsize set to %d\n", packet_size);
+            //    break;
             case 'd':
                 batch_size = atoi(optarg);
                 printf("l3fwd batchsize set to %d\n", batch_size);

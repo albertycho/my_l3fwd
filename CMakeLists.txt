@@ -36,14 +36,12 @@ endif()
 
 set(LIBRARIES ${LIBRARIES} rt pthread)
 
-#set(LIBZSIMNIC_DIR /nethome/acho44/zsim/zSim/src/libzsim)
-#set(LIBZSIMNIC_DIR /nethome/acho44/zsim/zSim/src/libzsim PARENT_SCOPE)
+set(LIBZSIMNIC_DIR /nethome/acho44/zsim/zSim/src/libzsim)
+set(LIBZSIMNIC_DIR /nethome/acho44/zsim/zSim/src/libzsim PARENT_SCOPE)
 
-#set(LIBZSIMNIC_DIR /home/albert/INDIE/my_l3fwd/libzsim)
-#set(LIBZSIMNIC_DIR /home/albert/INDIE/my_l3fwd/libzsim PARENT_SCOPE)
 
-set(LIBZSIMNIC_DIR /nethome/acho44/zsim/my_l3fwd/libzsim)
-set(LIBZSIMNIC_DIR /nethome/acho44/zsim/my_l3fwd/libzsim PARENT_SCOPE)
+#set(LIBZSIMNIC_DIR /nethome/acho44/zsim/my_l3fwd/libzsim)
+#set(LIBZSIMNIC_DIR /nethome/acho44/zsim/my_l3fwd/libzsim PARENT_SCOPE)
 
 
 set(LIBZSIMNIC_SOURCES

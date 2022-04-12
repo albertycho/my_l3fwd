@@ -96,6 +96,7 @@ extern int multithread_check;
 
 
 void batch_process_l3fwd(rpcNUMAContext* rpcContext, RPCWithHeader* rpcs,  uint64_t *source_node_ids, struct rte_hash* worker_hash, NIExposedBuffer* myLocalBuffer, uint32_t batch_size, uint32_t packet_size, int tmp_count, int wrkr_lid, uint32_t sonuma_nid){
+	//printf("packet size: %d at batch_procees_l3fwd\n", packet_size);
     for(int i=0; i<batch_size;i++){
         char raw_data[2048];
         memcpy(raw_data,rpcs[i].payload, packet_size);
@@ -212,6 +213,7 @@ void* run_worker(void* arg) {
 #endif
 
 	int tmp_count=0;
+	int heartbeatset=0;
 
     uint32_t batch_counter = 0;
     RPCWithHeader* rpcs = calloc(batch_size, sizeof(RPCWithHeader));
@@ -254,8 +256,10 @@ void* run_worker(void* arg) {
         // (there could be the case where we get the last packet, AND all_packets_sent is set,
         //   in which case we do increment batch couter)
 
-	    if(rolling_iter==0){
+		//if(rolling_iter==0){
+	    if(tmp_count==1010 && heartbeatset==0){
 		  zsim_heartbeat();
+		  heartbeatset=1;
 	    }
 
 
