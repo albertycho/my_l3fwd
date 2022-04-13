@@ -425,10 +425,10 @@ struct rte_hash* setup_hash(int socket_id, uint64_t num_keys){
 		printf("setup hash failed - rte_hash_create fail\n");
 	}
 
-	printf("ipv6_l3fwd_lookup's addr = %lx\n", (uint64_t)ipv6_l3fwd_lookup);
+	//printf("ipv6_l3fwd_lookup's addr = %lx\n", (uint64_t)ipv6_l3fwd_lookup);
 
-	print_hash_names(ipv6_l3fwd_lookup);
-	printf("h->freeslot's addr = %lx\n", (uint64_t)(ipv6_l3fwd_lookup->free_slots));
+	//print_hash_names(ipv6_l3fwd_lookup);
+	//printf("h->freeslot's addr = %lx\n", (uint64_t)(ipv6_l3fwd_lookup->free_slots));
 	//printf("rte_hash_create returned in setup_hash\n");
 	//printf("ipv6_l3fwd_lookup's addr = %lx\n", (uint64_t)ipv6_l3fwd_lookup);
 	//printf("setup_hash: hash.name = %s\n",ipv6_l3fwd_lookup->name);

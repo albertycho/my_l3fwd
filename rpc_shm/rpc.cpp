@@ -82,7 +82,7 @@ soNUMAQP_T* registerNewSONUMAQP(rpcNUMAContext* ctx, size_t tidx)
     }
     //register CQs
     register_buffer((void*) (&cq), (void*) 1);
-    printf("New cq registered at address %lld\n", cq);
+    //printf("New cq registered at address %lld\n", cq);
     if( rcode < 0 ) {
         printf("Failed to register CQ from thread %lu.\n",tidx);
         return nullptr;
@@ -163,13 +163,13 @@ rpcNUMAContext* createRPCNUMAContext(int dev_fd, unsigned int aNodeID, unsigned 
     int kfd = 0;
 #endif
 
-    printf("Beginning creation of rpcNUMA context.....\n");
+    //printf("Beginning creation of rpcNUMA context.....\n");
     rpcNUMAContext* ctx = new rpcNUMAContext;
 #ifdef QFLEX
     ctx->kfd = kfd;
 #endif
 
-    printf("Beginning map of accessible 1-sided memory context...\n");
+    //printf("Beginning map of accessible 1-sided memory context...\n");
     //register context
     ctx->pgas = NULL;
     if(kal_reg_ctx(kfd, SR_CTX_ID, &(ctx->pgas), ctx_size/EMULATOR_SW_PAGE_SIZE) < 0) {
@@ -415,7 +415,7 @@ receiveRPCRequest_zsim_l3fwd(rpcNUMAContext* rpcContext, unsigned int serv_nid, 
     do {
         count++;
         if (count > 100) {
-            printf("looping in dowhielloop\n");
+            //printf("looping in dowhielloop\n");
             RPCWithHeader rpc;
             rpc.payload_len = 0xbeef;
             return rpc;

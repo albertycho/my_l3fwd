@@ -182,7 +182,7 @@ void* run_worker(void* arg) {
     registerNewSONUMAQP(rpcContext,wrkr_lid);
 
 #if defined ZSIM
-    printf("sanity check for defined ZSIM\n");
+    //printf("sanity check for defined ZSIM\n");
 #endif
 
 	/* We can detect at most NUM_CLIENTS requests in each step */
@@ -206,7 +206,7 @@ void* run_worker(void* arg) {
 #if defined ZSIM
 	monitor_client_done(&client_done);
     register_done_sending(&done_sending);
-	printf("monitor_client_done register done, returned addr:%lx\n");
+	//printf("monitor_client_done register done, returned addr:%lx\n");
 #else
 	bool dummy_true = true;
 	client_done = &dummy_true;
@@ -290,7 +290,7 @@ void* run_worker(void* arg) {
         //if(rpcs[batch_counter].payload_len==0xbeef){
         else{
             batch_size=batch_counter;
-            printf("rpcrecv returned 0xbeef without packet servid: %d, current batch_counter: %d\n",wrkr_lid, batch_counter);
+            //printf("rpcrecv returned 0xbeef without packet servid: %d, current batch_counter: %d\n",wrkr_lid, batch_counter);
         }
 
         if(batch_counter>=batch_size){

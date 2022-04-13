@@ -703,7 +703,7 @@ int rte_hash_create(const struct rte_hash_parameters* params, struct rte_hash** 
 	unsigned int readwrite_concur_lf_support = 0;
 	uint32_t i;
 
-	printf("starting hash_create\n");
+	//printf("starting hash_create\n");
 
 	rte_hash_function default_hash_func = (rte_hash_function)rte_jhash;
 
