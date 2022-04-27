@@ -385,6 +385,7 @@ populate_ipv6_many_flow_into_table(const struct rte_hash *h,
 		}
 		//printf("ret= %d, val(entry.if_out)= %d\n", ret, entry.if_out);
 		ipv6_l3fwd_out_if[ret] = (uint8_t) entry.if_out;
+		//printf("L3FWD_HASH_ENTRIES: %d\n",L3FWD_HASH_ENTRIES);
 
 	}
 	printf("Hash: Adding 0x%x keys\n", nr_flow);

@@ -480,6 +480,7 @@ __rte_hash_add_key_with_hash(const struct rte_hash* h, const void* key,
 	int32_t ret_val;
 	struct rte_hash_bucket* last;
 
+	//printf("key_entry_size: %d\n", h->key_entry_size);
 	
 	uint32_t ringcount = rte_ring_count(h->free_slots);
 	//printf("free_slot size: %d\n", ringcount);

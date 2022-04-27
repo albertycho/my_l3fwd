@@ -14,7 +14,8 @@
 
 
 // Msutherl: Change these for different experiments
-#define MSGS_PER_PAIR 256
+//#define MSGS_PER_PAIR 256
+#define MSGS_PER_PAIR 64
 #define RPC_MAX_PAYLOAD 512
 
 #ifdef __cplusplus // Msutherl: hacking
