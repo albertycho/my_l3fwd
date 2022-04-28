@@ -66,7 +66,7 @@ bool herdCallbackFunction(uint8_t* slot_ptr, rpcArg_t* rpc_arguments)
     //addToContainer(rpcContext, serviceTime);
 }
 */
-
+bool zeroCopy=false;
 
 static uint64_t l3fwd_em_handle_ipv6(char* payload, uint32_t port_id, void* h, uint32_t ival /*ival is temp wa for sanity check testing*/){
     //get header from rpc
@@ -99,11 +99,15 @@ void batch_process_l3fwd(rpcNUMAContext* rpcContext, RPCWithHeader* rpcs,  uint6
 	//printf("packet size: %d at batch_procees_l3fwd\n", packet_size);
     for(int i=0; i<batch_size;i++){
         char raw_data[2048];
-        memcpy(raw_data,rpcs[i].payload, packet_size);
+        if(!(zeroCopy)){
+            memcpy(raw_data,rpcs[i].payload, packet_size);
+        }
         uint64_t dst_port;
         uint8_t port_id = ((tmp_count-batch_size)+i) % 16;
         dst_port = l3fwd_em_handle_ipv6(raw_data, port_id, (void*)worker_hash, port_id);
-        memcpy(raw_data,&dst_port, sizeof(uint64_t));
+        if(!(zeroCopy)){
+            memcpy(raw_data,&dst_port, sizeof(uint64_t));
+        }
         sendToNode_zsim( rpcContext, 
           myLocalBuffer, // where the response will come from
           packet_size, //(is_get && !skip_ret_cpy) ? resp_arr[0].val_len : 64, // sizeof is a full resp. for GET, CB for PUT
@@ -113,11 +117,13 @@ void batch_process_l3fwd(rpcNUMAContext* rpcContext, RPCWithHeader* rpcs,  uint6
           wrkr_lid, // source qp
           true, // use true because response needs to go to a specific client
           //(char*) resp_arr[0].val_ptr, // raw data
-          (char*) raw_data,
-          false, //always cpy forwarded packet
+          (char*) rpcs[i].payload,
+          zeroCopy, //always cpy forwarded packet
           ((tmp_count-batch_size)+i)
         ); 
-        do_Recv_zsim(rpcContext, sonuma_nid, wrkr_lid, 0, rpcs[i].payload, 64);
+        if(!(zeroCopy)){ // if zeroCopy, NIC will free the recv buffer on its own
+            do_Recv_zsim(rpcContext, sonuma_nid, wrkr_lid, 0, rpcs[i].payload, 64);
+        }
         
 
     }
@@ -140,18 +146,20 @@ void* run_worker(void* arg) {
     //int dummyint = rte_jhash_dummy_int();
     //printf("dummyint = %d\n", dummyint);
 
+    //bool zeroCopy=false;
+    zeroCopy=false;
+    if(params.zeroCopy!=0){
+        zeroCopy=true;
+    }
+
     unsigned int packet_size = params.packet_size;
     multithread_check = params.id;
 
     uint32_t socket_id = params.id % 16;
     struct rte_hash* worker_hash = setup_hash(socket_id, params.num_keys);
-    char name[RTE_HASH_NAMESIZE];
-    //printf("after setup hash\n");
-    memcpy(name, worker_hash->name, sizeof(name));
-    //printf("after memcpy\n");
-    //printf("hash.name = %s\n",name);
-    //printf("core %d setuphash complete. hash.name=%s\n", params.id, worker_hash->name);
-    //printf("hash.freelost.name = %s\n", worker_hash->free_slots->name);
+    //char name[RTE_HASH_NAMESIZE];
+    //memcpy(name, worker_hash->name, sizeof(name));
+
 
     uint32_t portid;
     /* pre-init dst MACs for all ports to 02:00:00:00:00:xx */

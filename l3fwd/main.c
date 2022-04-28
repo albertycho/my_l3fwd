@@ -89,6 +89,7 @@ int main(int argc, char* argv[]) {
     int run_debug_mode = 0;
     unsigned int packet_size=512; // default 512 byte packet
     unsigned int batch_size = 1;
+    unsigned int zeroCopy=0;
     unsigned int num_threads = 0; // Msutherl: Fixed for -Wpedantic c++14 
     unsigned int num_rem_threads = 0;
     unsigned int node_cnt = 0; // Msutherl
@@ -113,7 +114,7 @@ int main(int argc, char* argv[]) {
         {.name = "num-server-ports", .has_arg = 1, .flag = NULL,.val = 'N'},
         {.name = "num-client-ports", .has_arg = 1, .flag = NULL,.val = 'n'},
         {.name = "is-client", .has_arg = 1,.flag = NULL, .val = 'c'},
-        {.name = "update-percentage", .has_arg = 1,.flag = NULL, .val = 'u'},
+        {.name = "zeroCopy", .has_arg = 1,.flag = NULL, .val = 'u'},
         {.name = "packet-size", .has_arg = 1,.flag = NULL, .val = 'm'},
         {.name = "total-nodes", .has_arg = 1,.flag = NULL, .val = 'C'},
         {.name = "qps-to-create", .has_arg = 1,.flag = NULL, .val = 'q'},
@@ -165,7 +166,7 @@ int main(int argc, char* argv[]) {
                 num_client_ports = atoi(optarg);
                 break;
             case 'u':
-                update_percentage = atoi(optarg);
+                zeroCopy = atol(optarg);
                 break;
             case 'm':
                 packet_size = atoi(optarg);
@@ -277,6 +278,7 @@ int main(int argc, char* argv[]) {
         param_arr[i].num_serv_threads = num_threads;
         param_arr[i].packet_size = packet_size;
         param_arr[i].batch_size= batch_size;
+        param_arr[i].zeroCopy = zeroCopy;
 
         //int core = thread_pin[i];
         printf("main launching pthread_create runworker\n");

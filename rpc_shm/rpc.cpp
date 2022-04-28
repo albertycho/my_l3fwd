@@ -253,18 +253,24 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
 {
     //DRPC("Client [%d] calls sendToNode [%d], sendQP [%d], qpTarget [%d]",clientFrom,destNode,sendQP,qpTarget);
 
-    /* Calculate local buffer address based on rpc_send_count, wrapping around when its greater than num msgs outstanding. */
-    ctx_entry_t *the_ctx = &(rpcContext->msg_domain->ctx_struct);
+    uint32_t* net_buffer_vaddr;
+    if(!skipcpy){
+        /* Calculate local buffer address based on rpc_send_count, wrapping around when its greater than num msgs outstanding. */
+        ctx_entry_t *the_ctx = &(rpcContext->msg_domain->ctx_struct);
 
-    size_t lbuf_offset = ((rpc_send_count % the_ctx->msgs_per_dest) * the_ctx->msg_entry_size);
+        size_t lbuf_offset = ((rpc_send_count % the_ctx->msgs_per_dest) * the_ctx->msg_entry_size);
 
-    //adding size_t to uint32_t* adds the value*4 because pointer increments by 4..
-    //at least that's what we see here, so divide by 4 to accomodate            
-    lbuf_offset=lbuf_offset/4;       
+        //adding size_t to uint32_t* adds the value*4 because pointer increments by 4..
+        //at least that's what we see here, so divide by 4 to accomodate            
+        lbuf_offset=lbuf_offset/4;       
 
-    uint32_t* net_buffer_vaddr = messageBuffer->getUnderlyingAddress(lbuf_offset);
-	//printf("rpc_send_count: %d, lbuf_offset: %d, net_buffer_vaddr: %lx, underlying_buffer_base: %lx\n", rpc_send_count, lbuf_offset, net_buffer_vaddr, messageBuffer->underlyingBuffer);
-
+        //uint32_t* net_buffer_vaddr = messageBuffer->getUnderlyingAddress(lbuf_offset);
+        net_buffer_vaddr = messageBuffer->getUnderlyingAddress(lbuf_offset);
+        //printf("rpc_send_count: %d, lbuf_offset: %d, net_buffer_vaddr: %lx, underlying_buffer_base: %lx\n", rpc_send_count, lbuf_offset, net_buffer_vaddr, messageBuffer->underlyingBuffer);
+    }
+    else{
+        net_buffer_vaddr = raw_payload_data;
+    }
     //PASS2FLEXUS_DEBUG((uint64_t)lbuf_offset,MEASUREMENT,(uint64_t)net_buffer_vaddr);
     soNUMAQP_T* my_qp = rpcContext->qps.at(sendQP);
     // copy the struct into the netbuffer address
@@ -272,7 +278,7 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
 
 
     if( skipcpy ) {
-        *((uint32_t*)net_buffer_vaddr) = 0x1234; // simulate header write
+        //*((uint32_t*)net_buffer_vaddr) = 0x1234; // simulate header write
     } else {
         //my_memcpy(net_buffer_vaddr,raw_payload_data,messageByteSize); // from libsonuma
         mempcpy(net_buffer_vaddr,raw_payload_data,messageByteSize);
