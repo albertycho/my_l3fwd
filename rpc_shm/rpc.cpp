@@ -269,7 +269,7 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
         //printf("rpc_send_count: %d, lbuf_offset: %d, net_buffer_vaddr: %lx, underlying_buffer_base: %lx\n", rpc_send_count, lbuf_offset, net_buffer_vaddr, messageBuffer->underlyingBuffer);
     }
     else{
-        net_buffer_vaddr = raw_payload_data;
+        net_buffer_vaddr = (uint32_t*) raw_payload_data;
     }
     //PASS2FLEXUS_DEBUG((uint64_t)lbuf_offset,MEASUREMENT,(uint64_t)net_buffer_vaddr);
     soNUMAQP_T* my_qp = rpcContext->qps.at(sendQP);
