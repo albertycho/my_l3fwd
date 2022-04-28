@@ -56,6 +56,7 @@ struct thread_params {
   unsigned int num_client_threads;
   unsigned int packet_size;
   unsigned int batch_size;
+  bool zero_copy;
   uint64_t num_keys;
   uint64_t num_hash_buckets;
   uint64_t log_capacity_bytes;
