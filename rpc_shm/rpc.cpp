@@ -254,10 +254,10 @@ void sendToNode_zsim(rpcNUMAContext* rpcContext, NIExposedBuffer* messageBuffer,
     //DRPC("Client [%d] calls sendToNode [%d], sendQP [%d], qpTarget [%d]",clientFrom,destNode,sendQP,qpTarget);
 
     uint32_t* net_buffer_vaddr;
+    ctx_entry_t *the_ctx = &(rpcContext->msg_domain->ctx_struct);
     if(!skipcpy){
+        
         /* Calculate local buffer address based on rpc_send_count, wrapping around when its greater than num msgs outstanding. */
-        ctx_entry_t *the_ctx = &(rpcContext->msg_domain->ctx_struct);
-
         size_t lbuf_offset = ((rpc_send_count % the_ctx->msgs_per_dest) * the_ctx->msg_entry_size);
 
         //adding size_t to uint32_t* adds the value*4 because pointer increments by 4..
