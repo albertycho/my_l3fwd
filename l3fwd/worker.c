@@ -100,33 +100,52 @@ void batch_process_l3fwd(rpcNUMAContext* rpcContext, RPCWithHeader* rpcs,  uint6
     for(int i=0; i<batch_size;i++){
         char raw_data[2048];
         if(!(zeroCopy)){
+			//printf("NOT_ZERO_COPY\n");
             memcpy(raw_data,rpcs[i].payload, packet_size);
         }
         uint64_t dst_port;
         uint8_t port_id = ((tmp_count-batch_size)+i) % 16;
         dst_port = l3fwd_em_handle_ipv6(raw_data, port_id, (void*)worker_hash, port_id);
+		if(dst_port>1024){// should never print. added to avoid compiler skipping the handle_ipv6 call
+			printf("unexpected dest port %d\n", dst_port);
+		}
         if(!(zeroCopy)){
             memcpy(raw_data,&dst_port, sizeof(uint64_t));
-        }
-        sendToNode_zsim( rpcContext, 
-          myLocalBuffer, // where the response will come from
-          packet_size, //(is_get && !skip_ret_cpy) ? resp_arr[0].val_len : 64, // sizeof is a full resp. for GET, CB for PUT
-          source_node_ids[i], // node id to reply to comes from the cq entry
-          0,//params.sonuma_nid,  // my nodeid unused
-          0,//source_qp_to_reply, // qp to reply to comes from the payload unused
-          wrkr_lid, // source qp
-          true, // use true because response needs to go to a specific client
-          //(char*) resp_arr[0].val_ptr, // raw data
-          (char*) rpcs[i].payload,
-          zeroCopy, //always cpy forwarded packet
-          ((tmp_count-batch_size)+i)
-        ); 
-        if(!(zeroCopy)){ // if zeroCopy, NIC will free the recv buffer on its own
+        
+        	sendToNode_zsim( rpcContext, 
+        	  myLocalBuffer, // where the response will come from
+        	  packet_size, //(is_get && !skip_ret_cpy) ? resp_arr[0].val_len : 64, // sizeof is a full resp. for GET, CB for PUT
+        	  source_node_ids[i], // node id to reply to comes from the cq entry
+        	  0,//params.sonuma_nid,  // my nodeid unused
+        	  0,//source_qp_to_reply, // qp to reply to comes from the payload unused
+        	  wrkr_lid, // source qp
+        	  true, // use true because response needs to go to a specific client
+        	  //(char*) resp_arr[0].val_ptr, // raw data
+        	  (char*) rpcs[i].payload,
+        	  zeroCopy, //always cpy forwarded packet
+        	  ((tmp_count-batch_size)+i)
+        	); 
             do_Recv_zsim(rpcContext, sonuma_nid, wrkr_lid, 0, rpcs[i].payload, 64);
         }
-        
-
     }
+	if(zeroCopy){
+    	for(int i=0; i<batch_size;i++){
+    	    sendToNode_zsim( rpcContext, 
+    	      myLocalBuffer, // where the response will come from
+    	      packet_size, //(is_get && !skip_ret_cpy) ? resp_arr[0].val_len : 64, // sizeof is a full resp. for GET, CB for PUT
+    	      source_node_ids[i], // node id to reply to comes from the cq entry
+    	      0,//params.sonuma_nid,  // my nodeid unused
+    	      0,//source_qp_to_reply, // qp to reply to comes from the payload unused
+    	      wrkr_lid, // source qp
+    	      true, // use true because response needs to go to a specific client
+    	      //(char*) resp_arr[0].val_ptr, // raw data
+    	      (char*) rpcs[i].payload,
+    	      zeroCopy, //always cpy forwarded packet
+    	      ((tmp_count-batch_size)+i)
+    	    ); 
+		}
+	}
+
 }
 
 
@@ -310,7 +329,7 @@ void* run_worker(void* arg) {
             //}
             uint32_t sonuma_nid = params.sonuma_nid;
             batch_process_l3fwd(rpcContext, rpcs, source_node_ids, worker_hash, myLocalBuffer, batch_size, packet_size, tmp_count, wrkr_lid, sonuma_nid);
-
+			//printf("returned from batch_process, batchsize=%d\n", batch_size);
             batch_counter = 0;
             //if(*done_sending){
             //    break;
